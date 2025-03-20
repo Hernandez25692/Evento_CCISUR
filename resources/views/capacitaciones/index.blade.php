@@ -20,12 +20,15 @@
                     <p class="card-text"><strong>Fecha:</strong> {{ $capacitacion->fecha }}</p>
 
                     <!-- Botón para abrir el menú offcanvas -->
-                    <button class="btn btn-info w-100" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDetalles{{ $capacitacion->id }}">
+                    <button class="btn btn-info w-100" type="button" data-bs-toggle="offcanvas" 
+                        data-bs-target="#offcanvasDetalles{{ $capacitacion->id }}" 
+                        aria-controls="offcanvasDetalles{{ $capacitacion->id }}">
                         🔍 Ver Detalles
                     </button>
 
-                    <!-- Offcanvas (Menú lateral de detalles) -->
-                    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDetalles{{ $capacitacion->id }}">
+                    <!-- Offcanvas (Menú lateral en escritorio, inferior en móvil) -->
+                    <div class="offcanvas offcanvas-end offcanvas-responsive" tabindex="-1" 
+                        id="offcanvasDetalles{{ $capacitacion->id }}">
                         <div class="offcanvas-header">
                             <h5 class="offcanvas-title">Detalles de {{ $capacitacion->nombre }}</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
@@ -61,7 +64,9 @@
                                     <button class="btn btn-danger w-100 close-offcanvas" onclick="confirmarEliminacion({{ $capacitacion->id }})">
                                         🗑️ Eliminar evento
                                     </button>
-                                    <form id="eliminar-capacitacion-{{ $capacitacion->id }}" action="{{ route('capacitaciones.destroy', $capacitacion->id) }}" method="POST" style="display: none;">
+                                    <form id="eliminar-capacitacion-{{ $capacitacion->id }}" 
+                                        action="{{ route('capacitaciones.destroy', $capacitacion->id) }}" 
+                                        method="POST" style="display: none;">
                                         @csrf
                                         @method('DELETE')
                                     </form>
@@ -93,6 +98,23 @@
                 bsOffcanvas.hide();
             });
         });
+
+        // Ajustar el menú según el tamaño de la pantalla
+        function ajustarOffcanvas() {
+            document.querySelectorAll(".offcanvas-responsive").forEach(offcanvas => {
+                if (window.innerWidth < 768) {
+                    offcanvas.classList.remove("offcanvas-end");
+                    offcanvas.classList.add("offcanvas-bottom");
+                } else {
+                    offcanvas.classList.remove("offcanvas-bottom");
+                    offcanvas.classList.add("offcanvas-end");
+                }
+            });
+        }
+
+        // Ejecutar cuando se cargue la página y al cambiar el tamaño de la ventana
+        ajustarOffcanvas();
+        window.addEventListener("resize", ajustarOffcanvas);
     });
 </script>
 
@@ -116,6 +138,10 @@
 
     .offcanvas {
         width: 300px; /* Define el ancho del menú */
+    }
+
+    .offcanvas-bottom {
+        height: 50vh; /* Altura en móviles */
     }
 
     .list-group-item a {
