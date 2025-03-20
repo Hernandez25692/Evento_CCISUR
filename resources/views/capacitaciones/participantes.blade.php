@@ -8,7 +8,7 @@
     
     @if ($participantes->count() > 0)
     <div class="table-responsive">
-        <table class="table table-hover table-bordered shadow-sm">
+        <table id="tablaParticipantes" class="table table-hover table-bordered shadow-sm">
             <thead class="table-dark text-center">
                 <tr>
                     <th>#</th>
@@ -54,6 +54,37 @@
     @endif
 </div>
 
+<!-- Agregar DataTables -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#tablaParticipantes').DataTable({
+            "language": {
+                "lengthMenu": "Mostrar _MENU_ registros por página",
+                "zeroRecords": "No se encontraron resultados",
+                "info": "Mostrando página _PAGE_ de _PAGES_",
+                "infoEmpty": "No hay registros disponibles",
+                "infoFiltered": "(filtrado de _MAX_ registros en total)",
+                "search": "Buscar:",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            },
+            "order": [[1, "asc"]], // Ordenar por nombre (ascendente)
+            "columnDefs": [
+                { "orderable": false, "targets": [0, 10] } // Desactivar orden en # y Acciones
+            ]
+        });
+    });
+</script>
+
 <style>
     .table {
         border-radius: 10px;
@@ -61,12 +92,12 @@
     }
 
     .table thead {
-        background-color: #007bff;
+        background-color: #343a40;
         color: white;
     }
 
     .table-hover tbody tr:hover {
-        background-color: #f1f1f1;
+        background-color: #f8f9fa;
     }
 
     .btn-danger {
