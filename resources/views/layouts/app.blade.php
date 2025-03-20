@@ -15,6 +15,10 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('capacitaciones.create') }}">Nueva Capacitación</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('dashboard') }}">📊 Dashboard</a>
+                    </li>
+
                 </ul>
             </div>
         </div>

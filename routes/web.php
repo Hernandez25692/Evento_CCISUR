@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CapacitacionController;
 use App\Http\Controllers\ParticipanteController;
 use App\Http\Controllers\PlantillaDiplomaController;
+use App\Http\Controllers\DashboardController;
 
 
 
@@ -31,5 +32,6 @@ Route::get('capacitaciones/{id}/plantilla', [CapacitacionController::class, 'agr
 Route::post('capacitaciones/{id}/plantilla', [CapacitacionController::class, 'guardarPlantilla'])->name('capacitaciones.plantilla.store');
 Route::get('capacitaciones/{id}/diplomas', [CapacitacionController::class, 'generarDiplomas'])->name('capacitaciones.diplomas');
 
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 
