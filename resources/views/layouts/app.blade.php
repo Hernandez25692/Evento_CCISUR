@@ -105,6 +105,10 @@
                             <i class="fas fa-chart-bar"></i> Dashboard
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('dashboard.filtro') }}"><i class="fas fa-filter"></i> Filtro de Participantes</a>
+                    </li>
+
                 </ul>
             </div>
         </div>

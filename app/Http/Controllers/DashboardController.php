@@ -28,4 +28,35 @@ class DashboardController extends Controller
             'participantesData'
         ));
     }
+    //Dashboard de Filtros
+    public function filtro(Request $request)
+    {
+        // Obtiene los valores de los filtros desde el formulario
+        $query = Participante::query();
+
+        if ($request->filled('edad')) {
+            $query->where('edad', $request->edad);
+        }
+
+        if ($request->filled('genero')) {
+            $query->where('genero', $request->genero);
+        }
+
+        if ($request->filled('nivel_educativo')) {
+            $query->where('nivel_educativo', $request->nivel_educativo);
+        }
+
+        if ($request->filled('empresa')) {
+            $query->where('empresa', 'LIKE', '%' . $request->empresa . '%');
+        }
+
+        if ($request->filled('municipio')) {
+            $query->where('municipio', 'LIKE', '%' . $request->municipio . '%');
+        }
+
+        // Obtener los participantes filtrados
+        $participantes = $query->get();
+
+        return view('dashboard.filtro', compact('participantes'));
+    }
 }

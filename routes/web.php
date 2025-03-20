@@ -34,4 +34,6 @@ Route::get('capacitaciones/{id}/diplomas', [CapacitacionController::class, 'gene
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+//Dashboard de Filtros
+Route::get('/dashboard/filtro', [DashboardController::class, 'filtro'])->name('dashboard.filtro');
 
