@@ -97,16 +97,16 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('capacitaciones.create') }}">
-                            <i class="fas fa-plus-circle"></i> Nueva Capacitación
+                            <i class="fas fa-plus-circle"></i> 📚Nueva Capacitación
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('dashboard') }}">
-                            <i class="fas fa-chart-bar"></i> Dashboard
+                            <i class="fas fa-chart-bar"></i> 📊Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('dashboard.filtro') }}"><i class="fas fa-filter"></i> Filtro de Participantes</a>
+                        <a class="nav-link" href="{{ route('dashboard.filtro') }}"><i class="fas fa-filter"></i> 🔽Filtro de Participantes</a>
                     </li>
 
                 </ul>
