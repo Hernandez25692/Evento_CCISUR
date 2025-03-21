@@ -15,7 +15,7 @@
     <style>
         /* ======== NAVBAR ======== */
         .navbar {
-            background-color: #2c3e50 !important; /* Color más elegante */
+            background-color: #2c3e50 !important;
             padding: 10px 15px;
         }
         .navbar-brand {
@@ -35,7 +35,7 @@
             font-weight: 500;
         }
         .nav-link:hover {
-            color: #1abc9c !important; /* Color destacado */
+            color: #1abc9c !important;
             transition: 0.3s;
         }
 
@@ -68,25 +68,14 @@
             background-color: #16a085;
             transform: scale(1.05);
         }
-
-        /* ======== RESPONSIVE ======== */
-        @media (max-width: 768px) {
-            .navbar-nav {
-                text-align: center;
-            }
-            .footer {
-                position: relative;
-            }
-        }
     </style>
 </head>
 <body>
 
-    <!-- Navbar Responsivo -->
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="{{ route('home') }}">
-                <!-- Logo de la CCISUR -->
                 <img src="{{ asset('storage/logo/Logo-CCISUR.png') }}" alt="CCISUR Logo">
                 Evento_CCISUR
             </a>
@@ -95,20 +84,32 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('capacitaciones.create') }}">
-                            <i class="fas fa-plus-circle"></i> 📚Nueva Capacitación
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('dashboard') }}">
-                            <i class="fas fa-chart-bar"></i> 📊Dashboard
-                        </a>
-                    </li>
+                    @guest
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('login') }}">Iniciar Sesión</a>
+                        </li>
+                    @else
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('capacitaciones.index') }}">
+                                📚 Capacitaciones
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('dashboard') }}">
+                                📊 Dashboard
+                            </a>
+                        </li>
+                         </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('dashboard.filtro') }}"><i class="fas fa-filter"></i> 🔽Filtro de Participantes</a>
                     </li>
-
+                        <li class="nav-item">
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button class="btn btn-danger">Cerrar Sesión</button>
+                            </form>
+                        </li>
+                    @endguest
                 </ul>
             </div>
         </div>
