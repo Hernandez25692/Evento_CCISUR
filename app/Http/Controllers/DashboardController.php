@@ -31,7 +31,6 @@ class DashboardController extends Controller
     //Dashboard de Filtros
     public function filtro(Request $request)
     {
-        // Obtiene los valores de los filtros desde el formulario
         $query = Participante::query();
 
         if ($request->filled('edad')) {
@@ -47,15 +46,14 @@ class DashboardController extends Controller
         }
 
         if ($request->filled('empresa')) {
-            $query->where('empresa', 'LIKE', '%' . $request->empresa . '%');
+            $query->where('empresa', 'like', "%{$request->empresa}%");
         }
 
         if ($request->filled('municipio')) {
-            $query->where('municipio', 'LIKE', '%' . $request->municipio . '%');
+            $query->where('municipio', 'like', "%{$request->municipio}%");
         }
 
-        // Obtener los participantes filtrados
-        $participantes = $query->get();
+        $participantes = $query->paginate(10); // Mostrar 10 registros por página
 
         return view('dashboard.filtro', compact('participantes'));
     }

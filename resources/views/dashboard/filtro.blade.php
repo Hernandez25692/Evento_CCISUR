@@ -41,6 +41,9 @@
             <div class="col-md-3 align-self-end">
                 <button type="submit" class="btn btn-primary w-100">🔍 Filtrar</button>
             </div>
+            <div class="col-md-3 align-self-end">
+                <a href="{{ route('dashboard.filtro') }}" class="btn btn-danger w-100">❌ Eliminar Filtros</a>
+            </div>
         </div>
     </form>
 
@@ -64,7 +67,7 @@
             <tbody>
                 @foreach ($participantes as $index => $participante)
                 <tr class="align-middle">
-                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td class="text-center">{{ $loop->iteration }}</td>
                     <td>{{ $participante->nombre_completo }}</td>
                     <td>{{ $participante->correo }}</td>
                     <td>{{ $participante->telefono }}</td>
@@ -78,8 +81,13 @@
             </tbody>
         </table>
     </div>
+
+    <!-- Paginación personalizada -->
+    <div class="d-flex justify-content-center mt-4">
+        {{ $participantes->withQueryString()->links('pagination::bootstrap-5') }}
+    </div>
     @else
-    <p class="text-center alert alert-warning">⚠️ No hay resultados para los filtros aplicados.</p>
+    <p class="text-center alert alert-warning mt-4">⚠️ No hay resultados para los filtros aplicados.</p>
     @endif
 </div>
 
@@ -89,23 +97,43 @@
         overflow: hidden;
     }
 
-    .table thead {
-        background-color: #007bff;
-        color: white;
-    }
-
     .table-hover tbody tr:hover {
         background-color: #f1f1f1;
     }
 
     .btn-primary {
-        background-color: #007bff;
+        background-color: #1abc9c;
         border: none;
     }
 
     .btn-primary:hover {
-        background-color: #0056b3;
+        background-color: #16a085;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+    .pagination .page-link {
+        color: #1abc9c;
+        border: 1px solid #1abc9c;
+        transition: all 0.3s ease;
+    }
+
+    .pagination .page-link:hover {
+        background-color: #1abc9c;
+        color: white;
+    }
+
+    .pagination .active .page-link {
+        background-color: #1abc9c;
+        color: white;
+        border-color: #1abc9c;
     }
 </style>
-
 @endsection
