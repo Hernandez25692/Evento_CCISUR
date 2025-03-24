@@ -8,11 +8,14 @@ RUN apt-get update && apt-get install -y \
 # Instala Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copia todos los archivos de tu proyecto
+# Copia el código fuente
 COPY . /var/www/html
 
 # Establece el directorio de trabajo
 WORKDIR /var/www/html
+
+# Instala dependencias de Laravel
+RUN composer install --no-dev --optimize-autoloader
 
 # Permisos correctos
 RUN chown -R www-data:www-data /var/www/html \
@@ -21,8 +24,11 @@ RUN chown -R www-data:www-data /var/www/html \
 # Habilita el módulo de reescritura de Apache
 RUN a2enmod rewrite
 
-# Copia archivo de configuración personalizado de Apache
+# Copia configuración personalizada de Apache
 COPY .docker/vhost.conf /etc/apache2/sites-available/000-default.conf
 
 # Expone el puerto 80
 EXPOSE 80
+
+# Comando para iniciar el servidor
+CMD php artisan migrate --force && apache2-foreground
