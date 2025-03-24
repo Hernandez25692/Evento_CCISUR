@@ -1,83 +1,115 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mt-4">
-    <h1 class="text-center mb-4">📊 Dashboard de Capacitaciones</h1>
+<div class="container py-4">
+    <h1 class="text-center mb-5 fw-bold text-primary-emphasis">
+        📊 Dashboard de Capacitaciones
+    </h1>
 
     <!-- Resumen General -->
-    <div class="row mb-4">
+    <div class="row g-4 mb-5">
         <div class="col-md-6">
-            <div class="card shadow-lg text-center p-3">
-                <h3 class="text-primary">📅 Total de Capacitaciones</h3>
-                <h2>{{ $totalCapacitaciones }}</h2>
+            <div class="card shadow-sm border-0 bg-light h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-primary fw-bold mb-2">📅 Total de Capacitaciones</h5>
+                    <h2 class="display-5">{{ $totalCapacitaciones }}</h2>
+                </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="card shadow-lg text-center p-3">
-                <h3 class="text-success">👥 Total de Participantes</h3>
-                <h2>{{ $totalParticipantes }}</h2>
+            <div class="card shadow-sm border-0 bg-light h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-success fw-bold mb-2">👥 Total de Participantes</h5>
+                    <h2 class="display-5">{{ $totalParticipantes }}</h2>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Gráficos -->
-    <div class="row">
+    <div class="row g-4">
         <div class="col-md-6">
-            <div class="card p-3 shadow-lg">
-                <h4 class="text-center">Participantes por Capacitación</h4>
-                <canvas id="chartParticipantes"></canvas>
+            <div class="card shadow-lg border-0 h-100">
+                <div class="card-header bg-primary text-white text-center fw-bold">
+                    Participantes por Capacitación
+                </div>
+                <div class="card-body">
+                    <canvas id="chartParticipantes" height="230"></canvas>
+                </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="card p-3 shadow-lg">
-                <h4 class="text-center">Capacitaciones Más Populares</h4>
-                <canvas id="chartCapacitaciones"></canvas>
+            <div class="card shadow-lg border-0 h-100">
+                <div class="card-header bg-success text-white text-center fw-bold">
+                    Capacitaciones Más Populares
+                </div>
+                <div class="card-body">
+                    <canvas id="chartCapacitaciones" height="230"></canvas>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Incluir Chart.js -->
+<!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Gráficos -->
 <script>
-    // Datos para el gráfico de barras
-    let ctxBar = document.getElementById('chartParticipantes').getContext('2d');
-    new Chart(ctxBar, {
+    const participantesLabels = @json($capacitacionesLabels);
+    const participantesData = @json($participantesData);
+
+    new Chart(document.getElementById('chartParticipantes'), {
         type: 'bar',
         data: {
-            labels: @json($capacitacionesLabels),
+            labels: participantesLabels,
             datasets: [{
                 label: 'Participantes',
-                data: @json($participantesData),
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                data: participantesData,
+                backgroundColor: 'rgba(54, 162, 235, 0.7)',
                 borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2,
+                borderRadius: 5,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('chartCapacitaciones'), {
+        type: 'doughnut',
+        data: {
+            labels: participantesLabels,
+            datasets: [{
+                label: 'Participantes',
+                data: participantesData,
+                backgroundColor: [
+                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+                    '#FF9F40', '#C9CBCF', '#9AD0F5'
+                ],
+                borderColor: '#fff',
                 borderWidth: 1
             }]
         },
         options: {
             responsive: true,
-            scales: {
-                y: { beginAtZero: true }
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
             }
         }
     });
-
-    // Datos para el gráfico de pastel
-    let ctxPie = document.getElementById('chartCapacitaciones').getContext('2d');
-    new Chart(ctxPie, {
-        type: 'pie',
-        data: {
-            labels: @json($capacitacionesLabels),
-            datasets: [{
-                label: 'Participantes',
-                data: @json($participantesData),
-                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
-            }]
-        },
-        options: {
-            responsive: true
-        }
-    });
 </script>
-
 @endsection
+    
