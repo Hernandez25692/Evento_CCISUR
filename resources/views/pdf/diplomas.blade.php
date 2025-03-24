@@ -60,6 +60,13 @@
 </head>
 <body>
     @foreach($participantes as $participante)
+        @php
+            // Configura el locale en español para Carbon
+            \Carbon\Carbon::setLocale('es');
+            // Formatea la fecha en español (ejemplo: "25 de octubre de 2023")
+            $fechaFormateada = \Carbon\Carbon::parse($plantilla->fecha_emision)->isoFormat('D [de] MMMM [de] YYYY');
+        @endphp
+
         <div class="content">
             <img src="{{ public_path('storage/logo_diploma/images.jpeg') }}" class="logo">
             <h2>OTORGA EL PRESENTE</h2>
@@ -69,7 +76,7 @@
             <p class="info">Por su participación en :</p>
             <h3><strong>{{ strtoupper($capacitacion->nombre) }}</strong></h3>
             <p class="info">
-                {{ $capacitacion->lugar }}, {{ \Carbon\Carbon::parse($plantilla->fecha_emision)->translatedFormat('d \d\e F \d\e Y') }}
+                {{ $capacitacion->lugar }}, {{ $fechaFormateada }}
             </p>
             <p class="info"><strong>Impartido por: {{ $capacitacion->impartido_por }}</strong></p>
         </div>
