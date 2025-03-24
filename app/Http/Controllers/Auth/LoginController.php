@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
-
+use Illuminate\Validation\ValidationException;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +18,7 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            // Redirigir a la lista de capacitaciones en lugar del dashboard
+            // Redirigir a la lista de capacitaciones
             return redirect()->route('capacitaciones.index');
         }
 
@@ -35,4 +35,6 @@ class LoginController extends Controller
 
         return redirect()->route('login');
     }
+
+    
 }
