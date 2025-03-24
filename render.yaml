@@ -27,3 +27,10 @@ services:
         value: root
       - key: DB_PASSWORD
         value: fPAQlShwskbNDSVYOVCzVoveRThZjJwj
+
+services:
+  - type: web
+    name: evento-ccisur
+    env: docker
+    plan: free
+    autoDeploy: true
