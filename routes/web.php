@@ -49,4 +49,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Cerrar sesión
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+    // Vista previa de diplomas
+    Route::get('capacitaciones/{id}/diplomas/preview', [CapacitacionController::class, 'vistaPreviaDiploma'])->name('capacitaciones.diplomas.vistaPrevia');
+    Route::get('capacitaciones/{id}/diplomas/preview', [CapacitacionController::class, 'vistaPreviaDiploma'])->name('capacitaciones.diplomas.preview');
+
 });

@@ -124,7 +124,8 @@ class CapacitacionController extends Controller
     public function agregarPlantilla($id)
     {
         $capacitacion = Capacitacion::findOrFail($id);
-        return view('capacitaciones.plantilla', compact('capacitacion'));
+        $plantillaExistente = Plantilla::where('capacitacion_id', $id)->exists();
+        return view('capacitaciones.plantilla', compact('capacitacion', 'plantillaExistente'));
     }
 
     /**
@@ -166,8 +167,9 @@ class CapacitacionController extends Controller
 
         $plantilla->save();
 
-        return redirect()->route('capacitaciones.index')->with('success', 'Plantilla guardada correctamente.');
+        return redirect()->back()->with('success', '✅ Plantilla guardada correctamente.');
     }
+
 
     /**
      * Genera diplomas en PDF para los participantes de una capacitación.
@@ -189,5 +191,29 @@ class CapacitacionController extends Controller
             ->setPaper('letter', $orientacion); // Ajustar a tamaño carta
 
         return $pdf->download('diplomas.pdf');
+    }
+
+    /**
+     * Muestra una vista previa de un diploma en PDF.
+     */
+    public function vistaPreviaDiploma($id)
+    {
+        $capacitacion = Capacitacion::findOrFail($id);
+        $plantilla = Plantilla::where('capacitacion_id', $id)->first();
+        $participante = Participante::where('capacitacion_id', $id)->first();
+
+        if (!$plantilla || !$participante) {
+            return redirect()->back()->with('error', 'Debe existir una plantilla y al menos un participante para la vista previa.');
+        }
+
+        $orientacion = $plantilla->orientacion === 'vertical' ? 'portrait' : 'landscape';
+
+        $pdf = PDF::loadView('pdf.diplomas', [
+            'capacitacion' => $capacitacion,
+            'plantilla' => $plantilla,
+            'participantes' => collect([$participante])
+        ])->setPaper('letter', $orientacion);
+
+        return $pdf->stream('vista_previa.pdf');
     }
 }
