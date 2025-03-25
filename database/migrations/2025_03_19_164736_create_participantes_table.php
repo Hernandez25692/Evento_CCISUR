@@ -20,7 +20,6 @@ return new class extends Migration {
             $table->enum('genero', ['Masculino', 'Femenino', 'Otro']);
             $table->string('municipio');
             $table->string('ciudad');
-            $table->foreignId('capacitacion_id')->constrained('capacitaciones')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -7,13 +7,14 @@ use App\Http\Controllers\ParticipanteController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 
+
 // Redirigir a login si no está autenticado
 Route::get('/', function () {
     return redirect()->route('login');
 })->name('home');
 
 // Rutas de autenticación
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 // Rutas protegidas
 Route::middleware(['auth'])->group(function () {
@@ -54,4 +55,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('capacitaciones/{id}/diplomas/preview', [CapacitacionController::class, 'vistaPreviaDiploma'])->name('capacitaciones.diplomas.vistaPrevia');
     Route::get('capacitaciones/{id}/diplomas/preview', [CapacitacionController::class, 'vistaPreviaDiploma'])->name('capacitaciones.diplomas.preview');
 
+    // Importar y exportar participantes
+    Route::post('/capacitaciones/{id}/importar-excel', [ParticipanteController::class, 'importarExcel'])->name('participantes.importar');
+    Route::get('/capacitaciones/{id}/exportar-excel', [ParticipanteController::class, 'exportarExcel'])->name('participantes.exportar');
 });

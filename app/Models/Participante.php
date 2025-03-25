@@ -2,17 +2,30 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Participante extends Model
 {
     use HasFactory;
-    protected $fillable = ['nombre_completo', 'correo', 'telefono', 'empresa', 'puesto', 'edad', 'identidad', 'nivel_educativo', 'genero', 'municipio', 'ciudad', 'capacitacion_id'];
 
-    public function capacitacion()
+    protected $fillable = [
+        'nombre_completo',
+        'correo',
+        'telefono',
+        'empresa',
+        'puesto',
+        'edad',
+        'identidad',
+        'nivel_educativo',
+        'genero',
+        'municipio',
+        'ciudad',
+    ];
+
+    // ✅ Relación muchos a muchos con Capacitacion
+    public function capacitaciones()
     {
-        return $this->belongsTo(Capacitacion::class);
+        return $this->belongsToMany(Capacitacion::class, 'capacitacion_participante', 'participante_id', 'capacitacion_id');
     }
 }
-

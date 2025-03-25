@@ -19,5 +19,13 @@ class DatabaseSeeder extends Seeder
             CapacitacionSeeder::class,
             ParticipanteSeeder::class,
         ]);
+
+        User::create([
+            'name' => 'Jose Hernandez',
+            'email' => 'jose@gmail.com',
+            'password' => bcrypt('admin'),
+        ]);
     }
+
+    
 }

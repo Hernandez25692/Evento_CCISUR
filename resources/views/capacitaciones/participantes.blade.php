@@ -5,7 +5,27 @@
     <h1 class="text-center mb-4">Participantes de {{ $capacitacion->nombre }}</h1>
 
     <a href="{{ route('capacitaciones.participantes.create', $capacitacion->id) }}" class="btn btn-primary mb-3">➕ Agregar Participante</a>
-    
+    <!-- Botón para exportar a Excel -->
+<a href="{{ route('participantes.exportar', $capacitacion->id) }}" class="btn btn-success mb-3">
+    Exportar a Excel
+</a>
+
+<!-- Formulario para importar desde Excel -->
+<form action="{{ route('participantes.importar', $capacitacion->id) }}" method="POST" enctype="multipart/form-data" class="mb-3">
+    @csrf
+    <div class="form-group">
+        <label for="archivo_excel">Importar archivo Excel (.xlsx)</label>
+        <input type="file" name="archivo_excel" id="archivo_excel" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Importar Participantes</button>
+</form>
+
+@if(session('success'))
+    <div class="alert alert-success mt-2">
+        {{ session('success') }}
+    </div>
+@endif
+
     @if ($participantes->count() > 0)
     <div class="table-responsive">
         <table id="tablaParticipantes" class="table table-hover table-bordered shadow-sm">

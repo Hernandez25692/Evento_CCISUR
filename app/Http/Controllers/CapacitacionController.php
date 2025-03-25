@@ -201,7 +201,8 @@ class CapacitacionController extends Controller
     {
         $capacitacion = Capacitacion::findOrFail($id);
         $plantilla = Plantilla::where('capacitacion_id', $id)->first();
-        $participante = Participante::where('capacitacion_id', $id)->first();
+        $capacitacion = Capacitacion::findOrFail($id);
+        $participante = $capacitacion->participantes()->first();
 
         if (!$plantilla || !$participante) {
             return redirect()->back()->with('error', 'Debe existir una plantilla y al menos un participante para la vista previa.');
