@@ -10,7 +10,7 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Times New Roman', serif;
             margin: 0;
             padding: 0;
             text-align: center;
@@ -18,15 +18,15 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            color: #000;
         }
 
         .content {
             position: absolute;
-            top: 9%;
+            top: 2%; /* Más arriba */
             left: 10%;
             width: 80%;
             z-index: 2;
-            color: #000;
         }
 
         .nombre {
@@ -49,36 +49,50 @@
         }
 
         .logo {
-            width: 120px;
-            margin-bottom: 0; /* Elimina espacio bajo el logo */
+            width: 350px;
+            height: auto;
+            margin-bottom: 0;
         }
 
-        h2, h1 {
-            margin-top: 0;
+        h1, h2, h3, p {
+            margin: 0.5rem 0;
+        }
+
+        h3 strong {
+            font-weight: bold;
+        }
+
+        h3::before,
+        h3::after {
+            content: '"';
         }
     </style>
 </head>
 <body>
     @foreach($participantes as $participante)
         @php
-            // Configura el locale en español para Carbon
             \Carbon\Carbon::setLocale('es');
-            // Formatea la fecha en español (ejemplo: "25 de octubre de 2023")
             $fechaFormateada = \Carbon\Carbon::parse($plantilla->fecha_emision)->isoFormat('D [de] MMMM [de] YYYY');
         @endphp
 
-        <div class="content">
-            <img src="{{ public_path('storage/logo_diploma/images.jpeg') }}" class="logo">
-            <h2>OTORGA EL PRESENTE</h2>
-            <h1>CERTIFICADO DE PARTICIPACIÓN A:</h1>
-            <p class="nombre">{{ $participante->nombre_completo }}</p>
-            <p class="info">Por su participación en :</p>
-            <h3><strong>{{ strtoupper($capacitacion->nombre) }}</strong></h3>
-            <p class="info">
-                {{ $capacitacion->lugar }}, {{ $fechaFormateada }}
-            </p>
-            <p class="info"><strong>Impartido por: {{ $capacitacion->impartido_por }}</strong></p>
-        </div>
+ <div class="content">
+    <img src="{{ public_path('storage/logo_diploma/CCISUR_LOGO.png') }}" class="logo">
+
+    <h2 style="line-height: 1.5;">OTORGA EL PRESENTE</h2>
+
+    <h1 style="line-height: 1.5;">CERTIFICADO DE PARTICIPACIÓN A:</h1>
+
+    <p class="nombre" style="line-height: 1.6;">{{ $participante->nombre_completo }}</p>
+
+    <p class="info" style="line-height: 1.6;">Por su participación en:</p>
+
+    <h3 style="line-height: 1.6;"><strong>"{{ $capacitacion->nombre }}"</strong></h3>
+
+    <p class="info" style="line-height: 1.5;">{{ $capacitacion->lugar }}, {{ $fechaFormateada }}</p>
+
+    <p class="info" style="line-height: 1.5;"><strong>Impartido por: {{ $capacitacion->impartido_por }}</strong></p>
+</div>
+
 
         <img src="{{ public_path('storage/' . $plantilla->firma) }}" class="firma">
         <div style="page-break-after: always;"></div>
