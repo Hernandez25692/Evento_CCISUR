@@ -8,73 +8,63 @@
     <div class="row">
         @foreach($capacitaciones as $capacitacion)
         <div class="col-md-4 mb-4">
-            <div class="card shadow-lg border-0 rounded">
+            <div class="card shadow border-0 rounded h-100 position-relative">
                 @if($capacitacion->imagen)
                     <img src="{{ asset('storage/' . $capacitacion->imagen) }}" class="card-img-top custom-img" alt="Imagen de la capacitación">
                 @else
                     <img src="{{ asset('images/default.png') }}" class="card-img-top custom-img" alt="Imagen por defecto">
                 @endif
-                <div class="card-body">
+                <div class="card-body d-flex flex-column">
                     <h5 class="card-title text-primary">{{ $capacitacion->nombre }}</h5>
                     <p class="card-text"><strong>Lugar:</strong> {{ $capacitacion->lugar }}</p>
                     <p class="card-text"><strong>Fecha:</strong> {{ $capacitacion->fecha }}</p>
 
-                    <!-- Botón para abrir el menú offcanvas -->
-                    <button class="btn btn-info w-100" type="button" data-bs-toggle="offcanvas" 
-                        data-bs-target="#offcanvasDetalles{{ $capacitacion->id }}" 
-                        aria-controls="offcanvasDetalles{{ $capacitacion->id }}">
+                    <!-- Botón para mostrar menú -->
+                    <button class="btn btn-info mt-auto w-100 toggle-slide" data-slide="slideMenu{{ $capacitacion->id }}">
                         🔍 Ver Detalles
                     </button>
 
-                    <!-- Offcanvas (Menú lateral en escritorio, inferior en móvil) -->
-                    <div class="offcanvas offcanvas-end offcanvas-responsive" tabindex="-1" 
-                        id="offcanvasDetalles{{ $capacitacion->id }}">
-                        <div class="offcanvas-header">
-                            <h5 class="offcanvas-title">Detalles de {{ $capacitacion->nombre }}</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-                        </div>
-                        <div class="offcanvas-body">
-                            <ul class="list-group">
-                                <li class="list-group-item">
-                                    <a href="{{ route('capacitaciones.edit', $capacitacion->id) }}" class="text-decoration-none close-offcanvas">
-                                        ✏️ Editar evento
-                                    </a>
-                                </li>
-                                <li class="list-group-item">
-                                    <a href="{{ route('capacitaciones.participantes', $capacitacion->id) }}" class="text-decoration-none close-offcanvas">
-                                        👥 Listar participantes
-                                    </a>
-                                </li>
-                                <li class="list-group-item">
-                                    <a href="{{ route('capacitaciones.participantes.create', $capacitacion->id) }}" class="text-decoration-none close-offcanvas">
-                                        ➕ Agregar participante
-                                    </a>
-                                </li>
-                                <li class="list-group-item">
-                                    <a href="{{ route('capacitaciones.plantilla', $capacitacion->id) }}" class="text-decoration-none close-offcanvas">
-                                        📄 Agregar plantilla
-                                    </a>
-                                </li>
-                                <li class="list-group-item">
-                                    <a href="{{ route('capacitaciones.diplomas', $capacitacion->id) }}" class="text-decoration-none close-offcanvas">
-                                        🎓 Generar diplomas
-                                    </a>
-                                </li>
-                                <li class="list-group-item text-danger">
-                                    <button class="btn btn-danger w-100 close-offcanvas" onclick="confirmarEliminacion({{ $capacitacion->id }})">
-                                        🗑️ Eliminar evento
-                                    </button>
-                                    <form id="eliminar-capacitacion-{{ $capacitacion->id }}" 
-                                        action="{{ route('capacitaciones.destroy', $capacitacion->id) }}" 
-                                        method="POST" style="display: none;">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
+                    <!-- Menú deslizable dentro de la tarjeta -->
+                    <div class="slide-menu mt-3" id="slideMenu{{ $capacitacion->id }}">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <a href="{{ route('capacitaciones.edit', $capacitacion->id) }}" class="text-decoration-none">
+                                    ✏️ Editar evento
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ route('capacitaciones.participantes', $capacitacion->id) }}" class="text-decoration-none">
+                                    👥 Listar participantes
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ route('capacitaciones.participantes.create', $capacitacion->id) }}" class="text-decoration-none">
+                                    ➕ Agregar participante
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ route('capacitaciones.plantilla', $capacitacion->id) }}" class="text-decoration-none">
+                                    📄 Agregar plantilla
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ route('capacitaciones.diplomas', $capacitacion->id) }}" class="text-decoration-none">
+                                    🎓 Generar diplomas
+                                </a>
+                            </li>
+                            <li class="list-group-item text-danger">
+                                <button class="btn btn-danger w-100" onclick="confirmarEliminacion({{ $capacitacion->id }})">
+                                    🗑️ Eliminar evento
+                                </button>
+                                <form id="eliminar-capacitacion-{{ $capacitacion->id }}" 
+                                      action="{{ route('capacitaciones.destroy', $capacitacion->id) }}" 
+                                      method="POST" style="display: none;">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
+                            </li>
+                        </ul>
                     </div>
-                    <!-- Fin del Offcanvas -->
                 </div>
             </div>
         </div>
@@ -83,39 +73,42 @@
 </div>
 
 <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const botones = document.querySelectorAll(".toggle-slide");
+
+        botones.forEach(btn => {
+            btn.addEventListener("click", function (e) {
+                const targetId = this.getAttribute("data-slide");
+                const menu = document.getElementById(targetId);
+
+                // Cierra todos los demás
+                document.querySelectorAll(".slide-menu").forEach(m => {
+                    if (m.id !== targetId) {
+                        m.classList.remove("slide-open");
+                    }
+                });
+
+                // Alterna este
+                menu.classList.toggle("slide-open");
+                e.stopPropagation();
+            });
+        });
+
+        // Ocultar menú al hacer clic fuera
+        document.addEventListener("click", function (e) {
+            if (!e.target.closest(".slide-menu") && !e.target.classList.contains("toggle-slide")) {
+                document.querySelectorAll(".slide-menu").forEach(menu => {
+                    menu.classList.remove("slide-open");
+                });
+            }
+        });
+    });
+
     function confirmarEliminacion(id) {
         if (confirm('¿Estás seguro de que deseas eliminar este evento? Esta acción no se puede deshacer.')) {
             document.getElementById('eliminar-capacitacion-' + id).submit();
         }
     }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        // Cierra el menú cuando se hace clic en cualquier opción
-        document.querySelectorAll(".close-offcanvas").forEach(item => {
-            item.addEventListener("click", function() {
-                let offcanvas = this.closest(".offcanvas");
-                let bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvas);
-                bsOffcanvas.hide();
-            });
-        });
-
-        // Ajustar el menú según el tamaño de la pantalla
-        function ajustarOffcanvas() {
-            document.querySelectorAll(".offcanvas-responsive").forEach(offcanvas => {
-                if (window.innerWidth < 768) {
-                    offcanvas.classList.remove("offcanvas-end");
-                    offcanvas.classList.add("offcanvas-bottom");
-                } else {
-                    offcanvas.classList.remove("offcanvas-bottom");
-                    offcanvas.classList.add("offcanvas-end");
-                }
-            });
-        }
-
-        // Ejecutar cuando se cargue la página y al cambiar el tamaño de la ventana
-        ajustarOffcanvas();
-        window.addEventListener("resize", ajustarOffcanvas);
-    });
 </script>
 
 <style>
@@ -127,29 +120,9 @@
         border-top-right-radius: 10px;
     }
 
-    .card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
     .card:hover {
-        transform: scale(1.05);
-        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .offcanvas {
-        width: 300px; /* Define el ancho del menú */
-    }
-
-    .offcanvas-bottom {
-        height: 50vh; /* Altura en móviles */
-    }
-
-    .list-group-item a {
-        color: #007bff;
-    }
-
-    .list-group-item:hover {
-        background-color: #f8f9fa;
+        transform: scale(1.02);
+        transition: transform 0.3s ease;
     }
 
     .btn-info {
@@ -160,6 +133,30 @@
     .btn-info:hover {
         background-color: #0056b3;
     }
-</style>
 
+    .slide-menu {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .slide-menu.slide-open {
+        max-height: 1000px;
+        transition: max-height 0.5s ease;
+    }
+
+    .list-group-item {
+        font-size: 0.95rem;
+    }
+
+    .list-group-item a {
+        color: #0d6efd;
+    }
+
+    .list-group-item:hover {
+        background-color: #e9ecef;
+    }
+</style>
 @endsection

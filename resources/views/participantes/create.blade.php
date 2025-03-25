@@ -81,8 +81,15 @@
         <button type="submit" class="btn btn-success">✅ Guardar Participante</button>
         <button type="button" class="btn btn-warning" onclick="limpiarFormulario()">🗑️ Vaciar</button>
         <a href="{{ route('capacitaciones.participantes', $capacitacion->id) }}" class="btn btn-info">🔍 Mostrar Participantes</a>
+        
         <a href="{{ route('capacitaciones.index') }}" class="btn btn-secondary">🔙 Volver</a>
+        
     </form>
+      <form action="{{ route('participantes.importar', $capacitacion->id) }}" method="POST" enctype="multipart/form-data" class="d-flex gap-2 align-items-center flex-wrap justify-content-center">
+            @csrf
+            <input type="file" name="archivo_excel" id="archivo_excel" class="form-control" required>
+            <button type="submit" class="btn btn-secondary">📥 Importar</button>
+        </form>
 </div>
 
 <script>

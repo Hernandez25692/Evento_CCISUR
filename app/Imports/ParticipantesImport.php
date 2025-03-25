@@ -5,6 +5,7 @@ namespace App\Imports;
 use App\Models\Participante;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
+use Illuminate\Support\Facades\Session;
 
 class ParticipantesImport implements ToCollection
 {
@@ -17,8 +18,19 @@ class ParticipantesImport implements ToCollection
 
     public function collection(Collection $rows)
     {
+        // Validar que al menos una fila tenga 11 columnas esperadas (posición 0 a 10)
+        $encabezado = $rows->first();
+
+        if (!$encabezado || count($encabezado) < 11) {
+            Session::flash('error', '❌ El archivo Excel no tiene la estructura correcta. Asegúrese de usar una plantilla con todos los campos necesarios.');
+            return;
+        }
+
         foreach ($rows as $index => $row) {
             if ($index === 0) continue; // Saltar encabezado
+
+            // Validar que la fila tenga al menos 11 columnas
+            if (count($row) < 11) continue;
 
             $identidad = $row[0];
 
