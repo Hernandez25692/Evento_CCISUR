@@ -70,8 +70,7 @@
         <div class="content">
             <img src="{{ public_path('storage/logo_diploma/images.jpeg') }}" class="logo">
             <h2>OTORGA EL PRESENTE</h2>
-            <h1>CERTIFICADO DE PARTICIPACIÓN</h1>
-            <p class="info">A:</p>
+            <h1>CERTIFICADO DE PARTICIPACIÓN A:</h1>
             <p class="nombre">{{ $participante->nombre_completo }}</p>
             <p class="info">Por su participación en :</p>
             <h3><strong>{{ strtoupper($capacitacion->nombre) }}</strong></h3>

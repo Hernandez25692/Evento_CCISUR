@@ -16,7 +16,8 @@ class CapacitacionController extends Controller
      */
     public function index()
     {
-        $capacitaciones = Capacitacion::all();
+        // Obtener todas las capacitaciones ordenadas por fecha de creación
+        $capacitaciones = Capacitacion::orderBy('created_at', 'desc')->get();
         return view('capacitaciones.index', compact('capacitaciones'));
     }
 

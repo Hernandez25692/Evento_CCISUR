@@ -1,11 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
+
 <div class="container py-4">
     <h1 class="text-center mb-5 fw-bold text-primary-emphasis">
         📊 Dashboard de Capacitaciones
     </h1>
-
+    
     <!-- Resumen General -->
     <div class="row g-4 mb-5">
         <div class="col-md-6">
@@ -25,7 +26,7 @@
             </div>
         </div>
     </div>
-
+    
     <!-- Gráficos -->
     <div class="row g-4">
         <div class="col-md-6">
@@ -112,4 +113,3 @@
     });
 </script>
 @endsection
-    
