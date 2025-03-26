@@ -81,7 +81,7 @@
         <h1>CERTIFICADO DE PARTICIPACIÓN A:</h1>
         <p class="nombre">{{ $participante->nombre_completo }}</p>
         <p class="info">Por su participación en:</p>
-        <h3><strong>"{{ $capacitacion->nombre }}"</strong></h3>
+        <h3><strong>{{ $capacitacion->nombre }}</strong></h3>
         <p class="info">{{ $capacitacion->lugar }}, {{ $fechaFormateada }}</p>
         <p class="info"><strong>Impartido por: {{ $capacitacion->impartido_por }}</strong></p>
     </div>
