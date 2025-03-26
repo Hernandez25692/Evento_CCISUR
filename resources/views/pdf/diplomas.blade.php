@@ -69,33 +69,29 @@
     </style>
 </head>
 <body>
-    @foreach($participantes as $participante)
-        @php
-            \Carbon\Carbon::setLocale('es');
-            $fechaFormateada = \Carbon\Carbon::parse($plantilla->fecha_emision)->isoFormat('D [de] MMMM [de] YYYY');
-        @endphp
+    @foreach($participantes as $index => $participante)
+    @php
+        \Carbon\Carbon::setLocale('es');
+        $fechaFormateada = \Carbon\Carbon::parse($plantilla->fecha_emision)->isoFormat('D [de] MMMM [de] YYYY');
+    @endphp
 
- <div class="content">
-    <img src="{{ public_path('storage/logo_diploma/CCISUR_LOGO.png') }}" class="logo">
+    <div class="content">
+        <img src="{{ public_path('storage/logo_diploma/CCISUR_LOGO.png') }}" class="logo">
+        <h2>OTORGA EL PRESENTE</h2>
+        <h1>CERTIFICADO DE PARTICIPACIÓN A:</h1>
+        <p class="nombre">{{ $participante->nombre_completo }}</p>
+        <p class="info">Por su participación en:</p>
+        <h3><strong>"{{ $capacitacion->nombre }}"</strong></h3>
+        <p class="info">{{ $capacitacion->lugar }}, {{ $fechaFormateada }}</p>
+        <p class="info"><strong>Impartido por: {{ $capacitacion->impartido_por }}</strong></p>
+    </div>
 
-    <h2 style="line-height: 1.5;">OTORGA EL PRESENTE</h2>
+    <img src="{{ public_path('storage/' . $plantilla->firma) }}" class="firma">
 
-    <h1 style="line-height: 1.5;">CERTIFICADO DE PARTICIPACIÓN A:</h1>
-
-    <p class="nombre" style="line-height: 1.6;">{{ $participante->nombre_completo }}</p>
-
-    <p class="info" style="line-height: 1.6;">Por su participación en:</p>
-
-    <h3 style="line-height: 1.6;"><strong>"{{ $capacitacion->nombre }}"</strong></h3>
-
-    <p class="info" style="line-height: 1.5;">{{ $capacitacion->lugar }}, {{ $fechaFormateada }}</p>
-
-    <p class="info" style="line-height: 1.5;"><strong>Impartido por: {{ $capacitacion->impartido_por }}</strong></p>
-</div>
-
-
-        <img src="{{ public_path('storage/' . $plantilla->firma) }}" class="firma">
+    @if (!$loop->last)
         <div style="page-break-after: always;"></div>
-    @endforeach
+    @endif
+@endforeach
+
 </body>
 </html>
