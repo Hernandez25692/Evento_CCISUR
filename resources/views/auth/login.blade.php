@@ -54,7 +54,7 @@
                     <span class="text-info">Evento_CCISUR</span>
                 </h1>
                 <p class="mb-4">
-                    Plataforma de gestión de capacitaciones para la Cámara de Comercio e Industrias del Sur.
+                    Plataforma de gestión de Formaciones para la Cámara de Comercio e Industrias del Sur.
                 </p>
             </div>
 

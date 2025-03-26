@@ -2,13 +2,13 @@
 
 @section('content')
 <div class="container">
-    <h1 class="text-center mb-4">Nueva Capacitación</h1>
+    <h1 class="text-center mb-4">Nueva Formación</h1>
 
     <form action="{{ route('capacitaciones.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <div class="mb-3">
-            <label class="form-label">Nombre de la Capacitación</label>
+            <label class="form-label">Nombre de la Formación</label>
             <input type="text" class="form-control" name="nombre" required>
         </div>
 
@@ -37,7 +37,7 @@
             <input type="file" class="form-control" name="imagen">
         </div>
 
-        <button type="submit" class="btn btn-success">Guardar Capacitación</button>
+        <button type="submit" class="btn btn-success">Guardar Formación</button>
         <a href="{{ route('capacitaciones.index') }}" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>

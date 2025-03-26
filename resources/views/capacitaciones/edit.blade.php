@@ -2,14 +2,14 @@
 
 @section('content')
 <div class="container">
-    <h1 class="text-center mb-4">Editar Capacitación</h1>
+    <h1 class="text-center mb-4">Editar Formación</h1>
 
     <form action="{{ route('capacitaciones.update', $capacitacion->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
         <div class="mb-3">
-            <label class="form-label">Nombre de la Capacitación</label>
+            <label class="form-label">Nombre de la Formación</label>
             <input type="text" class="form-control" name="nombre" value="{{ $capacitacion->nombre }}" required>
         </div>
 

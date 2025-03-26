@@ -3,7 +3,7 @@
 @section('content')
 <div class="container mt-4">
     <h1 class="text-center mb-4">Lista de Formaciones</h1>
-    <a href="{{ route('capacitaciones.create') }}" class="btn btn-primary mb-3">➕ Nueva Capacitación</a>
+    <a href="{{ route('capacitaciones.create') }}" class="btn btn-primary mb-3">➕ Nueva Formación</a>
 
     <div class="row">
         @foreach($capacitaciones as $capacitacion)

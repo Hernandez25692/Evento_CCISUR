@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <h1 class="text-center text-primary mb-5">📊 Resumen General de Capacitaciones</h1>
+    <h1 class="text-center text-primary mb-5">📊 Resumen General de Formaciones</h1>
 
     <!-- Tarjetas de estadísticas -->
     <div class="row g-4 justify-content-center text-center">
@@ -10,7 +10,7 @@
             <div class="card shadow-sm border-0 p-3 h-100">
                 <div class="card-body">
                     <div class="text-primary fs-2 mb-2">📁</div>
-                    <h5 class="card-title">Total de Capacitaciones</h5>
+                    <h5 class="card-title">Total de Formaciones</h5>
                     <h2 class="fw-bold text-primary">{{ $totalCapacitaciones }}</h2>
                 </div>
             </div>
@@ -41,7 +41,7 @@
     <!-- Gráfico de barras horizontal -->
     <div class="card mb-4 shadow-sm border-0">
         <div class="card-body">
-            <h5 class="card-title mb-4 text-center">👥 Participantes por Capacitación</h5>
+            <h5 class="card-title mb-4 text-center">👥 Participantes por Formación</h5>
             <canvas id="participantesChart"></canvas>
         </div>
     </div>
@@ -49,7 +49,7 @@
     <!-- Gráfico de línea -->
     <div class="card mb-4 shadow-sm border-0">
         <div class="card-body">
-            <h5 class="card-title mb-4 text-center">📅 Capacitaciones por Mes</h5>
+            <h5 class="card-title mb-4 text-center">📅 Formaciones por Mes</h5>
             <canvas id="capacitacionesMesChart"></canvas>
         </div>
     </div>

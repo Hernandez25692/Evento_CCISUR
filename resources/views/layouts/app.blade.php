@@ -91,7 +91,7 @@
                     @else
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('capacitaciones.index') }}">
-                                📚 Capacitaciones
+                                📚 Formaciones
                             </a>
                         </li>
                         <li class="nav-item">
