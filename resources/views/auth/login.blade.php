@@ -114,11 +114,11 @@
                                         {{ old('remember') ? 'checked' : '' }}>
                                     <label class="form-check-label" for="remember"> Recuérdame </label>
                                 </div>
-                                @if (Route::has('password.request'))
-                                    <a class="text-decoration-none" href="{{ route('password.request') }}">
-                                        ¿Olvidaste tu contraseña?
-                                    </a>
-                                @endif
+                                    @if (Route::has('password.request-code'))
+            <a class="text-decoration-none" href="{{ route('password.request-code') }}">
+                🔐 ¿Olvidaste tu contraseña?
+            </a>
+        @endif
                             </div>
 
                             <button type="submit" class="btn btn-info w-100 fw-bold">

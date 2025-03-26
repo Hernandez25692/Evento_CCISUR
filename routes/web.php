@@ -6,6 +6,7 @@ use App\Http\Controllers\CapacitacionController;
 use App\Http\Controllers\ParticipanteController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Auth\ResetCodeController;
 
 
 // Redirigir a login si no está autenticado
@@ -59,3 +60,21 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/capacitaciones/{id}/importar-excel', [ParticipanteController::class, 'importarExcel'])->name('participantes.importar');
     Route::get('/capacitaciones/{id}/exportar-excel', [ParticipanteController::class, 'exportarExcel'])->name('participantes.exportar');
 });
+
+//-----------------------------------------------------------------------------------------------------------------------------
+// ✅ RUTAS PÚBLICAS para el proceso de recuperación de contraseña por código
+// Mostrar formulario para solicitar código
+Route::get('/password/request-code', [ResetCodeController::class, 'showRequestForm'])->name('password.request-code');
+
+// Enviar código por correo
+Route::post('/password/send-code', [ResetCodeController::class, 'sendCode'])->name('password.send-code');
+
+// Mostrar formulario para verificar código
+Route::get('/password/verify-code', [ResetCodeController::class, 'showVerifyForm'])->name('password.verify-code-form');
+
+// Validar código ingresado
+Route::post('/password/verify-code', [ResetCodeController::class, 'verifyCode'])->name('password.verify-code');
+
+// Guardar nueva contraseña
+Route::post('/password/reset-with-code', [ResetCodeController::class, 'resetPassword'])->name('password.reset-with-code');
+//-----------------------------------------------------------------------------------------------------------------------------
