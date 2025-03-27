@@ -27,7 +27,7 @@ class DashboardController extends Controller
         $capacitacionesLabels = $participantesPorCapacitacion->pluck('nombre');
         $participantesData = $participantesPorCapacitacion->pluck('participantes_count');
 
-        // Función adicional: capacitaciones por mes
+        // Gráfico: capacitaciones por mes
         $capacitacionesPorMes = Capacitacion::select(
             DB::raw("DATE_FORMAT(fecha, '%Y-%m') as mes"),
             DB::raw("count(*) as total")
@@ -36,13 +36,21 @@ class DashboardController extends Controller
         ->orderBy('mes')
         ->get();
 
+        // Gráfico: distribución por género
+        $generoData = [
+            Participante::where('genero', 'Masculino')->count(),
+            Participante::where('genero', 'Femenino')->count(),
+            Participante::where('genero', 'Otro')->count()
+        ];
+
         return view('dashboard.index', compact(
             'totalCapacitaciones',
             'totalParticipantesUnicos',
             'totalParticipaciones',
             'capacitacionesLabels',
             'participantesData',
-            'capacitacionesPorMes'
+            'capacitacionesPorMes',
+            'generoData'
         ));
     }
 
