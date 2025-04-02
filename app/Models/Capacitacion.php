@@ -11,7 +11,25 @@ class Capacitacion extends Model
 
     protected $table = 'capacitaciones'; // Asegurar que el nombre de la tabla es correcto
 
-    protected $fillable = ['nombre', 'lugar', 'fecha', 'impartido_por', 'descripcion', 'imagen'];
+    protected $fillable = [
+        'nombre',
+        'lugar',
+        'fecha',
+        'impartido_por',
+        'descripcion',
+        'imagen',
+        'tipo_formacion',
+        'duracion',
+        'forma',
+        'cupos',
+        'limite_participantes',
+        'medio',
+        'precio_afiliado',
+        'isv_afiliado',
+        'precio_no_afiliado',
+        'isv_no_afiliado',
+    ];
+
 
     public function participantes()
     {

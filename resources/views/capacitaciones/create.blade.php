@@ -115,6 +115,50 @@
                         </div>
                     </div>
 
+                    <!-- SECCIÓN DE COSTOS -->
+                    <div id="seccion_pago" style="display: none;">
+                        <div class="form-section mb-4">
+                            <div class="section-header mb-4 mt-4">
+                                <h5 class="section-title"><i class="fas fa-dollar-sign me-2"></i> Costos de Participación</h5>
+                                <div class="section-divider"></div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="precio_afiliado" class="form-label">Precio Afiliado</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">L.</span>
+                                        <input type="number" class="form-control" id="precio_afiliado" name="precio_afiliado" step="0.01">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="isv_afiliado" class="form-label">ISV Afiliado</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">L.</span>
+                                        <input type="number" class="form-control" id="isv_afiliado" name="isv_afiliado" step="0.01">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="precio_no_afiliado" class="form-label">Precio No Afiliado</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">L.</span>
+                                        <input type="number" class="form-control" id="precio_no_afiliado" name="precio_no_afiliado" step="0.01">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="isv_no_afiliado" class="form-label">ISV No Afiliado</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">L.</span>
+                                        <input type="number" class="form-control" id="isv_no_afiliado" name="isv_no_afiliado" step="0.01">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-section mb-4">
                         <div class="section-header mb-4">
                             <h5 class="section-title"><i class="fas fa-align-left me-2"></i>Descripción</h5>
@@ -157,7 +201,72 @@
     </div>
 </div>
 
+<!-- CDN FontAwesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    .form-header {
+        background: linear-gradient(135deg, #4361ee, #3f37c9);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-title {
+        font-size: 2rem;
+        font-weight: bold;
+    }
+
+    .form-subtitle {
+        font-weight: 300;
+        font-size: 1rem;
+    }
+
+    .form-card {
+        border-radius: 10px;
+    }
+
+    .form-section {
+        padding: 1rem;
+        background: #fff;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+    }
+
+    .section-title {
+        color: #4361ee;
+        font-weight: 600;
+    }
+
+    .section-divider {
+        height: 2px;
+        background: #e0e0e0;
+        margin-top: 4px;
+    }
+
+    .form-actions .btn {
+        padding: 0.7rem 1.5rem;
+    }
+
+    .image-preview {
+        width: 100%;
+        min-height: 150px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .img-thumbnail {
+        max-height: 200px;
+        object-fit: contain;
+    }
+</style>
 
 <script>
     // Vista previa de imagen
@@ -182,6 +291,12 @@
     document.getElementById('cupos').addEventListener('change', function () {
         const limite = document.getElementById('limite_participantes_container');
         limite.style.display = this.value === 'limitado' ? 'block' : 'none';
+    });
+
+    // Mostrar campos de pago solo si medio = pago
+    document.getElementById('medio').addEventListener('change', function () {
+        const pago = document.getElementById('seccion_pago');
+        pago.style.display = this.value === 'pago' ? 'block' : 'none';
     });
 
     // Validación Bootstrap

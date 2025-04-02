@@ -64,15 +64,11 @@
 
                             <div class="col-md-6">
                                 <label for="tipo_formacion" class="form-label">Tipo de Formación</label>
-                                <select class="form-select" name="tipo_formacion" id="tipo_formacion">
+                                <select class="form-select" name="tipo_formacion">
                                     <option value="">Seleccione una opción</option>
-                                    <option {{ $capacitacion->tipo_formacion == 'Webinar' ? 'selected' : '' }}>Webinar</option>
-                                    <option {{ $capacitacion->tipo_formacion == 'Charla' ? 'selected' : '' }}>Charla</option>
-                                    <option {{ $capacitacion->tipo_formacion == 'Taller' ? 'selected' : '' }}>Taller</option>
-                                    <option {{ $capacitacion->tipo_formacion == 'Seminario' ? 'selected' : '' }}>Seminario</option>
-                                    <option {{ $capacitacion->tipo_formacion == 'Capacitación' ? 'selected' : '' }}>Capacitación</option>
-                                    <option {{ $capacitacion->tipo_formacion == 'Diplomado' ? 'selected' : '' }}>Diplomado</option>
-                                    <option {{ $capacitacion->tipo_formacion == 'Charla informativa' ? 'selected' : '' }}>Charla informativa</option>
+                                    @foreach (['Webinar','Charla','Taller','Seminario','Capacitación','Diplomado','Charla informativa'] as $tipo)
+                                        <option value="{{ $tipo }}" {{ $capacitacion->tipo_formacion == $tipo ? 'selected' : '' }}>{{ $tipo }}</option>
+                                    @endforeach
                                 </select>
                             </div>
 
@@ -85,9 +81,9 @@
                                 <label for="forma" class="form-label">Forma de impartir</label>
                                 <select class="form-select" name="forma">
                                     <option value="">Seleccione una opción</option>
-                                    <option {{ $capacitacion->forma == 'Presencial' ? 'selected' : '' }}>Presencial</option>
-                                    <option {{ $capacitacion->forma == 'Virtual' ? 'selected' : '' }}>Virtual</option>
-                                    <option {{ $capacitacion->forma == 'Híbrida' ? 'selected' : '' }}>Híbrida</option>
+                                    <option value="Presencial" {{ $capacitacion->forma == 'Presencial' ? 'selected' : '' }}>Presencial</option>
+                                    <option value="Virtual" {{ $capacitacion->forma == 'Virtual' ? 'selected' : '' }}>Virtual</option>
+                                    <option value="Híbrida" {{ $capacitacion->forma == 'Híbrida' ? 'selected' : '' }}>Híbrida</option>
                                 </select>
                             </div>
 
@@ -99,17 +95,38 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-6" id="limite_participantes_container" style="display: {{ $capacitacion->cupos == 'limitado' ? 'block' : 'none' }};">
+                            <div class="col-md-6" id="limite_participantes_container" style="display: {{ $capacitacion->cupos == 'limitado' ? 'block' : 'none' }}">
                                 <label for="limite_participantes" class="form-label">Límite de Participantes</label>
                                 <input type="number" class="form-control" name="limite_participantes" value="{{ $capacitacion->limite_participantes }}">
                             </div>
 
                             <div class="col-md-6">
                                 <label for="medio" class="form-label">Medio</label>
-                                <select class="form-select" name="medio">
+                                <select class="form-select" name="medio" id="medio">
                                     <option value="gratis" {{ $capacitacion->medio == 'gratis' ? 'selected' : '' }}>Gratis</option>
                                     <option value="pago" {{ $capacitacion->medio == 'pago' ? 'selected' : '' }}>De Paga</option>
                                 </select>
+                            </div>
+
+                            <div id="precios_pago" style="display: {{ $capacitacion->medio == 'pago' ? 'block' : 'none' }}">
+                                <div class="row mt-3">
+                                    <div class="col-md-3">
+                                        <label>Precio Afiliado</label>
+                                        <input type="number" step="0.01" class="form-control" name="precio_afiliado" value="{{ $capacitacion->precio_afiliado }}">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>ISV Afiliado</label>
+                                        <input type="number" step="0.01" class="form-control" name="isv_afiliado" value="{{ $capacitacion->isv_afiliado }}">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>Precio No Afiliado</label>
+                                        <input type="number" step="0.01" class="form-control" name="precio_no_afiliado" value="{{ $capacitacion->precio_no_afiliado }}">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>ISV No Afiliado</label>
+                                        <input type="number" step="0.01" class="form-control" name="isv_no_afiliado" value="{{ $capacitacion->isv_no_afiliado }}">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -138,8 +155,6 @@
                                 <p>Imagen actual:</p>
                                 <img src="{{ asset('storage/' . $capacitacion->imagen) }}" class="img-thumbnail" style="max-width: 250px;">
                             </div>
-                        @else
-                            <p>No hay imagen adjunta.</p>
                         @endif
 
                         <div class="mb-3">
@@ -167,10 +182,15 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 <script>
-    // Mostrar campo de límite solo si se selecciona "limitado"
+    // Mostrar límite de participantes si cupos es limitado
     document.getElementById('cupos').addEventListener('change', function () {
-        const contenedor = document.getElementById('limite_participantes_container');
-        contenedor.style.display = this.value === 'limitado' ? 'block' : 'none';
+        const limite = document.getElementById('limite_participantes_container');
+        limite.style.display = this.value === 'limitado' ? 'block' : 'none';
+    });
+
+    // Mostrar precios si el medio es de paga
+    document.getElementById('medio').addEventListener('change', function () {
+        document.getElementById('precios_pago').style.display = this.value === 'pago' ? 'block' : 'none';
     });
 
     // Validación Bootstrap

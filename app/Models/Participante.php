@@ -21,6 +21,11 @@ class Participante extends Model
         'genero',
         'municipio',
         'ciudad',
+        'afiliado',          // ✅ Nuevo campo booleano
+        'precio',            // ✅ Precio base según tipo
+        'isv',               // ✅ Impuesto sobre venta
+        'total',             // ✅ Total a pagar (precio + ISV)
+        'comprobante',       // ✅ Ruta del archivo adjunto
     ];
 
     // ✅ Relación muchos a muchos con Capacitacion

@@ -167,69 +167,90 @@
             <div class="card-body">
                 <div class="table-responsive">
                     <table id="participantsTable" class="table table-hover align-middle" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Nombre</th>
-                                <th>Identidad</th>
-                                <th>Edad</th>
-                                <th>Contacto</th>
-                                <th>Educación</th>
-                                <th>Género</th>
-                                <th>Empresa</th>
-                                <th>Ubicación</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($participantes as $p)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>
-                                    <div class="participant-info">
-                                        <div class="participant-name">{{ $p->nombre_completo }}</div>
-                                        <div class="participant-email text-muted small">{{ $p->correo }}</div>
-                                    </div>
-                                </td>
-                                <td>{{ $p->identidad }}</td>
-                                <td>{{ $p->edad }}</td>
-                                <td>
-                                    <div class="contact-info">
-                                        <div><i class="fas fa-phone me-2"></i>{{ $p->telefono }}</div>
-                                    </div>
-                                </td>
-                                <td>{{ $p->nivel_educativo }}</td>
-                                <td>
-                                    <span class="badge bg-{{ $p->genero == 'Femenino' ? 'success' : 'primary' }}">
-                                        {{ $p->genero }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="company-info">
-                                        <div class="company-name">{{ $p->empresa ?? '-' }}</div>
-                                        <div class="company-position small text-muted">{{ $p->puesto ?? '-' }}</div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="location-info">
-                                        <div>{{ $p->ciudad }}</div>
-                                        <div class="small text-muted">{{ $p->municipio }}</div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex gap-2">
-                                        <form action="{{ route('participantes.destroy', $p->id) }}" method="POST" class="delete-form">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="Eliminar">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
+                       <thead>
+    <tr>
+        <th>#</th>
+        <th>Nombre</th>
+        <th>Identidad</th>
+        <th>Edad</th>
+        <th>Contacto</th>
+        <th>Educación</th>
+        <th>Género</th>
+        <th>Empresa</th>
+        <th>Ubicación</th>
+        @if(strtolower($capacitacion->medio ?? '') == 'pago')
+            <th>Precio</th>
+            <th>ISV</th>
+            <th>Total</th>
+            <th>Comprobante</th>
+        @endif
+        <th>Acciones</th>
+    </tr>
+</thead>
+<tbody>
+    @foreach ($participantes as $p)
+    <tr>
+        <td>{{ $loop->iteration }}</td>
+        <td>
+            <div class="participant-info">
+                <div class="participant-name">{{ $p->nombre_completo }}</div>
+                <div class="participant-email text-muted small">{{ $p->correo }}</div>
+            </div>
+        </td>
+        <td>{{ $p->identidad }}</td>
+        <td>{{ $p->edad }}</td>
+        <td>
+            <div class="contact-info">
+                <div><i class="fas fa-phone me-2"></i>{{ $p->telefono }}</div>
+            </div>
+        </td>
+        <td>{{ $p->nivel_educativo }}</td>
+        <td>
+            <span class="badge bg-{{ $p->genero == 'Femenino' ? 'success' : 'primary' }}">
+                {{ $p->genero }}
+            </span>
+        </td>
+        <td>
+            <div class="company-info">
+                <div class="company-name">{{ $p->empresa ?? '-' }}</div>
+                <div class="company-position small text-muted">{{ $p->puesto ?? '-' }}</div>
+            </div>
+        </td>
+        <td>
+            <div class="location-info">
+                <div>{{ $p->ciudad }}</div>
+                <div class="small text-muted">{{ $p->municipio }}</div>
+            </div>
+        </td>
+        @if(strtolower($capacitacion->medio ?? '') == 'pago')
+        <td>{{ number_format($p->precio ?? 0, 2) }}</td>
+        <td>{{ number_format($p->isv ?? 0, 2) }}</td>
+        <td>{{ number_format($p->total ?? 0, 2) }}</td>
+        <td>
+            @if($p->comprobante)
+                <a href="{{ asset('storage/' . $p->comprobante) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                    Ver
+                </a>
+            @else
+                <span class="text-muted">No adjunto</span>
+            @endif
+        </td>
+        @endif
+        <td>
+            <div class="d-flex gap-2">
+                <form action="{{ route('participantes.destroy', $p->id) }}" method="POST" class="delete-form">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="Eliminar">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </form>
+            </div>
+        </td>
+    </tr>
+    @endforeach
+</tbody>
+
                     </table>
                 </div>
             </div>

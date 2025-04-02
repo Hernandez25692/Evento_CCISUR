@@ -35,41 +35,26 @@ class CapacitacionController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|string|unique:capacitaciones,nombre',
-            'lugar' => 'required|string',
+            'nombre' => 'required',
+            'lugar' => 'required',
             'fecha' => 'required|date',
-            'impartido_por' => 'required|string',
-            'descripcion' => 'nullable|string',
+            'impartido_por' => 'required',
+            'descripcion' => 'nullable',
             'imagen' => 'nullable|image|max:2048',
             'tipo_formacion' => 'nullable|string',
             'duracion' => 'nullable|string',
-            'forma' => 'nullable|in:Presencial,Virtual,Híbrida',
+            'forma' => 'nullable|string',
             'cupos' => 'required|in:limitado,ilimitado',
-            'limite_participantes' => 'nullable|integer|min:1',
+            'limite_participantes' => 'nullable|integer',
             'medio' => 'required|in:gratis,pago',
+            'precio_afiliado' => 'nullable|numeric',
+            'isv_afiliado' => 'nullable|numeric',
+            'precio_no_afiliado' => 'nullable|numeric',
+            'isv_no_afiliado' => 'nullable|numeric',
         ]);
 
-        $data = $request->only([
-            'nombre',
-            'lugar',
-            'fecha',
-            'impartido_por',
-            'descripcion',
-            'tipo_formacion',
-            'duracion',
-            'forma',
-            'cupos',
-            'medio'
-        ]);
+        $data = $request->all();
 
-        // Si los cupos son limitados, guardamos el límite. Si no, lo dejamos nulo.
-        if ($request->cupos === 'limitado') {
-            $data['limite_participantes'] = $request->limite_participantes;
-        } else {
-            $data['limite_participantes'] = null;
-        }
-
-        // Imagen
         if ($request->hasFile('imagen')) {
             $data['imagen'] = $request->file('imagen')->store('capacitaciones', 'public');
         }
@@ -78,6 +63,8 @@ class CapacitacionController extends Controller
 
         return redirect()->route('capacitaciones.index')->with('success', 'Capacitación creada correctamente.');
     }
+
+
 
 
     /**
@@ -93,54 +80,43 @@ class CapacitacionController extends Controller
      * Actualiza los datos de una capacitación.
      */
     public function update(Request $request, $id)
-{
-    $capacitacion = Capacitacion::findOrFail($id);
+    {
+        $capacitacion = Capacitacion::findOrFail($id);
 
-    $request->validate([
-        'nombre' => 'required|string|unique:capacitaciones,nombre,' . $id,
-        'lugar' => 'required|string',
-        'fecha' => 'required|date',
-        'impartido_por' => 'required|string',
-        'descripcion' => 'nullable|string',
-        'imagen' => 'nullable|image|max:2048',
-        'tipo_formacion' => 'nullable|string',
-        'duracion' => 'nullable|string',
-        'forma' => 'nullable|in:Presencial,Virtual,Híbrida',
-        'cupos' => 'required|in:limitado,ilimitado',
-        'limite_participantes' => 'nullable|integer|min:1',
-        'medio' => 'required|in:gratis,pago',
-    ]);
+        $request->validate([
+            'nombre' => 'required',
+            'lugar' => 'required',
+            'fecha' => 'required|date',
+            'impartido_por' => 'required',
+            'descripcion' => 'nullable',
+            'imagen' => 'nullable|image|max:2048',
+            'tipo_formacion' => 'nullable|string',
+            'duracion' => 'nullable|string',
+            'forma' => 'nullable|string',
+            'cupos' => 'required|in:limitado,ilimitado',
+            'limite_participantes' => 'nullable|integer',
+            'medio' => 'required|in:gratis,pago',
+            'precio_afiliado' => 'nullable|numeric',
+            'isv_afiliado' => 'nullable|numeric',
+            'precio_no_afiliado' => 'nullable|numeric',
+            'isv_no_afiliado' => 'nullable|numeric',
+        ]);
 
-    $data = $request->only([
-        'nombre',
-        'lugar',
-        'fecha',
-        'impartido_por',
-        'descripcion',
-        'tipo_formacion',
-        'duracion',
-        'forma',
-        'cupos',
-        'medio'
-    ]);
+        $data = $request->all();
 
-    if ($request->cupos === 'limitado') {
-        $data['limite_participantes'] = $request->limite_participantes;
-    } else {
-        $data['limite_participantes'] = null;
-    }
-
-    if ($request->hasFile('imagen')) {
-        if ($capacitacion->imagen) {
-            Storage::delete('public/' . $capacitacion->imagen);
+        if ($request->hasFile('imagen')) {
+            if ($capacitacion->imagen) {
+                Storage::delete('public/' . $capacitacion->imagen);
+            }
+            $data['imagen'] = $request->file('imagen')->store('capacitaciones', 'public');
         }
-        $data['imagen'] = $request->file('imagen')->store('capacitaciones', 'public');
+
+        $capacitacion->update($data);
+
+        return redirect()->route('capacitaciones.index')->with('success', 'Capacitación actualizada correctamente.');
     }
 
-    $capacitacion->update($data);
 
-    return redirect()->route('capacitaciones.index')->with('success', 'Capacitación actualizada correctamente.');
-}
 
 
     /**
