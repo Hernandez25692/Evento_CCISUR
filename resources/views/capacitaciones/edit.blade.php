@@ -61,6 +61,56 @@
                                     <div class="invalid-feedback">Seleccione la fecha.</div>
                                 </div>
                             </div>
+
+                            <div class="col-md-6">
+                                <label for="tipo_formacion" class="form-label">Tipo de Formación</label>
+                                <select class="form-select" name="tipo_formacion" id="tipo_formacion">
+                                    <option value="">Seleccione una opción</option>
+                                    <option {{ $capacitacion->tipo_formacion == 'Webinar' ? 'selected' : '' }}>Webinar</option>
+                                    <option {{ $capacitacion->tipo_formacion == 'Charla' ? 'selected' : '' }}>Charla</option>
+                                    <option {{ $capacitacion->tipo_formacion == 'Taller' ? 'selected' : '' }}>Taller</option>
+                                    <option {{ $capacitacion->tipo_formacion == 'Seminario' ? 'selected' : '' }}>Seminario</option>
+                                    <option {{ $capacitacion->tipo_formacion == 'Capacitación' ? 'selected' : '' }}>Capacitación</option>
+                                    <option {{ $capacitacion->tipo_formacion == 'Diplomado' ? 'selected' : '' }}>Diplomado</option>
+                                    <option {{ $capacitacion->tipo_formacion == 'Charla informativa' ? 'selected' : '' }}>Charla informativa</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="duracion" class="form-label">Duración (horas)</label>
+                                <input type="text" class="form-control" name="duracion" value="{{ $capacitacion->duracion }}">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="forma" class="form-label">Forma de impartir</label>
+                                <select class="form-select" name="forma">
+                                    <option value="">Seleccione una opción</option>
+                                    <option {{ $capacitacion->forma == 'Presencial' ? 'selected' : '' }}>Presencial</option>
+                                    <option {{ $capacitacion->forma == 'Virtual' ? 'selected' : '' }}>Virtual</option>
+                                    <option {{ $capacitacion->forma == 'Híbrida' ? 'selected' : '' }}>Híbrida</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="cupos" class="form-label">Cupos</label>
+                                <select class="form-select" name="cupos" id="cupos">
+                                    <option value="ilimitado" {{ $capacitacion->cupos == 'ilimitado' ? 'selected' : '' }}>Ilimitado</option>
+                                    <option value="limitado" {{ $capacitacion->cupos == 'limitado' ? 'selected' : '' }}>Limitado</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6" id="limite_participantes_container" style="display: {{ $capacitacion->cupos == 'limitado' ? 'block' : 'none' }};">
+                                <label for="limite_participantes" class="form-label">Límite de Participantes</label>
+                                <input type="number" class="form-control" name="limite_participantes" value="{{ $capacitacion->limite_participantes }}">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="medio" class="form-label">Medio</label>
+                                <select class="form-select" name="medio">
+                                    <option value="gratis" {{ $capacitacion->medio == 'gratis' ? 'selected' : '' }}>Gratis</option>
+                                    <option value="pago" {{ $capacitacion->medio == 'pago' ? 'selected' : '' }}>De Paga</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -116,60 +166,13 @@
 <!-- FontAwesome CDN -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-<style>
-    .form-header {
-        background: linear-gradient(135deg, #4361ee, #3f37c9);
-        color: white;
-        padding: 2rem 0;
-        margin-bottom: 2rem;
-        text-align: center;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-title {
-        font-size: 2rem;
-        font-weight: bold;
-    }
-
-    .form-subtitle {
-        font-weight: 300;
-        font-size: 1rem;
-    }
-
-    .form-card {
-        border-radius: 10px;
-    }
-
-    .form-section {
-        padding: 1rem;
-        background: #fff;
-        border-radius: 10px;
-        margin-bottom: 2rem;
-        box-shadow: 0 1px 5px rgba(0,0,0,0.05);
-    }
-
-    .section-title {
-        color: #4361ee;
-        font-weight: 600;
-    }
-
-    .section-divider {
-        height: 2px;
-        background: #e0e0e0;
-        margin-top: 4px;
-    }
-
-    .form-actions .btn {
-        padding: 0.7rem 1.5rem;
-    }
-
-    .img-thumbnail {
-        max-height: 200px;
-        object-fit: contain;
-    }
-</style>
-
 <script>
+    // Mostrar campo de límite solo si se selecciona "limitado"
+    document.getElementById('cupos').addEventListener('change', function () {
+        const contenedor = document.getElementById('limite_participantes_container');
+        contenedor.style.display = this.value === 'limitado' ? 'block' : 'none';
+    });
+
     // Validación Bootstrap
     (function () {
         'use strict'

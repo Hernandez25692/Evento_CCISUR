@@ -35,16 +35,41 @@ class CapacitacionController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required',
-            'lugar' => 'required',
+            'nombre' => 'required|string|unique:capacitaciones,nombre',
+            'lugar' => 'required|string',
             'fecha' => 'required|date',
-            'impartido_por' => 'required',
-            'descripcion' => 'nullable',
+            'impartido_por' => 'required|string',
+            'descripcion' => 'nullable|string',
             'imagen' => 'nullable|image|max:2048',
+            'tipo_formacion' => 'nullable|string',
+            'duracion' => 'nullable|string',
+            'forma' => 'nullable|in:Presencial,Virtual,Híbrida',
+            'cupos' => 'required|in:limitado,ilimitado',
+            'limite_participantes' => 'nullable|integer|min:1',
+            'medio' => 'required|in:gratis,pago',
         ]);
 
-        $data = $request->all();
+        $data = $request->only([
+            'nombre',
+            'lugar',
+            'fecha',
+            'impartido_por',
+            'descripcion',
+            'tipo_formacion',
+            'duracion',
+            'forma',
+            'cupos',
+            'medio'
+        ]);
 
+        // Si los cupos son limitados, guardamos el límite. Si no, lo dejamos nulo.
+        if ($request->cupos === 'limitado') {
+            $data['limite_participantes'] = $request->limite_participantes;
+        } else {
+            $data['limite_participantes'] = null;
+        }
+
+        // Imagen
         if ($request->hasFile('imagen')) {
             $data['imagen'] = $request->file('imagen')->store('capacitaciones', 'public');
         }
@@ -53,6 +78,7 @@ class CapacitacionController extends Controller
 
         return redirect()->route('capacitaciones.index')->with('success', 'Capacitación creada correctamente.');
     }
+
 
     /**
      * Muestra el formulario de edición de una capacitación.
@@ -67,31 +93,55 @@ class CapacitacionController extends Controller
      * Actualiza los datos de una capacitación.
      */
     public function update(Request $request, $id)
-    {
-        $capacitacion = Capacitacion::findOrFail($id);
+{
+    $capacitacion = Capacitacion::findOrFail($id);
 
-        $request->validate([
-            'nombre' => 'required',
-            'lugar' => 'required',
-            'fecha' => 'required|date',
-            'impartido_por' => 'required',
-            'descripcion' => 'nullable',
-            'imagen' => 'nullable|image|max:2048',
-        ]);
+    $request->validate([
+        'nombre' => 'required|string|unique:capacitaciones,nombre,' . $id,
+        'lugar' => 'required|string',
+        'fecha' => 'required|date',
+        'impartido_por' => 'required|string',
+        'descripcion' => 'nullable|string',
+        'imagen' => 'nullable|image|max:2048',
+        'tipo_formacion' => 'nullable|string',
+        'duracion' => 'nullable|string',
+        'forma' => 'nullable|in:Presencial,Virtual,Híbrida',
+        'cupos' => 'required|in:limitado,ilimitado',
+        'limite_participantes' => 'nullable|integer|min:1',
+        'medio' => 'required|in:gratis,pago',
+    ]);
 
-        $data = $request->all();
+    $data = $request->only([
+        'nombre',
+        'lugar',
+        'fecha',
+        'impartido_por',
+        'descripcion',
+        'tipo_formacion',
+        'duracion',
+        'forma',
+        'cupos',
+        'medio'
+    ]);
 
-        if ($request->hasFile('imagen')) {
-            if ($capacitacion->imagen) {
-                Storage::delete('public/' . $capacitacion->imagen);
-            }
-            $data['imagen'] = $request->file('imagen')->store('capacitaciones', 'public');
-        }
-
-        $capacitacion->update($data);
-
-        return redirect()->route('capacitaciones.index')->with('success', 'Capacitación actualizada correctamente.');
+    if ($request->cupos === 'limitado') {
+        $data['limite_participantes'] = $request->limite_participantes;
+    } else {
+        $data['limite_participantes'] = null;
     }
+
+    if ($request->hasFile('imagen')) {
+        if ($capacitacion->imagen) {
+            Storage::delete('public/' . $capacitacion->imagen);
+        }
+        $data['imagen'] = $request->file('imagen')->store('capacitaciones', 'public');
+    }
+
+    $capacitacion->update($data);
+
+    return redirect()->route('capacitaciones.index')->with('success', 'Capacitación actualizada correctamente.');
+}
+
 
     /**
      * Elimina una capacitación y sus recursos relacionados.
