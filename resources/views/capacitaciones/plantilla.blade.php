@@ -24,30 +24,18 @@
     <div class="template-content">
         <!-- Mensajes de alerta -->
         @if(session('success'))
-        <div class="alert-message success">
-            <div class="icon">
-                <i class="fas fa-check-circle"></i>
+            <div class="alert-message success">
+                <div class="icon"><i class="fas fa-check-circle"></i></div>
+                <div class="text">{{ session('success') }}</div>
+                <div class="close-btn"><i class="fas fa-times"></i></div>
             </div>
-            <div class="text">
-                {{ session('success') }}
-            </div>
-            <div class="close-btn">
-                <i class="fas fa-times"></i>
-            </div>
-        </div>
         @endif
         @if(session('error'))
-        <div class="alert-message error">
-            <div class="icon">
-                <i class="fas fa-exclamation-circle"></i>
+            <div class="alert-message error">
+                <div class="icon"><i class="fas fa-exclamation-circle"></i></div>
+                <div class="text">{{ session('error') }}</div>
+                <div class="close-btn"><i class="fas fa-times"></i></div>
             </div>
-            <div class="text">
-                {{ session('error') }}
-            </div>
-            <div class="close-btn">
-                <i class="fas fa-times"></i>
-            </div>
-        </div>
         @endif
 
         <!-- Tarjeta de formulario -->
@@ -59,38 +47,58 @@
                 <form action="{{ route('capacitaciones.plantilla.store', $capacitacion->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="form-grid">
-                        <!-- Campo Firma -->
-                        <div class="form-group">
-                            <label class="form-label">
-                                <i class="fas fa-signature"></i> Firma
-                            </label>
-                            <div class="file-upload">
-                                <input type="file" name="firma" id="firma" accept="image/*" required>
-                                <label for="firma" class="upload-label">
-                                    <div class="upload-content">
-                                        <i class="fas fa-cloud-upload-alt"></i>
-                                        <span>Seleccionar archivo</span>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <!-- Campo Fondo -->
-                        <div class="form-group">
-                            <label class="form-label">
-                                <i class="fas fa-image"></i> Fondo del Diploma
-                            </label>
-                            <div class="file-upload">
-                                <input type="file" name="fondo" id="fondo" accept="image/*" required>
-                                <label for="fondo" class="upload-label">
-                                    <div class="upload-content">
-                                        <i class="fas fa-cloud-upload-alt"></i>
-                                        <span>Seleccionar archivo</span>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-                        
+                        <!-- Firma 1 -->
+<div class="form-group">
+    <label class="form-label">
+        <i class="fas fa-signature"></i> Firma 1 (izquierda)
+    </label>
+    <div class="file-upload">
+        <input type="file" name="firma_1" id="firma_1" accept="image/*">
+        <label for="firma_1" class="upload-label">
+            <div class="upload-content">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>Seleccionar archivo</span>
+            </div>
+        </label>
+        <img id="preview_firma_1" src="" alt="Vista previa Firma 1" class="d-none" style="max-height: 100px; margin-top: 10px;">
+    </div>
+</div>
+
+<!-- Firma 2 -->
+<div class="form-group">
+    <label class="form-label">
+        <i class="fas fa-signature"></i> Firma 2 (derecha)
+    </label>
+    <div class="file-upload">
+        <input type="file" name="firma_2" id="firma_2" accept="image/*">
+        <label for="firma_2" class="upload-label">
+            <div class="upload-content">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>Seleccionar archivo</span>
+            </div>
+        </label>
+        <img id="preview_firma_2" src="" alt="Vista previa Firma 2" class="d-none" style="max-height: 100px; margin-top: 10px;">
+    </div>
+</div>
+
+<!-- Campo Fondo -->
+<div class="form-group">
+    <label class="form-label">
+        <i class="fas fa-image"></i> Fondo del Diploma
+    </label>
+    <div class="file-upload">
+        <input type="file" name="fondo" id="fondo" accept="image/*" required>
+        <label for="fondo" class="upload-label">
+            <div class="upload-content">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>Seleccionar archivo</span>
+            </div>
+        </label>
+        <img id="preview_fondo" src="" alt="Vista previa Fondo" class="d-none" style="max-height: 100px; margin-top: 10px;">
+    </div>
+</div>
+
+
                         <!-- Fecha de Emisión -->
                         <div class="form-group">
                             <label class="form-label">
@@ -101,7 +109,7 @@
                                 <input type="date" name="fecha_emision" required>
                             </div>
                         </div>
-                        
+
                         <!-- Orientación -->
                         <div class="form-group">
                             <label class="form-label">
@@ -116,7 +124,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Botón de Guardar -->
                     <div class="form-footer">
                         <button type="submit" class="submit-btn">
@@ -127,7 +135,7 @@
             </div>
         </div>
 
-        <!-- Acciones (sólo si existe plantilla) -->
+        <!-- Acciones -->
         @if ($plantillaExistente)
         <div class="actions-card">
             <div class="card-header">
@@ -150,7 +158,34 @@
 
 <!-- CDNs -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<script>
+    function vistaPrevia(inputId, previewId) {
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
 
+        if (!input || !preview) return;
+
+        input.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    preview.src = event.target.result;
+                    preview.classList.remove('d-none');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = '';
+                preview.classList.add('d-none');
+            }
+        });
+    }
+
+    vistaPrevia('firma_1', 'preview_firma_1');
+    vistaPrevia('firma_2', 'preview_firma_2');
+    vistaPrevia('fondo', 'preview_fondo');
+</script>
+    
 <style>
     /* Variables de color */
     :root {

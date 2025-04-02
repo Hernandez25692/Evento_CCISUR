@@ -7,6 +7,7 @@ use App\Http\Controllers\ParticipanteController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\ResetCodeController;
+use App\Http\Controllers\PlantillaDiplomaController;
 
 
 // Redirigir a login si no está autenticado
@@ -59,6 +60,10 @@ Route::middleware(['auth'])->group(function () {
     // Importar y exportar participantes
     Route::post('/capacitaciones/{id}/importar-excel', [ParticipanteController::class, 'importarExcel'])->name('participantes.importar');
     Route::get('/capacitaciones/{id}/exportar-excel', [ParticipanteController::class, 'exportarExcel'])->name('participantes.exportar');
+
+    Route::post('/capacitaciones/{id}/plantilla', [PlantillaDiplomaController::class, 'store'])->name('capacitaciones.plantilla.store');
+    Route::get('/capacitaciones/{id}/plantilla/configurar', [PlantillaDiplomaController::class, 'configuracionPlantilla'])->name('capacitaciones.configuracion.plantilla');
+
 });
 
 //-----------------------------------------------------------------------------------------------------------------------------
