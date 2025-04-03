@@ -564,7 +564,7 @@
             language: {
                 lengthMenu: "Mostrar _MENU_ registros por página",
                 zeroRecords: "No se encontraron participantes",
-                info: "Mostrando _START_ a _END_ de _TOTAL_ participantes",
+                info: "Mostrando _END_ de _TOTAL_ participantes",
                 infoEmpty: "No hay participantes disponibles",
                 infoFiltered: "(filtrado de _MAX_ registros totales)",
                 search: "Buscar:",

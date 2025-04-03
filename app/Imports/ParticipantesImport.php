@@ -18,7 +18,6 @@ class ParticipantesImport implements ToCollection
 
     public function collection(Collection $rows)
     {
-        // Validar que al menos una fila tenga 11 columnas esperadas (posición 0 a 10)
         $encabezado = $rows->first();
 
         if (!$encabezado || count($encabezado) < 11) {
@@ -29,25 +28,33 @@ class ParticipantesImport implements ToCollection
         foreach ($rows as $index => $row) {
             if ($index === 0) continue; // Saltar encabezado
 
-            // Validar que la fila tenga al menos 11 columnas
             if (count($row) < 11) continue;
 
             $identidad = $row[0];
 
+            $datos = [
+                'nombre_completo'   => $row[1],
+                'correo'            => $row[2],
+                'telefono'          => $row[3],
+                'empresa'           => $row[4],
+                'puesto'            => $row[5],
+                'edad'              => $row[6],
+                'nivel_educativo'   => $row[7],
+                'genero'            => $row[8],
+                'municipio'         => $row[9],
+                'ciudad'            => $row[10],
+            ];
+
+            // Si hay más columnas, agregamos los campos nuevos
+            if (isset($row[11])) $datos['afiliado'] = strtolower($row[11]) === 'sí' ? 1 : 0;
+            if (isset($row[12])) $datos['precio'] = $row[12];
+            if (isset($row[13])) $datos['isv'] = $row[13];
+            if (isset($row[14])) $datos['total'] = $row[14];
+            if (isset($row[15])) $datos['comprobante'] = $row[15]; // Esto es solo la ruta/nombre, no el archivo real
+
             $participante = Participante::firstOrCreate(
                 ['identidad' => $identidad],
-                [
-                    'nombre_completo'   => $row[1],
-                    'correo'            => $row[2],
-                    'telefono'          => $row[3],
-                    'empresa'           => $row[4],
-                    'puesto'            => $row[5],
-                    'edad'              => $row[6],
-                    'nivel_educativo'   => $row[7],
-                    'genero'            => $row[8],
-                    'municipio'         => $row[9],
-                    'ciudad'            => $row[10],
-                ]
+                $datos
             );
 
             $participante->capacitaciones()->syncWithoutDetaching([$this->capacitacionId]);

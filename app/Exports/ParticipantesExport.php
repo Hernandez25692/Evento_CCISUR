@@ -28,8 +28,32 @@ class ParticipantesExport implements FromCollection, WithHeadings
             'nivel_educativo',
             'genero',
             'municipio',
-            'ciudad'
-        )->get();
+            'ciudad',
+            'afiliado',
+            'precio',
+            'isv',
+            'total',
+            'comprobante'
+        )->get()->map(function ($p) {
+            return [
+                'identidad' => $p->identidad,
+                'nombre_completo' => $p->nombre_completo,
+                'correo' => $p->correo,
+                'telefono' => $p->telefono,
+                'empresa' => $p->empresa,
+                'puesto' => $p->puesto,
+                'edad' => $p->edad,
+                'nivel_educativo' => $p->nivel_educativo,
+                'genero' => $p->genero,
+                'municipio' => $p->municipio,
+                'ciudad' => $p->ciudad,
+                'afiliado' => $p->afiliado ? 'Sí' : 'No',
+                'precio' => $p->precio_base,
+                'isv' => $p->isv,
+                'total' => $p->total,
+                'comprobante' => $p->comprobante,
+            ];
+        });
     }
 
     public function headings(): array
@@ -45,7 +69,12 @@ class ParticipantesExport implements FromCollection, WithHeadings
             'Nivel Educativo',
             'Género',
             'Municipio',
-            'Ciudad'
+            'Ciudad',
+            'Afiliado',
+            'Precio Base',
+            'ISV',
+            'Total a Pagar',
+            'Comprobante'
         ];
     }
 }
