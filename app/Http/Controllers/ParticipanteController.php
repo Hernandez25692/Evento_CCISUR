@@ -110,4 +110,61 @@ class ParticipanteController extends Controller
 
         return Excel::download(new ParticipantesExport($capacitacion), $nombre);
     }
+
+
+    public function edit($capacitacion_id, $participante_id)
+{
+    $capacitacion = Capacitacion::findOrFail($capacitacion_id);
+    $participante = Participante::findOrFail($participante_id);
+
+    return view('participantes.edit', compact('capacitacion', 'participante'));
+}
+
+public function update(Request $request, $capacitacion_id, $participante_id)
+{
+    $capacitacion = Capacitacion::findOrFail($capacitacion_id);
+    $participante = Participante::findOrFail($participante_id);
+
+    $request->validate([
+        'nombre_completo' => 'required|string|max:255',
+        'correo' => 'required|email|max:255',
+        'telefono' => 'required|string|max:20',
+        'empresa' => 'nullable|string|max:255',
+        'puesto' => 'nullable|string|max:255',
+        'edad' => 'required|integer|min:1|max:120',
+        'identidad' => 'required|string|max:50',
+        'nivel_educativo' => 'required|string|max:50',
+        'genero' => 'required|string|max:20',
+        'municipio' => 'required|string|max:100',
+        'ciudad' => 'required|string|max:100',
+        'afiliado' => 'nullable|boolean',
+        'comprobante' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+    ]);
+
+    $participante->fill($request->except('comprobante', 'afiliado'));
+    $participante->afiliado = $request->boolean('afiliado');
+
+    if (strtolower($capacitacion->medio) === 'pago') {
+        $precio = $participante->afiliado ? $capacitacion->precio_afiliado : $capacitacion->precio_no_afiliado;
+        $isv = $participante->afiliado ? $capacitacion->isv_afiliado : $capacitacion->isv_no_afiliado;
+        $total = $precio + $isv;
+
+        $participante->precio = $precio;
+        $participante->isv = $isv;
+        $participante->total = $total;
+
+        if ($request->hasFile('comprobante')) {
+            if ($participante->comprobante) {
+                Storage::delete('public/' . $participante->comprobante);
+            }
+            $participante->comprobante = $request->file('comprobante')->store('comprobantes', 'public');
+        }
+    }
+
+    $participante->save();
+
+    return redirect()->route('capacitaciones.participantes', $capacitacion_id)
+        ->with('success', '✅ Participante actualizado correctamente.');
+}
+
 }

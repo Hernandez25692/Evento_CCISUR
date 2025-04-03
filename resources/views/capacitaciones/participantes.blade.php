@@ -237,16 +237,20 @@
         </td>
         @endif
         <td>
-            <div class="d-flex gap-2">
-                <form action="{{ route('participantes.destroy', $p->id) }}" method="POST" class="delete-form">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="Eliminar">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
-                </form>
-            </div>
-        </td>
+    <div class="d-flex gap-2">
+        <a href="{{ route('participantes.edit', [$capacitacion->id, $p->id]) }}" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="Editar">
+            <i class="fas fa-edit"></i>
+        </a>
+        <form action="{{ route('participantes.destroy', $p->id) }}" method="POST" class="delete-form">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="Eliminar">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </form>
+    </div>
+</td>
+
     </tr>
     @endforeach
 </tbody>

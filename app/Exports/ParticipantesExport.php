@@ -48,7 +48,7 @@ class ParticipantesExport implements FromCollection, WithHeadings
                 'municipio' => $p->municipio,
                 'ciudad' => $p->ciudad,
                 'afiliado' => $p->afiliado ? 'Sí' : 'No',
-                'precio' => $p->precio_base,
+                'precio' => $p->precio,
                 'isv' => $p->isv,
                 'total' => $p->total,
                 'comprobante' => $p->comprobante,

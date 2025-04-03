@@ -37,15 +37,27 @@
                 <h3>{{ $capacitacion->nombre }}</h3>
                 
                 <div class="card-details">
-                    <div class="detail-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>{{ $capacitacion->lugar }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>{{ $capacitacion->fecha }}</span>
-                    </div>
-                </div>
+    <div class="detail-item">
+        <i class="fas fa-map-marker-alt"></i>
+        <span>{{ $capacitacion->lugar }}</span>
+    </div>
+    <div class="detail-item">
+        <i class="fas fa-calendar-alt"></i>
+        <span>{{ $capacitacion->fecha }}</span>
+    </div>
+    <div class="detail-item">
+        <i class="fas fa-broadcast-tower"></i> <!-- Icono para medio -->
+        <span>{{ $capacitacion->medio }}</span>
+    </div>
+    <div class="detail-item">
+        <i class="fas fa-chalkboard-teacher"></i> <!-- Icono para instructor -->
+        <span>{{ $capacitacion->impartido_por }}</span>
+    </div>
+    <div class="detail-item">
+        <i class="fas fa-graduation-cap"></i> <!-- Icono para tipo de formación -->
+        <span>{{ $capacitacion->tipo_formacion }}</span>
+    </div>
+</div>
 
                 <!-- Botón de acciones -->
                 <button class="action-toggle" data-target="menu-{{ $capacitacion->id }}">

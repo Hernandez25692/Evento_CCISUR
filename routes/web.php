@@ -64,6 +64,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/capacitaciones/{id}/plantilla', [PlantillaDiplomaController::class, 'store'])->name('capacitaciones.plantilla.store');
     Route::get('/capacitaciones/{id}/plantilla/configurar', [PlantillaDiplomaController::class, 'configuracionPlantilla'])->name('capacitaciones.configuracion.plantilla');
 
+    //-----------------------------------------------------------------------------------------------------------------------------
+// ✅Ruta para editar participante
+    Route::get('/capacitaciones/{capacitacion}/participantes/{participante}/editar', [ParticipanteController::class, 'edit'])->name('participantes.edit');
+    Route::put('/capacitaciones/{capacitacion}/participantes/{participante}', [ParticipanteController::class, 'update'])->name('participantes.update');
 });
 
 //-----------------------------------------------------------------------------------------------------------------------------
