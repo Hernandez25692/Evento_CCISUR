@@ -194,14 +194,21 @@
             </button>
             <div class="collapse navbar-collapse navbar-collapse-custom" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-lg-center">
-                    @guest
-                        <li class="nav-item nav-item-custom">
-                            <a class="nav-link nav-link-custom" href="{{ route('login') }}">
-                                <i class="fas fa-sign-in-alt me-1"></i>
-                                Iniciar Sesión
-                            </a>
-                        </li>
-                    @else
+    <li class="nav-item nav-item-custom">
+        <a class="nav-link nav-link-custom {{ request()->routeIs('certificados.buscar') ? 'active' : '' }}" href="{{ route('certificados.buscar') }}">
+            <i class="fas fa-certificate me-1"></i>
+            Buscar Certificados
+        </a>
+    </li>
+
+    @guest
+        <li class="nav-item nav-item-custom">
+            <a class="nav-link nav-link-custom" href="{{ route('login') }}">
+                <i class="fas fa-sign-in-alt me-1"></i>
+                Iniciar Sesión
+            </a>
+        </li>
+    @else
                         <li class="nav-item nav-item-custom">
                             <a class="nav-link nav-link-custom {{ request()->routeIs('capacitaciones.index') ? 'active' : '' }}" href="{{ route('capacitaciones.index') }}">
                                 <i class="fas fa-book me-1"></i>

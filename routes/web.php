@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\ResetCodeController;
 use App\Http\Controllers\PlantillaDiplomaController;
+use App\Http\Controllers\CertificadoController;
 
 
 // Redirigir a login si no está autenticado
@@ -87,3 +88,16 @@ Route::post('/password/verify-code', [ResetCodeController::class, 'verifyCode'])
 // Guardar nueva contraseña
 Route::post('/password/reset-with-code', [ResetCodeController::class, 'resetPassword'])->name('password.reset-with-code');
 //-----------------------------------------------------------------------------------------------------------------------------
+
+Route::get('/verificar-diploma', [App\Http\Controllers\DiplomaPublicoController::class, 'index'])->name('diploma.publico.index');
+Route::post('/verificar-diploma', [App\Http\Controllers\DiplomaPublicoController::class, 'buscar'])->name('diploma.publico.buscar');
+Route::get('/diplomas/descargar/{capacitacion_id}/{identidad}', [App\Http\Controllers\DiplomaPublicoController::class, 'descargar'])->name('diplomas.descargar');
+Route::get('/buscar-certificados', [CertificadoController::class, 'buscar'])->name('certificados.buscar');
+Route::post('/buscar-certificados', [CertificadoController::class, 'resultado'])->name('certificados.resultado');
+Route::get('/certificados/{capacitacion}/{participante}/descargar', [CertificadoController::class, 'descargar'])->name('certificados.descargar');
+Route::get('/certificados/{capacitacion}/plantilla', [CertificadoController::class, 'agregarPlantilla'])->name('certificados.plantilla');
+Route::get('/certificados/{capacitacion}/{participante}/descargar', [CertificadoController::class, 'descargar'])->name('certificados.descargar');
+// Ruta pública
+Route::get('/certificados/{capacitacion}/{participante}/descargar', [CertificadoController::class, 'descargar'])->name('certificados.descargar');
+
+
