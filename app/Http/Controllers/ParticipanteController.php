@@ -38,13 +38,22 @@ class ParticipanteController extends Controller
             'comprobante' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
-        // Buscar o crear por identidad
-        $participante = Participante::firstOrNew(['identidad' => $request->identidad]);
+        // Buscar participante por identidad
+        $participante = Participante::where('identidad', $request->identidad)->first();
+
+        // Si ya existe y está vinculado a esta capacitación, mostrar advertencia
+        if ($participante && $participante->capacitaciones->contains($capacitacion->id)) {
+            return redirect()->back()->with('warning', '⚠️ Este participante ya está registrado en esta capacitación.');
+        }
+
+        // Crear o actualizar datos del participante
+        if (!$participante) {
+            $participante = new Participante();
+        }
 
         $participante->fill($request->except('comprobante', 'afiliado'));
-        $participante->afiliado = $request->boolean('afiliado'); // Devuelve true o false como 1 o 0
+        $participante->afiliado = $request->boolean('afiliado');
 
-        // Evaluar si la capacitación es de pago
         if (strtolower($capacitacion->medio) === 'pago') {
             $esAfiliado = $participante->afiliado;
             $precio = $esAfiliado ? $capacitacion->precio_afiliado : $capacitacion->precio_no_afiliado;
@@ -56,31 +65,27 @@ class ParticipanteController extends Controller
             $participante->total = $total;
 
             if ($request->hasFile('comprobante')) {
-                // Si ya existe comprobante anterior, lo borra
                 if ($participante->comprobante) {
                     Storage::delete('public/' . $participante->comprobante);
                 }
-
                 $participante->comprobante = $request->file('comprobante')->store('comprobantes', 'public');
             }
         }
 
         $participante->save();
 
-        // Vincular sin duplicar
+        // Asociar sin duplicar
         $participante->capacitaciones()->syncWithoutDetaching([$capacitacion->id]);
 
         return redirect()->route('capacitaciones.participantes.create', $capacitacion->id)
             ->with('success', '✅ Participante agregado correctamente.');
     }
 
-
     public function destroy($id)
     {
         $participante = Participante::findOrFail($id);
         $capacitacion_id = $participante->capacitaciones->first()->id ?? null;
 
-        // Borrar comprobante si existe
         if ($participante->comprobante) {
             Storage::delete('public/' . $participante->comprobante);
         }
@@ -111,60 +116,67 @@ class ParticipanteController extends Controller
         return Excel::download(new ParticipantesExport($capacitacion), $nombre);
     }
 
-
     public function edit($capacitacion_id, $participante_id)
-{
-    $capacitacion = Capacitacion::findOrFail($capacitacion_id);
-    $participante = Participante::findOrFail($participante_id);
+    {
+        $capacitacion = Capacitacion::findOrFail($capacitacion_id);
+        $participante = Participante::findOrFail($participante_id);
 
-    return view('participantes.edit', compact('capacitacion', 'participante'));
-}
-
-public function update(Request $request, $capacitacion_id, $participante_id)
-{
-    $capacitacion = Capacitacion::findOrFail($capacitacion_id);
-    $participante = Participante::findOrFail($participante_id);
-
-    $request->validate([
-        'nombre_completo' => 'required|string|max:255',
-        'correo' => 'required|email|max:255',
-        'telefono' => 'required|string|max:20',
-        'empresa' => 'nullable|string|max:255',
-        'puesto' => 'nullable|string|max:255',
-        'edad' => 'required|integer|min:1|max:120',
-        'identidad' => 'required|string|max:50',
-        'nivel_educativo' => 'required|string|max:50',
-        'genero' => 'required|string|max:20',
-        'municipio' => 'required|string|max:100',
-        'ciudad' => 'required|string|max:100',
-        'afiliado' => 'nullable|boolean',
-        'comprobante' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-    ]);
-
-    $participante->fill($request->except('comprobante', 'afiliado'));
-    $participante->afiliado = $request->boolean('afiliado');
-
-    if (strtolower($capacitacion->medio) === 'pago') {
-        $precio = $participante->afiliado ? $capacitacion->precio_afiliado : $capacitacion->precio_no_afiliado;
-        $isv = $participante->afiliado ? $capacitacion->isv_afiliado : $capacitacion->isv_no_afiliado;
-        $total = $precio + $isv;
-
-        $participante->precio = $precio;
-        $participante->isv = $isv;
-        $participante->total = $total;
-
-        if ($request->hasFile('comprobante')) {
-            if ($participante->comprobante) {
-                Storage::delete('public/' . $participante->comprobante);
-            }
-            $participante->comprobante = $request->file('comprobante')->store('comprobantes', 'public');
-        }
+        return view('participantes.edit', compact('capacitacion', 'participante'));
     }
 
-    $participante->save();
+    public function update(Request $request, $capacitacion_id, $participante_id)
+    {
+        $capacitacion = Capacitacion::findOrFail($capacitacion_id);
+        $participante = Participante::findOrFail($participante_id);
 
-    return redirect()->route('capacitaciones.participantes', $capacitacion_id)
-        ->with('success', '✅ Participante actualizado correctamente.');
-}
+        $request->validate([
+            'nombre_completo' => 'required|string|max:255',
+            'correo' => 'required|email|max:255',
+            'telefono' => 'required|string|max:20',
+            'empresa' => 'nullable|string|max:255',
+            'puesto' => 'nullable|string|max:255',
+            'edad' => 'required|integer|min:1|max:120',
+            'identidad' => 'required|string|max:50',
+            'nivel_educativo' => 'required|string|max:50',
+            'genero' => 'required|string|max:20',
+            'municipio' => 'required|string|max:100',
+            'ciudad' => 'required|string|max:100',
+            'afiliado' => 'nullable|boolean',
+            'comprobante' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        ]);
 
+        // Verificar si la identidad ya está usada por otro participante
+        $otro = Participante::where('identidad', $request->identidad)
+            ->where('id', '!=', $participante_id)
+            ->first();
+
+        if ($otro) {
+            return redirect()->back()->with('warning', '⚠️ Ya existe otro participante con esta identidad.');
+        }
+
+        $participante->fill($request->except('comprobante', 'afiliado'));
+        $participante->afiliado = $request->boolean('afiliado');
+
+        if (strtolower($capacitacion->medio) === 'pago') {
+            $precio = $participante->afiliado ? $capacitacion->precio_afiliado : $capacitacion->precio_no_afiliado;
+            $isv = $participante->afiliado ? $capacitacion->isv_afiliado : $capacitacion->isv_no_afiliado;
+            $total = $precio + $isv;
+
+            $participante->precio = $precio;
+            $participante->isv = $isv;
+            $participante->total = $total;
+
+            if ($request->hasFile('comprobante')) {
+                if ($participante->comprobante) {
+                    Storage::delete('public/' . $participante->comprobante);
+                }
+                $participante->comprobante = $request->file('comprobante')->store('comprobantes', 'public');
+            }
+        }
+
+        $participante->save();
+
+        return redirect()->route('capacitaciones.participantes', $capacitacion_id)
+            ->with('success', '✅ Participante actualizado correctamente.');
+    }
 }
