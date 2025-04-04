@@ -35,15 +35,22 @@
                     
                     <!-- Filtro por Nivel Educativo -->
                     <div class="col-md-3">
-                        <label class="form-label small text-muted mb-1"><i class="fas fa-graduation-cap me-1"></i>Educación</label>
-                        <select name="nivel_educativo" class="form-select form-select-sm">
-                            <option value="">Todos</option>
-                            <option value="Primaria" {{ request('nivel_educativo') == 'Primaria' ? 'selected' : '' }}>Primaria</option>
-                            <option value="Secundaria" {{ request('nivel_educativo') == 'Secundaria' ? 'selected' : '' }}>Secundaria</option>
-                            <option value="Universidad" {{ request('nivel_educativo') == 'Universidad' ? 'selected' : '' }}>Universidad</option>
-                            <option value="Postgrado" {{ request('nivel_educativo') == 'Postgrado' ? 'selected' : '' }}>Postgrado</option>
-                        </select>
-                    </div>
+        <label class="form-label small text-muted mb-1">
+            <i class="fas fa-graduation-cap me-1"></i>Educación
+        </label>
+        <select name="nivel_educativo" class="form-select form-select-sm">
+            <option value="">Todos</option>
+            <option value="Primaria Completa" {{ request('nivel_educativo') == 'Primaria Completa' ? 'selected' : '' }}>Primaria Completa</option>
+            <option value="Primaria Incompleta" {{ request('nivel_educativo') == 'Primaria Incompleta' ? 'selected' : '' }}>Primaria Incompleta</option>
+            <option value="Secundaria Completa" {{ request('nivel_educativo') == 'Secundaria Completa' ? 'selected' : '' }}>Secundaria Completa</option>
+            <option value="Secundaria Incompleta" {{ request('nivel_educativo') == 'Secundaria Incompleta' ? 'selected' : '' }}>Secundaria Incompleta</option>
+            <option value="Técnico Completo" {{ request('nivel_educativo') == 'Técnico Completo' ? 'selected' : '' }}>Técnico Completo</option>
+            <option value="Técnico Incompleto" {{ request('nivel_educativo') == 'Técnico Incompleto' ? 'selected' : '' }}>Técnico Incompleto</option>
+            <option value="Universitaria Completa" {{ request('nivel_educativo') == 'Universitaria Completa' ? 'selected' : '' }}>Universitaria Completa</option>
+            <option value="Universitaria Incompleta" {{ request('nivel_educativo') == 'Universitaria Incompleta' ? 'selected' : '' }}>Universitaria Incompleta</option>
+        </select>
+    </div>
+
                     
                     <!-- Filtro por Empresa -->
                     <div class="col-md-3">

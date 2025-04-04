@@ -32,9 +32,9 @@ class DashboardController extends Controller
             DB::raw("DATE_FORMAT(fecha, '%Y-%m') as mes"),
             DB::raw("count(*) as total")
         )
-        ->groupBy('mes')
-        ->orderBy('mes')
-        ->get();
+            ->groupBy('mes')
+            ->orderBy('mes')
+            ->get();
 
         // Gráfico: distribución por género
         $generoData = [
@@ -43,6 +43,52 @@ class DashboardController extends Controller
             Participante::where('genero', 'Otro')->count()
         ];
 
+        // Distribución por edades
+        $rangosEdad = [
+            '-18' => 0,
+            '18-21' => 0,
+            '22-30' => 0,
+            '31-40' => 0,
+            '41-50' => 0,
+            '51-60' => 0,
+            '61+' => 0,
+        ];
+
+        foreach (Participante::all() as $p) {
+            if ($p->edad < 18) $rangosEdad['-18']++;
+            elseif ($p->edad <= 21) $rangosEdad['18-21']++;
+            elseif ($p->edad <= 30) $rangosEdad['22-30']++;
+            elseif ($p->edad <= 40) $rangosEdad['31-40']++;
+            elseif ($p->edad <= 50) $rangosEdad['41-50']++;
+            elseif ($p->edad <= 60) $rangosEdad['51-60']++;
+            else $rangosEdad['61+']++;
+        }
+
+        // Total dinero recaudado de capacitaciones de pago
+        $totalDineroRecaudado = Capacitacion::where('medio', 'pago')
+        ->with('participantes')
+        ->get()
+        ->flatMap(function ($cap) {
+            return $cap->participantes;
+        })
+        ->sum('total');
+    
+
+        // Recaudación por capacitación de pago (solo totales)
+        $formacionesPagas = Capacitacion::where('medio', 'pago')->get();
+
+        $recaudacionLabels = [];
+        $recaudacionTotales = [];
+
+        foreach ($formacionesPagas as $formacion) {
+            $total = $formacion->participantes->sum('total');
+            if ($total > 0) {
+                $recaudacionLabels[] = $formacion->nombre;
+                $recaudacionTotales[] = $total;
+            }
+        }
+
+
         return view('dashboard.index', compact(
             'totalCapacitaciones',
             'totalParticipantesUnicos',
@@ -50,7 +96,11 @@ class DashboardController extends Controller
             'capacitacionesLabels',
             'participantesData',
             'capacitacionesPorMes',
-            'generoData'
+            'generoData',
+            'rangosEdad',
+            'totalDineroRecaudado',
+            'recaudacionLabels',
+            'recaudacionTotales'
         ));
     }
 
