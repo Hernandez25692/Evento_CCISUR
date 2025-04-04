@@ -9,6 +9,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\ResetCodeController;
 use App\Http\Controllers\PlantillaDiplomaController;
 use App\Http\Controllers\CertificadoController;
+use App\Http\Controllers\ReporteController;
+
 
 
 // Redirigir a login si no está autenticado
@@ -66,9 +68,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/capacitaciones/{id}/plantilla/configurar', [PlantillaDiplomaController::class, 'configuracionPlantilla'])->name('capacitaciones.configuracion.plantilla');
 
     //-----------------------------------------------------------------------------------------------------------------------------
-// ✅Ruta para editar participante
+    // ✅Ruta para editar participante
     Route::get('/capacitaciones/{capacitacion}/participantes/{participante}/editar', [ParticipanteController::class, 'edit'])->name('participantes.edit');
     Route::put('/capacitaciones/{capacitacion}/participantes/{participante}', [ParticipanteController::class, 'update'])->name('participantes.update');
+
+    Route::get('/reportes/capacitaciones', [\App\Http\Controllers\ReporteController::class, 'index'])->name('reportes.capacitaciones');
+    Route::get('/reportes/capacitaciones/exportar', [\App\Http\Controllers\ReporteController::class, 'exportarExcel'])->name('reportes.capacitaciones.exportar');
+
+    // Reporte de capacitaciones
+    Route::get('/reportes/capacitaciones', [ReporteController::class, 'index'])->name('reportes.capacitaciones');
+    Route::get('/reportes/capacitaciones/exportar', [ReporteController::class, 'export'])->name('reportes.capacitaciones.export');
+    Route::get('/reportes/capacitaciones/exportar', [ReporteController::class, 'exportarExcel'])->name('reportes.capacitaciones.export');
+
 });
 
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -99,5 +110,3 @@ Route::get('/certificados/{capacitacion}/plantilla', [CertificadoController::cla
 Route::get('/certificados/{capacitacion}/{participante}/descargar', [CertificadoController::class, 'descargar'])->name('certificados.descargar');
 // Ruta pública
 Route::get('/certificados/{capacitacion}/{participante}/descargar', [CertificadoController::class, 'descargar'])->name('certificados.descargar');
-
-

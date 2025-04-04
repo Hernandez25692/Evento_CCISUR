@@ -227,6 +227,13 @@
                                 Filtro Participantes
                             </a>
                         </li>
+                        <li class="nav-item nav-item-custom">
+    <a class="nav-link nav-link-custom {{ request()->routeIs('reportes.capacitaciones') ? 'active' : '' }}" href="{{ route('reportes.capacitaciones') }}">
+        <i class="fas fa-chart-line me-1"></i>
+        Reportes
+    </a>
+</li>
+
                         <li class="nav-item nav-item-custom ms-lg-2 mt-2 mt-lg-0">
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
