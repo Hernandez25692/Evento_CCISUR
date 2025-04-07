@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->string('imagen')->nullable();
 
             // Nuevos campos
-            $table->string('    ')->nullable();
+            $table->string('tipo_formacion')->nullable();
             $table->string('duracion')->nullable();
             $table->string('forma')->nullable(); // Presencial, Virtual, Híbrida
             $table->enum('cupos', ['limitado', 'ilimitado'])->default('ilimitado');

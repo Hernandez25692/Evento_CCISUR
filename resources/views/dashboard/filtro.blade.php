@@ -123,6 +123,7 @@
                                     <th width="50" class="text-center">#</th>
                                     <th>Participante</th>
                                     <th>Contacto</th>
+                                    <th>DNI</th>
                                     <th>Empresa</th>
                                     <th width="80" class="text-center">Edad</th>
                                     <th>Educación</th>
@@ -149,6 +150,7 @@
                                             </div>
                                         </td>
                                         <td class="small">{{ $participante->telefono }}</td>
+                                        <td class="small">{{ $participante->identidad }}</td>
                                         <td>{{ $participante->empresa ?? '-' }}</td>
                                         <td class="text-center">{{ $participante->edad }}</td>
                                         <td class="small">{{ $participante->nivel_educativo }}</td>

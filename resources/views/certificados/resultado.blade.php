@@ -1,236 +1,362 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="certificates-container">
+    <div class="certificates-page">
         <!-- Hero Section -->
-        <div class="certificates-hero text-center py-5">
-            <div class="container">
-                <h1 class="hero-title animate__animated animate__fadeInDown">
-                    <i class="fas fa-certificate hero-icon"></i> Certificados Encontrados
-                </h1>
-                <p class="hero-subtitle animate__animated animate__fadeIn animate__delay-1s">
-                    Verifica y descarga tus diplomas de capacitación
-                </p>
+        <section class="certificates-hero">
+            <div class="hero-content">
+                <div class="hero-icon-container">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <h1 class="hero-title">Certificados Encontrados</h1>
+                <p class="hero-subtitle">Verifica y descarga tus diplomas de capacitación</p>
             </div>
-        </div>
+        </section>
 
-        <div class="container py-4">
+        <div class="certificates-content">
             <!-- Resultado de búsqueda -->
             @if (!$participante)
-                <div class="alert alert-warning alert-dismissible fade show animate__animated animate__shakeX">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-exclamation-triangle me-3 fs-4"></i>
-                        <div>
-                            <h5 class="alert-heading mb-1">¡No encontramos resultados!</h5>
-                            <p class="mb-0">No se encontró ningún participante con esa identidad.</p>
-                        </div>
+                <div class="empty-state warning">
+                    <div class="empty-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <div class="empty-text">
+                        <h3>¡No encontramos resultados!</h3>
+                        <p>No se encontró ningún participante con esa identidad.</p>
+                    </div>
                 </div>
             @else
                 <!-- Tarjeta de información del participante -->
-                <div class="card participant-card mb-5 animate__animated animate__fadeIn">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="participant-avatar bg-primary">
-                                        <i class="fas fa-user"></i>
-                                    </div>
-                                    <h2 class="participant-name mb-0 ms-3">{{ $participante->nombre_completo }}</h2>
-                                </div>
-
-                                <div class="participant-details">
-                                    <div class="detail-item">
-                                        <i class="fas fa-envelope"></i>
-                                        <span>{{ $participante->correo ?: 'No especificado' }}</span>
-                                    </div>
-                                    <div class="detail-item">
-                                        <i class="fas fa-id-card"></i>
-                                        <span>{{ $participante->identidad }}</span>
-                                    </div>
-                                    <div class="detail-item">
-                                        <i class="fas fa-award"></i>
-                                        <span>{{ $participante->capacitaciones->count() }} capacitación(es)</span>
-                                    </div>
-                                </div>
+                <div class="participant-profile">
+                    <div class="profile-avatar">
+                        <div class="avatar-circle">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="profile-info">
+                        <h2 class="profile-name">{{ $participante->nombre_completo }}</h2>
+                        <div class="profile-details">
+                            <div class="detail-item">
+                                <i class="fas fa-envelope"></i>
+                                <span>{{ $participante->correo ?: 'No especificado' }}</span>
                             </div>
-                            <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                                <div class="certificate-badge">
-                                    <i class="fas fa-certificate"></i>
-                                </div>
+                            <div class="detail-item">
+                                <i class="fas fa-id-card"></i>
+                                <span>{{ $participante->identidad }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-award"></i>
+                                <span>{{ $participante->capacitaciones->count() }} capacitación(es)</span>
                             </div>
                         </div>
+                    </div>
+                    <div class="profile-badge">
+                        <i class="fas fa-certificate"></i>
                     </div>
                 </div>
 
                 <!-- Listado de capacitaciones -->
                 @if ($participante->capacitaciones->isEmpty())
-                    <div class="alert alert-info animate__animated animate__fadeIn">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-info-circle me-3 fs-4"></i>
-                            <div>
-                                <h5 class="alert-heading mb-1">Sin capacitaciones registradas</h5>
-                                <p class="mb-0">Este participante no tiene capacitaciones registradas aún.</p>
-                            </div>
+                    <div class="empty-state info">
+                        <div class="empty-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="empty-text">
+                            <h3>Sin capacitaciones registradas</h3>
+                            <p>Este participante no tiene capacitaciones registradas aún.</p>
                         </div>
                     </div>
                 @else
-                    <h3 class="section-title mb-4 animate__animated animate__fadeIn">
-                        <i class="fas fa-list-ul me-2"></i> Tus Diplomas Disponibles
-                    </h3>
+                    <section class="certificates-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-list-ul"></i> Tus Diplomas Disponibles
+                        </h3>
 
-                    <div class="row g-4">
-                        @foreach ($participante->capacitaciones as $cap)
-                            <div class="col-lg-6 animate__animated animate__fadeInUp"
-                                style="animation-delay: {{ $loop->index * 0.1 }}s">
-                                <div class="certificate-card h-100">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start mb-3">
-                                            <div class="certificate-icon">
-                                                <i class="fas fa-chalkboard-teacher"></i>
-                                            </div>
-                                            <span class="badge bg-primary">{{ $loop->iteration }}</span>
+                        <div class="certificates-grid">
+                            @foreach ($participante->capacitaciones as $cap)
+                                <article class="certificate-card">
+                                    <div class="card-header">
+                                        <div class="card-icon">
+                                            <i class="fas fa-chalkboard-teacher"></i>
                                         </div>
+                                        <span class="card-badge">{{ $loop->iteration }}</span>
+                                    </div>
 
-                                        <h4 class="certificate-title">{{ $cap->nombre }}</h4>
+                                    <h4 class="card-title">{{ $cap->nombre }}</h4>
 
-                                        <div class="certificate-meta">
-                                            <div class="meta-item">
-                                                <i class="fas fa-calendar-day"></i>
-                                                <span>{{ \Carbon\Carbon::parse($cap->fecha_inicio)->isoFormat('D [de] MMMM [de] YYYY') }}</span>
-                                            </div>
-                                            <div class="meta-item">
-                                                <i class="fas fa-clock"></i>
-                                                <span>{{ $cap->duracion ?: 'Duración no especificada' }}</span>
-                                            </div>
+                                    <div class="card-meta">
+                                        <div class="meta-item">
+                                            <i class="fas fa-calendar-day"></i>
+                                            <span>{{ \Carbon\Carbon::parse($cap->fecha_inicio)->isoFormat('D [de] MMMM [de] YYYY') }}</span>
                                         </div>
-
-                                        <div class="d-grid mt-4">
-                                            <a href="{{ route('certificados.descargar', [$cap->id, $participante->id]) }}"
-                                                class="btn btn-download">
-                                                <i class="fas fa-download me-2"></i> Descargar Diploma
-                                            </a>
+                                        <div class="meta-item">
+                                            <i class="fas fa-clock"></i>
+                                            <span>{{ $cap->duracion ?: 'Duración no especificada' }}</span>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
+
+                                    <div class="card-actions">
+                                        <a href="{{ route('certificados.descargar', [$cap->id, $participante->id]) }}"
+                                            class="download-button">
+                                            <i class="fas fa-download"></i> Descargar Diploma
+                                        </a>
+                                    </div>
+                                </article>
+                            @endforeach
+                        </div>
+                    </section>
                 @endif
             @endif
         </div>
     </div>
 
-    <!-- CDNs para animaciones y estilos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <!-- CDNs -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
         :root {
-            --primary-color: #4361ee;
-            --primary-light: #6c7ef0;
-            --secondary-color: #3a0ca3;
-            --success-color: #4cc9f0;
-            --light-color: #f8f9fa;
-            --dark-color: #212529;
-            --text-color: #2b2d42;
+            --primary: #4361ee;
+            --primary-light: #eef2ff;
+            --primary-dark: #3a0ca3;
+            --secondary: #4cc9f0;
+            --success: #38b000;
+            --warning: #ff9e00;
+            --danger: #ef233c;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --text: #2b2d42;
             --text-light: #8d99ae;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            --border-radius: 12px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
             --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
             --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        .certificates-container {
-            background-color: #f8fafc;
+        /* Base Styles */
+        .certificates-page {
             min-height: 100vh;
+            background-color: var(--gray-100);
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            color: var(--text);
         }
 
         /* Hero Section */
         .certificates-hero {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
-            margin-bottom: 2rem;
+            padding: 4rem 1rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .certificates-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%234361ee' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.1;
+        }
+
+        .hero-content {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-icon-container {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
         }
 
         .hero-title {
-            font-weight: 700;
             font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .hero-icon {
-            margin-right: 0.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: white;
         }
 
         .hero-subtitle {
+            font-size: 1.25rem;
             font-weight: 300;
-            font-size: 1.2rem;
             opacity: 0.9;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            margin: 0 auto;
         }
 
-        /* Participant Card */
-        .participant-card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: var(--shadow-lg);
+        /* Main Content */
+        .certificates-content {
+            padding: 2rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Participant Profile */
+        .participant-profile {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            padding: 2rem;
+            margin-bottom: 3rem;
+            position: relative;
             overflow: hidden;
             transition: var(--transition);
         }
 
-        .participant-card:hover {
+        .participant-profile:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            box-shadow: var(--shadow-lg);
         }
 
-        .participant-avatar {
-            width: 60px;
-            height: 60px;
+        .profile-avatar {
+            flex: 0 0 auto;
+            margin-right: 2rem;
+        }
+
+        .avatar-circle {
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 1.5rem;
+            font-size: 2rem;
         }
 
-        .participant-name {
+        .profile-info {
+            flex: 1 1 0;
+            min-width: 250px;
+        }
+
+        .profile-name {
+            font-size: 1.75rem;
             font-weight: 700;
-            color: var(--text-color);
+            margin-bottom: 1.5rem;
+            color: var(--text);
         }
 
-        .participant-details {
-            margin-top: 1.5rem;
+        .profile-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
         }
 
         .detail-item {
             display: flex;
             align-items: center;
-            margin-bottom: 0.8rem;
-            color: var(--text-light);
+            font-size: 0.95rem;
         }
 
         .detail-item i {
             width: 24px;
-            color: var(--primary-color);
-            margin-right: 0.8rem;
-            text-align: center;
+            color: var(--primary);
+            margin-right: 0.75rem;
+            font-size: 1rem;
         }
 
-        .certificate-badge {
-            font-size: 5rem;
-            color: rgba(67, 97, 238, 0.1);
+        .profile-badge {
+            position: absolute;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 6rem;
+            color: rgba(67, 97, 238, 0.05);
+            z-index: 0;
         }
 
-        /* Certificate Cards */
+        /* Empty States */
+        .empty-state {
+            display: flex;
+            align-items: center;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            background: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .empty-state.warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .empty-state.info {
+            background-color: #e7f5ff;
+            color: #0c5460;
+        }
+
+        .empty-icon {
+            font-size: 2rem;
+            margin-right: 1.5rem;
+            opacity: 0.8;
+        }
+
+        .empty-text h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-text p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        /* Certificates Section */
+        .certificates-section {
+            margin-top: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            color: var(--text);
+        }
+
+        .section-title i {
+            margin-right: 0.75rem;
+            color: var(--primary);
+        }
+
+        .certificates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Certificate Card */
         .certificate-card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: var(--shadow-md);
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            padding: 1.5rem;
             transition: var(--transition);
+            display: flex;
+            flex-direction: column;
             height: 100%;
-            background-color: white;
         }
 
         .certificate-card:hover {
@@ -238,114 +364,179 @@
             box-shadow: var(--shadow-lg);
         }
 
-        .certificate-icon {
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-icon {
             width: 50px;
             height: 50px;
-            background-color: rgba(76, 201, 240, 0.1);
+            background-color: var(--primary-light);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--success-color);
-            font-size: 1.5rem;
+            color: var(--primary);
+            font-size: 1.25rem;
         }
 
-        .certificate-title {
+        .card-badge {
+            background-color: var(--primary);
+            color: white;
+            border-radius: 20px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
             font-weight: 600;
-            color: var(--text-color);
-            margin-bottom: 1.5rem;
         }
 
-        .certificate-meta {
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text);
+            line-height: 1.4;
+        }
+
+        .card-meta {
             margin-bottom: 1.5rem;
         }
 
         .meta-item {
             display: flex;
             align-items: center;
-            margin-bottom: 0.5rem;
-            color: var(--text-light);
+            margin-bottom: 0.75rem;
             font-size: 0.9rem;
+            color: var(--text-light);
         }
 
         .meta-item i {
             width: 20px;
-            margin-right: 0.5rem;
-            color: var(--primary-color);
+            margin-right: 0.75rem;
+            color: var(--primary);
+            font-size: 0.9rem;
         }
 
-        .btn-download {
-            background-color: var(--primary-color);
+        .card-actions {
+            margin-top: auto;
+        }
+
+        .download-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--primary);
             color: white;
             border: none;
-            padding: 0.75rem;
             border-radius: 8px;
             font-weight: 500;
             transition: var(--transition);
+            text-decoration: none;
         }
 
-        .btn-download:hover {
-            background-color: var(--secondary-color);
+        .download-button:hover {
+            background-color: var(--primary-dark);
             transform: translateY(-2px);
-        }
-
-        /* Alertas personalizadas */
-        .alert {
-            border-radius: 10px;
-            border: none;
             box-shadow: var(--shadow-sm);
         }
 
-        .alert-warning {
-            background-color: #fff3cd;
-            color: #856404;
-        }
-
-        .alert-info {
-            background-color: #e7f5ff;
-            color: #0c5460;
+        .download-button i {
+            margin-right: 0.5rem;
         }
 
         /* Responsive Design */
+        @media (max-width: 992px) {
+            .certificates-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 2rem;
             }
 
             .hero-subtitle {
-                font-size: 1rem;
+                font-size: 1.1rem;
             }
 
-            .participant-avatar {
-                width: 50px;
-                height: 50px;
-                font-size: 1.2rem;
+            .participant-profile {
+                padding: 1.5rem;
             }
 
-            .participant-name {
+            .profile-avatar {
+                margin-right: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .avatar-circle {
+                width: 70px;
+                height: 70px;
+                font-size: 1.75rem;
+            }
+
+            .profile-name {
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .profile-badge {
+                font-size: 4rem;
+                right: 1rem;
+            }
+
+            .section-title {
                 font-size: 1.3rem;
-            }
-
-            .certificate-badge {
-                font-size: 3rem;
             }
         }
 
         @media (max-width: 576px) {
             .hero-title {
-                font-size: 1.8rem;
+                font-size: 1.75rem;
             }
 
-            .participant-details {
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .participant-profile {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-avatar {
+                margin-right: 0;
+                margin-bottom: 1.5rem;
+            }
+
+            .profile-details {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-badge {
+                position: static;
+                transform: none;
                 margin-top: 1rem;
+                font-size: 3rem;
+                text-align: center;
             }
 
-            .detail-item {
-                font-size: 0.9rem;
+            .certificates-grid {
+                grid-template-columns: 1fr;
             }
 
-            .certificate-title {
-                font-size: 1.2rem;
+            .empty-state {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .empty-icon {
+                margin-right: 0;
+                margin-bottom: 1rem;
             }
         }
     </style>
@@ -353,22 +544,55 @@
     <script>
         // Efecto de aparición gradual para las tarjetas
         document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.animate__animated');
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add(entry.target.dataset.animation);
-                        observer.unobserve(entry.target);
+            const animateOnScroll = () => {
+                const elements = document.querySelectorAll('.certificate-card, .participant-profile, .empty-state, .section-title');
+                
+                elements.forEach((element, index) => {
+                    const elementPosition = element.getBoundingClientRect().top;
+                    const windowHeight = window.innerHeight;
+                    
+                    if (elementPosition < windowHeight - 100) {
+                        setTimeout(() => {
+                            element.style.opacity = '1';
+                            element.style.transform = 'translateY(0)';
+                        }, index * 100);
                     }
                 });
-            }, {
-                threshold: 0.1
-            });
+            };
+
+            // Establecer estado inicial
+            const cards = document.querySelectorAll('.certificate-card');
+            const profile = document.querySelector('.participant-profile');
+            const emptyStates = document.querySelectorAll('.empty-state');
+            const sectionTitle = document.querySelector('.section-title');
 
             cards.forEach(card => {
-                observer.observe(card);
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
             });
+
+            if (profile) {
+                profile.style.opacity = '0';
+                profile.style.transform = 'translateY(20px)';
+                profile.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            }
+
+            emptyStates.forEach(state => {
+                state.style.opacity = '0';
+                state.style.transform = 'translateY(20px)';
+                state.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            });
+
+            if (sectionTitle) {
+                sectionTitle.style.opacity = '0';
+                sectionTitle.style.transform = 'translateY(20px)';
+                sectionTitle.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            }
+
+            // Ejecutar al cargar y al hacer scroll
+            animateOnScroll();
+            window.addEventListener('scroll', animateOnScroll);
         });
     </script>
 @endsection

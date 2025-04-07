@@ -151,7 +151,7 @@
                                 <div class="progress-container">
                                     <div class="progress-info">
                                         <span>Cupos disponibles</span>
-                                        <span>{{ $capacitacion->imite_participantes - $capacitacion->participantes_count }}
+                                        <span>{{ $capacitacion->limite_participantes - $capacitacion->participantes_count }}
                                             / {{ $capacitacion->limite_participantes }}</span>
                                     </div>
                                     <div class="progress">
@@ -190,7 +190,7 @@
                                                     class="fas fa-user-plus me-2"></i>Agregar participante</a></li>
                                         <li><a class="dropdown-item"
                                                 href="{{ route('capacitaciones.plantilla', $capacitacion->id) }}"><i
-                                                    class="fas fa-file-alt me-2"></i>Diploma</a></li>
+                                                    class="fas fa-file-alt me-2"></i>Cargar Plantilla/Diploma</a></li>
                                         <li><a class="dropdown-item"
                                                 href="{{ route('capacitaciones.diplomas', $capacitacion->id) }}"><i
                                                     class="fas fa-certificate me-2"></i>Generar diplomas</a></li>

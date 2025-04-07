@@ -21,8 +21,8 @@ class CapacitacionController extends Controller
         if ($request->filled('buscar')) {
             $query->where(function ($q) use ($request) {
                 $q->where('nombre', 'like', '%' . $request->buscar . '%')
-                  ->orWhere('lugar', 'like', '%' . $request->buscar . '%')
-                  ->orWhere('impartido_por', 'like', '%' . $request->buscar . '%');
+                    ->orWhere('lugar', 'like', '%' . $request->buscar . '%')
+                    ->orWhere('impartido_por', 'like', '%' . $request->buscar . '%');
             });
         }
 
@@ -166,23 +166,31 @@ class CapacitacionController extends Controller
     public function guardarPlantilla(Request $request, $id)
     {
         $request->validate([
-            'firma' => 'required|image|max:2048',
+            'firma_1' => 'nullable|image|max:2048',
+            'firma_2' => 'nullable|image|max:2048',
             'fondo' => 'required|image|max:2048',
             'fecha_emision' => 'required|date',
             'orientacion' => 'required|in:vertical,horizontal',
         ]);
 
         $capacitacion = Capacitacion::findOrFail($id);
-
         $plantilla = Plantilla::firstOrNew(['capacitacion_id' => $id]);
+
         $plantilla->fecha_emision = $request->fecha_emision;
         $plantilla->orientacion = $request->orientacion;
 
-        if ($request->hasFile('firma')) {
-            if ($plantilla->firma) {
-                Storage::delete('public/' . $plantilla->firma);
+        if ($request->hasFile('firma_1')) {
+            if ($plantilla->firma_1) {
+                Storage::delete('public/' . $plantilla->firma_1);
             }
-            $plantilla->firma = $request->file('firma')->store('plantillas', 'public');
+            $plantilla->firma_1 = $request->file('firma_1')->store('plantillas', 'public');
+        }
+
+        if ($request->hasFile('firma_2')) {
+            if ($plantilla->firma_2) {
+                Storage::delete('public/' . $plantilla->firma_2);
+            }
+            $plantilla->firma_2 = $request->file('firma_2')->store('plantillas', 'public');
         }
 
         if ($request->hasFile('fondo')) {
