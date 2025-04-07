@@ -84,9 +84,14 @@
                                 </div>
                                 <div class="alert alert-info">
                                     <i class="fas fa-info-circle me-2"></i>
-                                    Descargue la <a href="{{ asset('plantillas/plantilla_participantes.xlsx') }}"
-                                        class="alert-link">plantilla de ejemplo</a> para asegurar el formato correcto.
+                                    Descargue la
+                                    <a href="{{ asset('storage/Formato_Participante/Formato_Participantes.xlsx') }}"
+                                        class="alert-link" download>
+                                        plantilla de ejemplo
+                                    </a>
+                                    para asegurar el formato correcto.
                                 </div>
+
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-outline-secondary"

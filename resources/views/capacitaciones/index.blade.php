@@ -151,7 +151,7 @@
                                 <div class="progress-container">
                                     <div class="progress-info">
                                         <span>Cupos disponibles</span>
-                                        <span>{{ $capacitacion->limite_participantes - $capacitacion->participantes_count }}
+                                        <span>{{ $capacitacion->imite_participantes - $capacitacion->participantes_count }}
                                             / {{ $capacitacion->limite_participantes }}</span>
                                     </div>
                                     <div class="progress">

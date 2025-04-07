@@ -38,7 +38,7 @@
                                             id="identidad" name="identidad" placeholder=" " required autocomplete="off"
                                             autofocus>
                                         <label for="identidad" class="text-secondary">
-                                            <i class="fas fa-id-card me-2"></i>Número de Identidad
+                                            <i class="fas fa-id-card me-2"></i>Número de Identidad sin guiones
                                         </label>
                                         @error('identidad')
                                             <div class="invalid-feedback d-block animate__animated animate__fadeIn">
