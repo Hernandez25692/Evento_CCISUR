@@ -172,7 +172,7 @@
                             <div class="card-actions">
                                 <!-- Botón que abre el modal --
 
-                                        <!-- Dropdown de acciones -->
+                                                <!-- Dropdown de acciones -->
                                 <div class="dropdown">
                                     <button class="btn btn-primary btn-sm w-100 mb-2" type="button"
                                         data-bs-toggle="dropdown" aria-expanded="false">

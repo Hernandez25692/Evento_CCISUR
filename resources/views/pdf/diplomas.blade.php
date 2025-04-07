@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Diploma de Participación</title>
@@ -31,7 +32,7 @@
             box-sizing: border-box;
         }
 
-         .logo {
+        .logo {
             width: 350px;
             height: auto;
             margin-bottom: 0;
@@ -93,49 +94,51 @@
         }
     </style>
 </head>
+
 <body>
 
-@foreach($participantes as $index => $participante)
-    @php
-        \Carbon\Carbon::setLocale('es');
-        $fechaFormateada = \Carbon\Carbon::parse($plantilla->fecha_emision)->isoFormat('D [de] MMMM [de] YYYY');
+    @foreach ($participantes as $index => $participante)
+        @php
+            \Carbon\Carbon::setLocale('es');
+            $fechaFormateada = \Carbon\Carbon::parse($plantilla->fecha_emision)->isoFormat('D [de] MMMM [de] YYYY');
 
-        $soloFirma1 = $plantilla->firma_1 && !$plantilla->firma_2;
-        $soloFirma2 = $plantilla->firma_2 && !$plantilla->firma_1;
-        $ambasFirmas = $plantilla->firma_1 && $plantilla->firma_2;
-    @endphp
+            $soloFirma1 = $plantilla->firma_1 && !$plantilla->firma_2;
+            $soloFirma2 = $plantilla->firma_2 && !$plantilla->firma_1;
+            $ambasFirmas = $plantilla->firma_1 && $plantilla->firma_2;
+        @endphp
 
-    <div class="diploma-container">
-        <img src="{{ public_path('storage/logo_diploma/CCISUR_LOGO.png') }}" class="logo" alt="Logo">
-        <p class="titulo-secundario">OTORGA EL PRESENTE</p>
-        <p class="titulo-principal">CERTIFICADO DE PARTICIPACIÓN A:</p>
-        <p class="nombre">{{ $participante->nombre_completo }}</p>
-        <p class="info">Por su participación en:</p>
-        <p class="actividad">{{ $capacitacion->nombre }}</p>
-        <p class="info">{{ $capacitacion->lugar }}, {{ $fechaFormateada }}</p>
-        <p class="info"><strong>Impartido por: {{ $capacitacion->impartido_por }}</strong></p>
+        <div class="diploma-container">
+            <img src="{{ public_path('storage/logo_diploma/CCISUR_LOGO.png') }}" class="logo" alt="Logo">
+            <p class="titulo-secundario">OTORGA EL PRESENTE</p>
+            <p class="titulo-principal">CERTIFICADO DE PARTICIPACIÓN A:</p>
+            <p class="nombre">{{ $participante->nombre_completo }}</p>
+            <p class="info">Por su participación en:</p>
+            <p class="actividad">{{ $capacitacion->nombre }}</p>
+            <p class="info">{{ $capacitacion->lugar }}, {{ $fechaFormateada }}</p>
+            <p class="info"><strong>Impartido por: {{ $capacitacion->impartido_por }}</strong></p>
 
-        {{-- Firmas --}}
-        @if ($soloFirma1)
-            <div class="firma-container">
-                <img src="{{ storage_path('app/public/' . $plantilla->firma_1) }}" class="firma" alt="Firma 1">
-            </div>
-        @elseif ($soloFirma2)
-            <div class="firma-container">
-                <img src="{{ storage_path('app/public/' . $plantilla->firma_2) }}" class="firma" alt="Firma 2">
-            </div>
-        @elseif ($ambasFirmas)
-            <div class="firma-container">
-                <img src="{{ storage_path('app/public/' . $plantilla->firma_1) }}" class="firma" alt="Firma 1">
-                <img src="{{ storage_path('app/public/' . $plantilla->firma_2) }}" class="firma" alt="Firma 2">
-            </div>
+            {{-- Firmas --}}
+            @if ($soloFirma1)
+                <div class="firma-container">
+                    <img src="{{ storage_path('app/public/' . $plantilla->firma_1) }}" class="firma" alt="Firma 1">
+                </div>
+            @elseif ($soloFirma2)
+                <div class="firma-container">
+                    <img src="{{ storage_path('app/public/' . $plantilla->firma_2) }}" class="firma" alt="Firma 2">
+                </div>
+            @elseif ($ambasFirmas)
+                <div class="firma-container">
+                    <img src="{{ storage_path('app/public/' . $plantilla->firma_1) }}" class="firma" alt="Firma 1">
+                    <img src="{{ storage_path('app/public/' . $plantilla->firma_2) }}" class="firma" alt="Firma 2">
+                </div>
+            @endif
+        </div>
+
+        @if (!$loop->last)
+            <div class="page-break"></div>
         @endif
-    </div>
-
-    @if (!$loop->last)
-        <div class="page-break"></div>
-    @endif
-@endforeach
+    @endforeach
 
 </body>
+
 </html>
