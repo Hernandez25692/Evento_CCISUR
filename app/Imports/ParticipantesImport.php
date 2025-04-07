@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\Models\Capacitacion;
 use App\Models\Participante;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -23,17 +24,31 @@ class ParticipantesImport implements ToCollection
             return;
         }
 
-        $encabezado = $rows[1]; // La fila 1 (índice 0) es el título, la fila 2 (índice 1) son los encabezados reales
-
+        $encabezado = $rows[1]; // Fila 1 es el encabezado
         if (!$encabezado || count($encabezado) < 11) {
-            Session::flash('error', '❌ El archivo Excel no tiene la estructura correcta. Asegúrese de usar una plantilla con todos los campos necesarios.');
+            Session::flash('error', '❌ La estructura del archivo Excel no es válida.');
             return;
         }
 
-        foreach ($rows as $index => $row) {
-            if ($index < 2) continue; // Saltar título y encabezado
+        $capacitacion = Capacitacion::find($this->capacitacionId);
+        if (!$capacitacion) {
+            Session::flash('error', '❌ Capacitación no encontrada.');
+            return;
+        }
 
-            if (count($row) < 11 || empty($row[0])) continue; // Asegurar identidad y estructura mínima
+        $actuales = $capacitacion->participantes()->count();
+        $limite = $capacitacion->limite_participantes ?? 0;
+        $esLimitado = $capacitacion->cupos === 'limitado';
+
+        $importados = 0;
+
+        foreach ($rows as $index => $row) {
+            if ($index < 2 || count($row) < 11 || empty($row[0])) continue;
+
+            if ($esLimitado && ($actuales + $importados) >= $limite) {
+                Session::flash('warning', '⚠️ Se alcanzó el límite de cupos. Solo se importaron ' . $importados . ' participantes.');
+                break;
+            }
 
             $identidad = trim($row[0]);
 
@@ -56,12 +71,15 @@ class ParticipantesImport implements ToCollection
             if (isset($row[14])) $datos['total'] = floatval($row[14]);
             if (isset($row[15])) $datos['comprobante'] = trim($row[15]);
 
-            $participante = Participante::firstOrCreate(
-                ['identidad' => $identidad],
-                $datos
-            );
+            $participante = Participante::firstOrCreate(['identidad' => $identidad], $datos);
 
-            $participante->capacitaciones()->syncWithoutDetaching([$this->capacitacionId]);
+            // Verificar si ya está vinculado
+            if (!$participante->capacitaciones->contains($this->capacitacionId)) {
+                $participante->capacitaciones()->attach($this->capacitacionId);
+                $importados++;
+            }
         }
+
+        Session::flash('success', "✅ Se importaron correctamente $importados participantes.");
     }
 }

@@ -22,6 +22,7 @@ class ParticipanteController extends Controller
     {
         $capacitacion = Capacitacion::findOrFail($id);
 
+        // Validar formulario
         $request->validate([
             'nombre_completo' => 'required|string|max:255',
             'correo' => 'required|email|max:255',
@@ -37,6 +38,16 @@ class ParticipanteController extends Controller
             'afiliado' => 'nullable|boolean',
             'comprobante' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
+
+        // Si tiene cupos limitados, verificar si se ha alcanzado el máximo
+        if ($capacitacion->cupos === 'limitado') {
+            $actuales = $capacitacion->participantes()->count();
+            $limite = $capacitacion->limite_participantes;
+
+            if ($actuales >= $limite) {
+                return redirect()->back()->with('warning', '⚠️ No se puede registrar más participantes. Se alcanzó el límite de cupos.');
+            }
+        }
 
         // Buscar participante por identidad
         $participante = Participante::where('identidad', $request->identidad)->first();
@@ -54,6 +65,7 @@ class ParticipanteController extends Controller
         $participante->fill($request->except('comprobante', 'afiliado'));
         $participante->afiliado = $request->boolean('afiliado');
 
+        // Si la capacitación es de pago, calcular precios
         if (strtolower($capacitacion->medio) === 'pago') {
             $esAfiliado = $participante->afiliado;
             $precio = $esAfiliado ? $capacitacion->precio_afiliado : $capacitacion->precio_no_afiliado;
@@ -80,6 +92,7 @@ class ParticipanteController extends Controller
         return redirect()->route('capacitaciones.participantes.create', $capacitacion->id)
             ->with('success', '✅ Participante agregado correctamente.');
     }
+
 
     public function destroy($id)
     {
