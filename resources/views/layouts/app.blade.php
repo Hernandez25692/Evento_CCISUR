@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Evento_CCISUR</title>
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Open+Sans:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
     <!-- Estilos Personalizados SOLO para header y footer -->
     <style>
         :root {
@@ -66,7 +69,8 @@
             position: relative;
         }
 
-        .nav-link-custom:hover, .nav-link-custom:focus {
+        .nav-link-custom:hover,
+        .nav-link-custom:focus {
             color: var(--primary-color) !important;
             background-color: rgba(255, 255, 255, 0.1);
         }
@@ -150,7 +154,8 @@
             box-shadow: 0 2px 5px rgba(26, 188, 156, 0.3);
         }
 
-        .btn-custom:hover, .btn-custom:focus {
+        .btn-custom:hover,
+        .btn-custom:focus {
             background-color: var(--primary-dark);
             color: white;
             transform: translateY(-2px);
@@ -166,21 +171,22 @@
                 margin-top: 0.5rem;
                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             }
-            
+
             .nav-item-custom {
                 margin: 0.3rem 0;
             }
-            
+
             .nav-link-custom {
                 padding: 0.75rem 1rem !important;
             }
-            
+
             .nav-link-custom.active::after {
                 display: none;
             }
         }
     </style>
 </head>
+
 <body>
     <!-- Navbar Customizado - Solo esto tiene nuevos estilos -->
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
@@ -189,50 +195,57 @@
                 <img src="{{ asset('storage/logo/Logo-CCISUR.png') }}" alt="CCISUR Logo" class="img-fluid">
                 <span class="d-none d-sm-inline">Evento_CCISUR</span>
             </a>
-            <button class="navbar-toggler navbar-toggler-custom" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler navbar-toggler-custom" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon navbar-toggler-icon-custom"></span>
             </button>
             <div class="collapse navbar-collapse navbar-collapse-custom" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-lg-center">
-    <li class="nav-item nav-item-custom">
-        <a class="nav-link nav-link-custom {{ request()->routeIs('certificados.buscar') ? 'active' : '' }}" href="{{ route('certificados.buscar') }}">
-            <i class="fas fa-certificate me-1"></i>
-            Buscar Certificados
-        </a>
-    </li>
+                    <li class="nav-item nav-item-custom">
+                        <a class="nav-link nav-link-custom {{ request()->routeIs('certificados.buscar') ? 'active' : '' }}"
+                            href="{{ route('certificados.buscar') }}">
+                            <i class="fas fa-certificate me-1"></i>
+                            Buscar Certificados
+                        </a>
+                    </li>
 
-    @guest
-        <li class="nav-item nav-item-custom">
-            <a class="nav-link nav-link-custom" href="{{ route('login') }}">
-                <i class="fas fa-sign-in-alt me-1"></i>
-                Iniciar Sesión
-            </a>
-        </li>
-    @else
+                    @guest
                         <li class="nav-item nav-item-custom">
-                            <a class="nav-link nav-link-custom {{ request()->routeIs('capacitaciones.index') ? 'active' : '' }}" href="{{ route('capacitaciones.index') }}">
+                            <a class="nav-link nav-link-custom" href="{{ route('login') }}">
+                                <i class="fas fa-sign-in-alt me-1"></i>
+                                Iniciar Sesión
+                            </a>
+                        </li>
+                    @else
+                        <li class="nav-item nav-item-custom">
+                            <a class="nav-link nav-link-custom {{ request()->routeIs('capacitaciones.index') ? 'active' : '' }}"
+                                href="{{ route('capacitaciones.index') }}">
                                 <i class="fas fa-book me-1"></i>
                                 Formaciones
                             </a>
                         </li>
                         <li class="nav-item nav-item-custom">
-                            <a class="nav-link nav-link-custom {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
+                            <a class="nav-link nav-link-custom {{ request()->routeIs('dashboard') ? 'active' : '' }}"
+                                href="{{ route('dashboard') }}">
                                 <i class="fas fa-chart-bar me-1"></i>
                                 Dashboard
                             </a>
                         </li>
                         <li class="nav-item nav-item-custom">
-                            <a class="nav-link nav-link-custom {{ request()->routeIs('dashboard.filtro') ? 'active' : '' }}" href="{{ route('dashboard.filtro') }}">
+                            <a class="nav-link nav-link-custom {{ request()->routeIs('dashboard.filtro') ? 'active' : '' }}"
+                                href="{{ route('dashboard.filtro') }}">
                                 <i class="fas fa-filter me-1"></i>
                                 Filtro Participantes
                             </a>
                         </li>
                         <li class="nav-item nav-item-custom">
-    <a class="nav-link nav-link-custom {{ request()->routeIs('reportes.capacitaciones') ? 'active' : '' }}" href="{{ route('reportes.capacitaciones') }}">
-        <i class="fas fa-chart-line me-1"></i>
-        Reportes
-    </a>
-</li>
+                            <a class="nav-link nav-link-custom {{ request()->routeIs('reportes.capacitaciones') ? 'active' : '' }}"
+                                href="{{ route('reportes.capacitaciones') }}">
+                                <i class="fas fa-chart-line me-1"></i>
+                                Reportes
+                            </a>
+                        </li>
 
                         <li class="nav-item nav-item-custom ms-lg-2 mt-2 mt-lg-0">
                             <form action="{{ route('logout') }}" method="POST">
@@ -264,4 +277,5 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

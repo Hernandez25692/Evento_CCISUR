@@ -14,11 +14,43 @@ class CapacitacionController extends Controller
     /**
      * Muestra todas las capacitaciones en la vista principal.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Obtener todas las capacitaciones ordenadas por fecha de creación
-        $capacitaciones = Capacitacion::orderBy('created_at', 'desc')->get();
-        return view('capacitaciones.index', compact('capacitaciones'));
+        $query = Capacitacion::withCount('participantes');
+
+        if ($request->filled('buscar')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('nombre', 'like', '%' . $request->buscar . '%')
+                  ->orWhere('lugar', 'like', '%' . $request->buscar . '%')
+                  ->orWhere('impartido_por', 'like', '%' . $request->buscar . '%');
+            });
+        }
+
+        if ($request->filled('tipo')) {
+            $query->where('tipo_formacion', $request->tipo);
+        }
+
+        if ($request->filled('modalidad')) {
+            $query->where('forma', $request->modalidad);
+        }
+
+        if ($request->filled('desde')) {
+            $query->whereDate('fecha', '>=', $request->desde);
+        }
+
+        if ($request->filled('hasta')) {
+            $query->whereDate('fecha', '<=', $request->hasta);
+        }
+
+        $capacitaciones = $query->orderBy('fecha', 'desc')->paginate(12);
+
+        // Obtener tipos únicos para los filtros
+        $tipo_formacion = Capacitacion::select('tipo_formacion')
+            ->distinct()
+            ->whereNotNull('tipo_formacion')
+            ->pluck('tipo_formacion');
+
+        return view('capacitaciones.index', compact('capacitaciones', 'tipo_formacion'));
     }
 
     /**
@@ -29,9 +61,6 @@ class CapacitacionController extends Controller
         return view('capacitaciones.create');
     }
 
-    /**
-     * Guarda una nueva capacitación en la base de datos.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -64,21 +93,12 @@ class CapacitacionController extends Controller
         return redirect()->route('capacitaciones.index')->with('success', 'Capacitación creada correctamente.');
     }
 
-
-
-
-    /**
-     * Muestra el formulario de edición de una capacitación.
-     */
     public function edit($id)
     {
         $capacitacion = Capacitacion::findOrFail($id);
         return view('capacitaciones.edit', compact('capacitacion'));
     }
 
-    /**
-     * Actualiza los datos de una capacitación.
-     */
     public function update(Request $request, $id)
     {
         $capacitacion = Capacitacion::findOrFail($id);
@@ -116,12 +136,6 @@ class CapacitacionController extends Controller
         return redirect()->route('capacitaciones.index')->with('success', 'Capacitación actualizada correctamente.');
     }
 
-
-
-
-    /**
-     * Elimina una capacitación y sus recursos relacionados.
-     */
     public function destroy($id)
     {
         $capacitacion = Capacitacion::findOrFail($id);
@@ -135,9 +149,6 @@ class CapacitacionController extends Controller
         return redirect()->route('capacitaciones.index')->with('success', 'Capacitación eliminada correctamente.');
     }
 
-    /**
-     * Lista los participantes de una capacitación.
-     */
     public function listarParticipantes($id)
     {
         $capacitacion = Capacitacion::findOrFail($id);
@@ -145,9 +156,6 @@ class CapacitacionController extends Controller
         return view('capacitaciones.participantes', compact('capacitacion', 'participantes'));
     }
 
-    /**
-     * Muestra el formulario para agregar una plantilla de diploma.
-     */
     public function agregarPlantilla($id)
     {
         $capacitacion = Capacitacion::findOrFail($id);
@@ -155,9 +163,6 @@ class CapacitacionController extends Controller
         return view('capacitaciones.plantilla', compact('capacitacion', 'plantillaExistente'));
     }
 
-    /**
-     * Guarda la plantilla de diploma en la base de datos.
-     */
     public function guardarPlantilla(Request $request, $id)
     {
         $request->validate([
@@ -169,12 +174,7 @@ class CapacitacionController extends Controller
 
         $capacitacion = Capacitacion::findOrFail($id);
 
-        $plantilla = Plantilla::where('capacitacion_id', $id)->first();
-        if (!$plantilla) {
-            $plantilla = new Plantilla();
-            $plantilla->capacitacion_id = $id;
-        }
-
+        $plantilla = Plantilla::firstOrNew(['capacitacion_id' => $id]);
         $plantilla->fecha_emision = $request->fecha_emision;
         $plantilla->orientacion = $request->orientacion;
 
@@ -197,10 +197,6 @@ class CapacitacionController extends Controller
         return redirect()->back()->with('success', '✅ Plantilla guardada correctamente.');
     }
 
-
-    /**
-     * Genera diplomas en PDF para los participantes de una capacitación.
-     */
     public function generarDiplomas($id)
     {
         $capacitacion = Capacitacion::findOrFail($id);
@@ -211,23 +207,18 @@ class CapacitacionController extends Controller
             return redirect()->route('capacitaciones.index')->with('error', 'No hay plantilla de diploma para esta capacitación.');
         }
 
-        // Ajustar tamaño de papel a Carta y orientación dinámica
         $orientacion = $plantilla->orientacion === 'vertical' ? 'portrait' : 'landscape';
 
         $pdf = PDF::loadView('pdf.diplomas', compact('capacitacion', 'plantilla', 'participantes'))
-            ->setPaper('letter', $orientacion); // Ajustar a tamaño carta
+            ->setPaper('letter', $orientacion);
 
         return $pdf->download('diplomas.pdf');
     }
 
-    /**
-     * Muestra una vista previa de un diploma en PDF.
-     */
     public function vistaPreviaDiploma($id)
     {
         $capacitacion = Capacitacion::findOrFail($id);
         $plantilla = Plantilla::where('capacitacion_id', $id)->first();
-        $capacitacion = Capacitacion::findOrFail($id);
         $participante = $capacitacion->participantes()->first();
 
         if (!$plantilla || !$participante) {
