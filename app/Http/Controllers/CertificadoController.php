@@ -15,6 +15,12 @@ class CertificadoController extends Controller
         return view('certificados.buscar');
     }
 
+    public function validarQR()
+    {
+        return view('validar_qr');
+    }
+
+
     public function resultado(Request $request)
     {
         $request->validate([

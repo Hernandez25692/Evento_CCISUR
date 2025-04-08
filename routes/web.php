@@ -102,3 +102,7 @@ Route::get('/buscar-certificados', [CertificadoController::class, 'buscar'])->na
 Route::post('/buscar-certificados', [CertificadoController::class, 'resultado'])->name('certificados.resultado');
 Route::get('/certificados/{capacitacion}/plantilla', [CertificadoController::class, 'agregarPlantilla'])->name('certificados.plantilla');
 Route::get('/certificados/{capacitacion}/{participante}/descargar', [CertificadoController::class, 'descargar'])->name('certificados.descargar');
+
+// Validar Certificados QR
+Route::get('/validar_qr', [CertificadoController::class, 'validarQR'])->name('certificados.validarQR');
+

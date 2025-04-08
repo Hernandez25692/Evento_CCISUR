@@ -70,7 +70,17 @@
                                     <img id="preview_firma_1" src="" alt="Vista previa Firma 1" class="d-none"
                                         style="max-height: 100px; margin-top: 10px;">
                                 </div>
+                                 <!-- Nombre Firma 1 -->
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-user-edit"></i> Nombre de quien firma (izquierda)
+                                </label>
+                                <input type="text" name="nombre_firma_1" class="form-control"
+                                    placeholder="Ej. Ing. Pedro Martínez"
+                                    value="{{ old('nombre_firma_1', $plantilla->nombre_firma_1 ?? '') }}">
                             </div>
+                            </div>
+                           
 
                             <!-- Firma 2 -->
                             <div class="form-group">
@@ -87,6 +97,15 @@
                                     </label>
                                     <img id="preview_firma_2" src="" alt="Vista previa Firma 2" class="d-none"
                                         style="max-height: 100px; margin-top: 10px;">
+                                </div>
+                                <!-- Nombre Firma 2 -->
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fas fa-user-edit"></i> Nombre de quien firma (derecha)
+                                    </label>
+                                    <input type="text" name="nombre_firma_2" class="form-control"
+                                        placeholder="Ej. Lic. Ana López"
+                                        value="{{ old('nombre_firma_2', $plantilla->nombre_firma_2 ?? '') }}">
                                 </div>
                             </div>
 

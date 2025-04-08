@@ -171,6 +171,8 @@ class CapacitacionController extends Controller
             'fondo' => 'required|image|max:2048',
             'fecha_emision' => 'required|date',
             'orientacion' => 'required|in:vertical,horizontal',
+            'nombre_firma_1' => 'nullable|string|max:255',
+            'nombre_firma_2' => 'nullable|string|max:255',
         ]);
 
         $capacitacion = Capacitacion::findOrFail($id);
@@ -179,6 +181,11 @@ class CapacitacionController extends Controller
         $plantilla->fecha_emision = $request->fecha_emision;
         $plantilla->orientacion = $request->orientacion;
 
+        // Guardar nombres de firmas
+        $plantilla->nombre_firma_1 = $request->input('nombre_firma_1');
+        $plantilla->nombre_firma_2 = $request->input('nombre_firma_2');
+
+        // Firma 1
         if ($request->hasFile('firma_1')) {
             if ($plantilla->firma_1) {
                 Storage::delete('public/' . $plantilla->firma_1);
@@ -186,6 +193,7 @@ class CapacitacionController extends Controller
             $plantilla->firma_1 = $request->file('firma_1')->store('plantillas', 'public');
         }
 
+        // Firma 2
         if ($request->hasFile('firma_2')) {
             if ($plantilla->firma_2) {
                 Storage::delete('public/' . $plantilla->firma_2);
@@ -193,6 +201,7 @@ class CapacitacionController extends Controller
             $plantilla->firma_2 = $request->file('firma_2')->store('plantillas', 'public');
         }
 
+        // Fondo
         if ($request->hasFile('fondo')) {
             if ($plantilla->fondo) {
                 Storage::delete('public/' . $plantilla->fondo);
