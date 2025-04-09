@@ -279,6 +279,30 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('total-display').textContent = `L. ${(base + impuesto).toFixed(2)}`;
         @endif
     }
+
+    <script>
+        document.getElementById('telefono').addEventListener('input', function(e) {
+            // Solo números y máximo 8 caracteres
+            this.value = this.value.replace(/\D/g, '').slice(0, 8);
+        });
+    </script>
+
+    <script>
+        function capitalizarNombre(nombre) {
+            return nombre
+                .toLowerCase()
+                .replace(/(^\w{1})|(\s+\w{1})/g, letra => letra.toUpperCase());
+        }
+
+        document.getElementById('nombre_completo').addEventListener('input', function(e) {
+            // Eliminar caracteres no permitidos
+            this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
+
+            // Aplicar capitalización
+            this.value = capitalizarNombre(this.value);
+        });
+    </script>
+
 });
 </script>
 
