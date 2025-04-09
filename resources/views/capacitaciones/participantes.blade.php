@@ -191,7 +191,7 @@
                                         <th>Ubicación</th>
                                         @if (strtolower($capacitacion->medio ?? '') == 'pago')
                                             <th>Precio</th>
-                                            <th>ISV</th>
+                                            <th>ISV%</th>
                                             <th>Total</th>
                                             <th>Comprobante</th>
                                         @endif
@@ -238,7 +238,7 @@
                                             </td>
                                             @if (strtolower($capacitacion->medio ?? '') == 'pago')
                                                 <td>{{ number_format($p->precio ?? 0, 2) }}</td>
-                                                <td>{{ number_format($p->isv ?? 0, 2) }}</td>
+                                                <td>{{ number_format($p->isv ?? 0, 0) }}</td>
                                                 <td>{{ number_format($p->total ?? 0, 2) }}</td>
                                                 <td>
                                                     @if ($p->comprobante)

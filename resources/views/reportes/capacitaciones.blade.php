@@ -411,9 +411,9 @@
                                         <td>{{ ucfirst($c->cupos) }}</td>
                                         <td>{{ $c->limite_participantes ?? 'N/A' }}</td>
                                         <td>L. {{ number_format($c->precio_afiliado, 2) }}</td>
-                                        <td>L. {{ number_format($c->isv_afiliado, 2) }}</td>
+                                        <td> {{ number_format($c->isv_afiliado, 0) }}%</td>
                                         <td>L. {{ number_format($c->precio_no_afiliado, 2) }}</td>
-                                        <td>L. {{ number_format($c->isv_no_afiliado, 2) }}</td>
+                                        <td> {{ number_format($c->isv_no_afiliado, 0) }}%</td>
                                         <td><span class="data-badge">{{ $c->participantes_count }}</span></td>
                                     </tr>
                                 @endforeach
