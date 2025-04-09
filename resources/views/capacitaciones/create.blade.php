@@ -140,16 +140,16 @@
                                     </div>
 
                                     <div class="col-md-6">
-                                        <label for="isv_afiliado" class="form-label">ISV Afiliado</label>
+                                        <label for="isv_afiliado" class="form-label">ISV Afiliado (Ingrese Porcentaje)</label>
                                         <div class="input-group">
-                                            <span class="input-group-text">L.</span>
+                                            <span class="input-group-text">%</span>
                                             <input type="number" class="form-control" id="isv_afiliado"
                                                 name="isv_afiliado" step="0.01">
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
-                                        <label for="precio_no_afiliado" class="form-label">Precio No Afiliado</label>
+                                        <label for="precio_no_afiliado" class="form-label">Precio No Afiliado </label>
                                         <div class="input-group">
                                             <span class="input-group-text">L.</span>
                                             <input type="number" class="form-control" id="precio_no_afiliado"
@@ -158,9 +158,9 @@
                                     </div>
 
                                     <div class="col-md-6">
-                                        <label for="isv_no_afiliado" class="form-label">ISV No Afiliado</label>
+                                        <label for="isv_no_afiliado" class="form-label">ISV No Afiliado (Ingrese Porcentaje)</label>
                                         <div class="input-group">
-                                            <span class="input-group-text">L.</span>
+                                            <span class="input-group-text">%</span>
                                             <input type="number" class="form-control" id="isv_no_afiliado"
                                                 name="isv_no_afiliado" step="0.01">
                                         </div>

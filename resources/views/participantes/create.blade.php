@@ -194,7 +194,7 @@
                                 </div>
 
                                 <div class="payment-row">
-                                    <span class="payment-label">ISV (15%):</span>
+                                    <span class="payment-label">ISV:</span>
                                     <span class="payment-value" id="isv-display">L. 0.00</span>
                                     <input type="hidden" id="isv" name="isv">
                                 </div>
@@ -370,7 +370,7 @@
                 // Actualizar displays
                 document.getElementById('precio-display').textContent = `L. ${base.toFixed(2)}`;
                 document.getElementById('isv-display').textContent = `L. ${impuesto.toFixed(2)}`;
-                document.getElementById('total-display').textContent = `L. ${(base + impuesto).toFixed(2)}`;
+                document.getElementById('total-display').textContent = `L. ${(base + (base * impuesto / 100)).toFixed(2)}`;
             @endif
         }
 
