@@ -129,6 +129,7 @@
                             <div class="card-header">
                                 <h3>{{ $capacitacion->nombre }}</h3>
                                 <span class="card-type">{{ $capacitacion->tipo_formacion }}</span>
+                                <span class="card-type">{{ $capacitacion->medio }}</span>
                             </div>
 
                             <div class="card-details">

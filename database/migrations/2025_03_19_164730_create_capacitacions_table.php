@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('capacitaciones', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre')->unique();
+            $table->string('nombre');
             $table->string('lugar');
             $table->date('fecha');
             $table->string('impartido_por');
