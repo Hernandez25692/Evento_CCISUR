@@ -306,7 +306,7 @@
 
     <div class="container py-4">
         <div class="report-container">
-            <h2 class="report-title"><i class="fas fa-chart-line me-2"></i>Reporte de Capacitaciones</h2>
+            <h2 class="report-title"><i class="fas fa-chart-line me-2"></i>Reporte de Formaciones</h2>
 
             <form method="GET" action="{{ route('reportes.capacitaciones') }}" class="filter-form" id="reportForm">
                 <div class="row g-3">

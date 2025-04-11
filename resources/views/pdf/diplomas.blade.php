@@ -118,7 +118,7 @@
             position: absolute;
             bottom: 100px;
             /* 👈 lo sube bastante */
-            right: 60px;
+            right: 190px;
             width: 60px;
             opacity: 0.9;
         }
