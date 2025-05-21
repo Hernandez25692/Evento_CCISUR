@@ -338,7 +338,7 @@
 
                     document.getElementById('precio-display').textContent = `L. ${base.toFixed(2)}`;
                     document.getElementById('isv-display').textContent = `${impuesto.toFixed(2)}%`;
-                    document.getElementById('total-display').textContent = `L. ${total.toFixed(2)}`;
+                    document.getElementById('total-display').textContent = `L. ${(base + (base * impuesto / 100)).toFixed(2)}`;
                 @endif
             }
 

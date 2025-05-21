@@ -25,12 +25,10 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
-            /* 👈 Empieza arriba */
             align-items: center;
             text-align: center;
             height: 100vh;
             padding: 2rem 6rem 6rem;
-            /* 👈 También podés reducir el padding superior */
             box-sizing: border-box;
             position: relative;
         }
