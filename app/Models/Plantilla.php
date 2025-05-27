@@ -11,14 +11,15 @@ class Plantilla extends Model
 
     protected $fillable = [
         'capacitacion_id',
-        'firma',
+        'firma_1',
         'firma_2',
         'fondo',
         'fecha_emision',
         'orientacion',
-        'firmante_1',
-        'firmante_2',
-        'mostrar_qr'
+        'nombre_firma_1',
+        'nombre_firma_2',
+        'titulo_convenio',
+        'tipo_certificado',
     ];
 
 

@@ -173,7 +173,10 @@ class CapacitacionController extends Controller
             'orientacion' => 'required|in:vertical,horizontal',
             'nombre_firma_1' => 'nullable|string|max:255',
             'nombre_firma_2' => 'nullable|string|max:255',
+            'tipo_certificado' => 'required|in:generico,convenio',
+            'titulo_convenio' => 'nullable|string|max:255',
         ]);
+
 
         $capacitacion = Capacitacion::findOrFail($id);
         $plantilla = Plantilla::firstOrNew(['capacitacion_id' => $id]);
@@ -208,6 +211,8 @@ class CapacitacionController extends Controller
             }
             $plantilla->fondo = $request->file('fondo')->store('plantillas', 'public');
         }
+        $plantilla->tipo_certificado = $request->input('tipo_certificado') ?? 'generico';
+        $plantilla->titulo_convenio = $request->input('titulo_convenio') ?? null;
 
         $plantilla->save();
 

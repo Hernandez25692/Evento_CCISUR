@@ -70,17 +70,17 @@
                                     <img id="preview_firma_1" src="" alt="Vista previa Firma 1" class="d-none"
                                         style="max-height: 100px; margin-top: 10px;">
                                 </div>
-                                 <!-- Nombre Firma 1 -->
-                            <div class="form-group">
-                                <label class="form-label">
-                                    <i class="fas fa-user-edit"></i> Nombre de quien firma (izquierda)
-                                </label>
-                                <input type="text" name="nombre_firma_1" class="form-control"
-                                    placeholder="Ej. Ing. Pedro Martínez"
-                                    value="{{ old('nombre_firma_1', $plantilla->nombre_firma_1 ?? '') }}">
+                                <!-- Nombre Firma 1 -->
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fas fa-user-edit"></i> Nombre de quien firma (izquierda)
+                                    </label>
+                                    <input type="text" name="nombre_firma_1" class="form-control"
+                                        placeholder="Ej. Ing. Pedro Martínez"
+                                        value="{{ old('nombre_firma_1', $plantilla->nombre_firma_1 ?? '') }}">
+                                </div>
                             </div>
-                            </div>
-                           
+
 
                             <!-- Firma 2 -->
                             <div class="form-group">
@@ -152,6 +152,32 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="mb-4">
+                                <label for="tipo_certificado">Tipo de Certificado</label>
+                                <select name="tipo_certificado" id="tipo_certificado" class="form-control" required>
+                                    <option value="generico"
+                                        {{ old('tipo_certificado', $plantilla->tipo_certificado ?? '') == 'generico' ? 'selected' : '' }}>
+                                        Genérico</option>
+                                    <option value="convenio"
+                                        {{ old('tipo_certificado', $plantilla->tipo_certificado ?? '') == 'convenio' ? 'selected' : '' }}>
+                                        Convenio</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4" id="titulo_convenio_div"
+                                style="{{ old('tipo_certificado', $plantilla->tipo_certificado ?? '') == 'convenio' ? '' : 'display: none;' }}">
+                                <label for="titulo_convenio">Título Personalizado (solo para convenio)</label>
+                                <input type="text" name="titulo_convenio" id="titulo_convenio" class="form-control"
+                                    value="{{ old('titulo_convenio', $plantilla->titulo_convenio ?? '') }}">
+                            </div>
+
+                            <script>
+                                document.getElementById('tipo_certificado').addEventListener('change', function() {
+                                    const isConvenio = this.value === 'convenio';
+                                    document.getElementById('titulo_convenio_div').style.display = isConvenio ? 'block' : 'none';
+                                });
+                            </script>
+
                         </div>
 
                         <!-- Botón de Guardar -->

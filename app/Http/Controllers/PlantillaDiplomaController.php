@@ -18,8 +18,10 @@ class PlantillaDiplomaController extends Controller
             'firma_2' => 'nullable|image',
             'fecha_emision' => 'required|date',
             'orientacion' => 'required|in:horizontal,vertical',
+            'tipo_certificado' => 'required|in:generico,convenio',
+            'titulo_convenio' => 'nullable|string|max:255',
         ]);
-
+        
         $plantilla = Plantilla::where('capacitacion_id', $capacitacion_id)->first();
         if (!$plantilla) {
             $plantilla = new Plantilla();
@@ -28,6 +30,8 @@ class PlantillaDiplomaController extends Controller
 
         $plantilla->fecha_emision = $request->fecha_emision;
         $plantilla->orientacion = $request->orientacion;
+        $plantilla->tipo_certificado = $request->tipo_certificado;
+        $plantilla->titulo_convenio = $request->titulo_convenio;
 
         // Fondo
         if ($request->hasFile('fondo')) {
@@ -60,11 +64,13 @@ class PlantillaDiplomaController extends Controller
             Storage::disk('public')->delete($plantilla->firma_2);
             $plantilla->firma_2 = null;
         }
+        $plantilla->nombre_firma_1 = $request->input('nombre_firma_1');
+        $plantilla->nombre_firma_2 = $request->input('nombre_firma_2');
 
         $plantilla->save();
 
         return redirect()->route('capacitaciones.configuracion.plantilla', $capacitacion_id)
-                         ->with('success', 'Plantilla guardada correctamente.');
+            ->with('success', 'Plantilla guardada correctamente.');
     }
 
     public function vistaPrevia($capacitacion_id)
