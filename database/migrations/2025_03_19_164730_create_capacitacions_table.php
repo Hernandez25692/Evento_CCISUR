@@ -12,6 +12,8 @@ return new class extends Migration {
             $table->string('nombre');
             $table->string('lugar');
             $table->date('fecha');
+            $table->time('hora_inicio')->nullable();
+            $table->time('hora_fin')->nullable();
             $table->string('impartido_por');
             $table->text('descripcion')->nullable();
             $table->string('imagen')->nullable();

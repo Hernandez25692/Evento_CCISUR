@@ -28,6 +28,8 @@ class Capacitacion extends Model
         'isv_afiliado',
         'precio_no_afiliado',
         'isv_no_afiliado',
+        'hora_inicio',
+        'hora_fin',
     ];
 
 

@@ -130,6 +130,10 @@
                                 <h3>{{ $capacitacion->nombre }}</h3>
                                 <span class="card-type">{{ $capacitacion->tipo_formacion }}</span>
                                 <span class="card-type">{{ $capacitacion->medio }}</span>
+                                <div style="margin-top: 0.5rem; font-size: 0.95em; color: var(--text-light);">
+                                    <i class="fas fa-clock"></i>
+                                    {{ $capacitacion->hora_inicio }} - {{ $capacitacion->hora_fin }}
+                                </div>
                             </div>
 
                             <div class="card-details">

@@ -349,9 +349,11 @@
                                 <tr>
                                     <th>Nombre</th>
                                     <th>Fecha</th>
+                                    <th>Hora Inicio</th>
+                                    <th>Hora Fin</th>
                                     <th>Tipo</th>
                                     <th>Modalidad</th>
-                                    <th>Duración</th>
+                                    <th>Duración-Horas</th>
                                     <th>Medio</th>
                                     <th>Total Participantes</th>
                                 </tr>
@@ -361,6 +363,8 @@
                                     <tr>
                                         <td>{{ $c->nombre }}</td>
                                         <td>{{ $c->fecha }}</td>
+                                        <td>{{ $c->hora_inicio ?? 'N/A' }}</td>
+                                        <td>{{ $c->hora_fin ?? 'N/A' }}</td>
                                         <td><span class="data-badge">{{ $c->tipo_formacion ?? 'N/A' }}</span></td>
                                         <td>{{ $c->forma ?? 'N/A' }}</td>
                                         <td>{{ $c->duracion ?? 'N/A' }}</td>
@@ -382,10 +386,12 @@
                                 <tr>
                                     <th>Nombre</th>
                                     <th>Fecha</th>
+                                    <th>Hora Inicio</th>
+                                    <th>Hora Fin</th>
                                     <th>Impartido Por</th>
                                     <th>Lugar</th>
                                     <th>Tipo</th>
-                                    <th>Duración</th>
+                                    <th>Duración-Horas</th>
                                     <th>Modalidad</th>
                                     <th>Medio</th>
                                     <th>Cupos</th>
@@ -402,6 +408,8 @@
                                     <tr>
                                         <td>{{ $c->nombre }}</td>
                                         <td>{{ $c->fecha }}</td>
+                                        <td>{{ $c->hora_inicio ?? 'N/A' }}</td>
+                                        <td>{{ $c->hora_fin ?? 'N/A' }}</td>
                                         <td>{{ $c->impartido_por }}</td>
                                         <td>{{ $c->lugar }}</td>
                                         <td><span class="data-badge">{{ $c->tipo_formacion ?? 'N/A' }}</span></td>

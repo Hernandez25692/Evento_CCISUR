@@ -85,6 +85,24 @@
                                             placeholder="Ej: 4 horas">
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <label for="hora_inicio" class="form-label">Hora de Inicio</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                                        <input type="time" class="form-control" name="hora_inicio" id="hora_inicio"
+                                            value="{{ old('hora_inicio') }}">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="hora_fin" class="form-label">Hora de Finalización</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                                        <input type="time" class="form-control" name="hora_fin" id="hora_fin"
+                                            value="{{ old('hora_fin') }}">
+                                    </div>
+                                </div>
+
 
                                 <div class="col-md-6">
                                     <label for="forma" class="form-label">Forma de impartir</label>
@@ -140,7 +158,8 @@
                                     </div>
 
                                     <div class="col-md-6">
-                                        <label for="isv_afiliado" class="form-label">ISV Afiliado (Ingrese Porcentaje)</label>
+                                        <label for="isv_afiliado" class="form-label">ISV Afiliado (Ingrese
+                                            Porcentaje)</label>
                                         <div class="input-group">
                                             <span class="input-group-text">%</span>
                                             <input type="number" class="form-control" id="isv_afiliado"
@@ -158,7 +177,8 @@
                                     </div>
 
                                     <div class="col-md-6">
-                                        <label for="isv_no_afiliado" class="form-label">ISV No Afiliado (Ingrese Porcentaje)</label>
+                                        <label for="isv_no_afiliado" class="form-label">ISV No Afiliado (Ingrese
+                                            Porcentaje)</label>
                                         <div class="input-group">
                                             <span class="input-group-text">%</span>
                                             <input type="number" class="form-control" id="isv_no_afiliado"

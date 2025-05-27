@@ -80,6 +80,9 @@ class CapacitacionController extends Controller
             'isv_afiliado' => 'nullable|numeric',
             'precio_no_afiliado' => 'nullable|numeric',
             'isv_no_afiliado' => 'nullable|numeric',
+            'hora_inicio' => 'nullable|date_format:H:i',
+            'hora_fin' => 'nullable|date_format:H:i',
+
         ]);
 
         $data = $request->all();
@@ -120,6 +123,9 @@ class CapacitacionController extends Controller
             'isv_afiliado' => 'nullable|numeric',
             'precio_no_afiliado' => 'nullable|numeric',
             'isv_no_afiliado' => 'nullable|numeric',
+            'hora_inicio' => 'nullable|date_format:H:i',
+            'hora_fin' => 'nullable|date_format:H:i',
+
         ]);
 
         $data = $request->all();
@@ -175,6 +181,7 @@ class CapacitacionController extends Controller
             'nombre_firma_2' => 'nullable|string|max:255',
             'tipo_certificado' => 'required|in:generico,convenio',
             'titulo_convenio' => 'nullable|string|max:255',
+
         ]);
 
 
