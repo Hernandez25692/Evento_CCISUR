@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Diploma de Participación</title>
@@ -39,10 +40,16 @@
         }
 
         .titulo-secundario {
-            font-size: 20px;
-            font-weight: normal;
-            margin-bottom: 0.3rem;
+            font-size: 22px;
+            margin-bottom: 1.8rem;
+            max-width: 85%;
+            line-height: 1.5;
+            word-wrap: break-word;
+            white-space: normal;
+            display: inline-block;
+            text-align: center;
         }
+
 
         .titulo-principal {
             font-size: 30px;
@@ -123,74 +130,83 @@
 
 <body>
 
-@foreach ($participantes as $index => $participante)
-    @php
-        \Carbon\Carbon::setLocale('es');
-        $fechaFormateada = \Carbon\Carbon::parse($plantilla->fecha_emision)->isoFormat('D [de] MMMM [de] YYYY');
-        $mostrarFirma1 = $plantilla->firma_1 && $plantilla->nombre_firma_1;
-        $mostrarFirma2 = $plantilla->firma_2 && $plantilla->nombre_firma_2;
+    @foreach ($participantes as $index => $participante)
+        @php
+            \Carbon\Carbon::setLocale('es');
+            $fechaFormateada = \Carbon\Carbon::parse($plantilla->fecha_emision)->isoFormat('D [de] MMMM [de] YYYY');
+            $mostrarFirma1 = $plantilla->firma_1 && $plantilla->nombre_firma_1;
+            $mostrarFirma2 = $plantilla->firma_2 && $plantilla->nombre_firma_2;
 
-        // QR en formato imagen PNG base64
-        $qrTexto = route('certificados.validarQR') . '?identidad=' . $participante->identidad;
-        $qrSvg = QrCode::format('svg')->size(100)->generate($qrTexto);
-        $qrBase64 = base64_encode($qrSvg);
-    @endphp
+            // QR en formato imagen PNG base64
+            $qrTexto = route('certificados.validarQR') . '?identidad=' . $participante->identidad;
+            $qrSvg = QrCode::format('svg')->size(100)->generate($qrTexto);
+            $qrBase64 = base64_encode($qrSvg);
+        @endphp
 
-    <div class="diploma-container">
-    
-    <br><br><br><br><br><br><br><br>
-        <p class="titulo-secundario">
-            @if ($plantilla->tipo_certificado === 'convenio')
-                {{ $plantilla->titulo_convenio ?? '---' }}
-            @else
-                La Cámara de Comercio e Industrias del Sur otorga el presente <br> certificado de participación a:
-            @endif
-        </p>
+        <div class="diploma-container">
 
-        
+            <br><br><br><br><br><br><br><br>
+            {{-- Título (centrado dinámico para convenio) --}}
+            <p class="titulo-secundario">
+                @if ($plantilla->tipo_certificado === 'convenio')
+                    {{ $plantilla->titulo_convenio ?? '---' }}
+                @else
+                    La Cámara de Comercio e Industrias del Sur otorga el presente <br>certificado de participación a:
+                @endif
+            </p>
 
-        <p class="nombre {{ $plantilla->tipo_certificado === 'generico' ? 'generico' : '' }}">
-            {{ $participante->nombre_completo }}
-        </p>
+            <br>
+            <div style="display: inline-block; border-bottom: 3px solid #000; padding: 0 30px; margin-bottom: 0.8rem;">
+                <p class="nombre {{ $plantilla->tipo_certificado === 'generico' ? 'generico' : '' }}"
+                    style="color: #004aad; text-decoration: none; margin: 0;">
+                    {{ $participante->nombre_completo }}
+                </p>
+            </div>
 
-        <p class="info">Por su participación en {{ $capacitacion->tipo_formacion ?? 'virtual' }}:</p>
-        <p class="actividad">"{{ $capacitacion->nombre }}"</p>
-        <p class="info">en modalidad {{ $capacitacion->modalidad ?? 'virtual' }} con duración de {{ $capacitacion->duracion ?? 'N horas' }} horas.</p>
-        <p class="info">{{ $capacitacion->lugar }}, {{ $fechaFormateada }}.</p>
 
-       
+
+            <p class="info">Por su participación en {{ $capacitacion->tipo_formacion ?? 'virtual' }}:</p>
+            <p class="actividad">"{{ $capacitacion->nombre }}"</p>
+            <p class="info">en modalidad {{ $capacitacion->modalidad ?? 'virtual' }} con duración de
+                {{ $capacitacion->duracion ?? 'N horas' }} horas.</p>
+            <p class="info">{{ $capacitacion->lugar }}, {{ $fechaFormateada }}.</p>
+
+
             @if ($plantilla->tipo_certificado === 'generico')
                 <p class="info"><strong>Impartido por: {{ $capacitacion->impartido_por }}</strong></p>
             @endif
-        
 
-        {{-- Firmas --}}
-        <div class="firmas-nombres">
-            @if ($mostrarFirma1)
-                <div class="firma-box">
-                    <img src="{{ storage_path('app/public/' . $plantilla->firma_1) }}" class="firma-img" alt="Firma 1">
-                    <div class="firma-linea"></div>
-                    <p class="firma-nombre">{{ $plantilla->nombre_firma_1 }}</p>
-                </div>
-            @endif
 
-            @if ($mostrarFirma2)
-                <div class="firma-box">
-                    <img src="{{ storage_path('app/public/' . $plantilla->firma_2) }}" class="firma-img" alt="Firma 2">
-                    <div class="firma-linea"></div>
-                    <p class="firma-nombre">{{ $plantilla->nombre_firma_2 }}</p>
-                </div>
-            @endif
+            {{-- Firmas --}}
+            <div class="firmas-nombres">
+                @if ($mostrarFirma1)
+                    <div class="firma-box">
+                        <img src="{{ storage_path('app/public/' . $plantilla->firma_1) }}" class="firma-img"
+                            alt="Firma 1">
+                        <div class="firma-linea"></div>
+                        <p class="firma-nombre">{{ $plantilla->nombre_firma_1 }}</p>
+                    </div>
+                @endif
+
+                @if ($mostrarFirma2)
+                    <div class="firma-box">
+                        <img src="{{ storage_path('app/public/' . $plantilla->firma_2) }}" class="firma-img"
+                            alt="Firma 2">
+                        <div class="firma-linea"></div>
+                        <p class="firma-nombre">{{ $plantilla->nombre_firma_2 }}</p>
+                    </div>
+                @endif
+            </div>
+
+            {{-- QR --}}
+            <img src="data:image/svg+xml;base64,{{ $qrBase64 }}" class="qr" alt="QR">
         </div>
 
-        {{-- QR --}}
-        <img src="data:image/svg+xml;base64,{{ $qrBase64 }}" class="qr" alt="QR">
-    </div>
-
-    @if (!$loop->last)
-        <div class="page-break"></div>
-    @endif
-@endforeach
+        @if (!$loop->last)
+            <div class="page-break"></div>
+        @endif
+    @endforeach
 
 </body>
+
 </html>
