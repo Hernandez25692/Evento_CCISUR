@@ -11,6 +11,8 @@ use App\Http\Controllers\PlantillaDiplomaController;
 use App\Http\Controllers\CertificadoController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\DiplomaPublicoController;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 //------------------------------------------------------------
 // 🔐 RUTAS DE AUTENTICACIÓN
@@ -106,3 +108,33 @@ Route::get('/certificados/{capacitacion}/{participante}/descargar', [Certificado
 // Validar Certificados QR
 Route::get('/validar_qr', [CertificadoController::class, 'validarQR'])->name('certificados.validarQR');
 
+Route::get('/prueba-fuente', function () {
+    $options = new Options();
+    $options->set('isHtml5ParserEnabled', true);
+    $options->set('isRemoteEnabled', true);
+    $options->set('defaultFont', 'Visby-Light'); // Nombre exacto
+
+    $dompdf = new Dompdf($options);
+
+    $html = '
+        <html>
+        <head>
+        <style>
+            body {
+                font-family: "Visby-Light", sans-serif;
+                font-size: 20px;
+            }
+        </style>
+        </head>
+        <body>
+            <p>Probando la fuente personalizada Visby-Light</p>
+        </body>
+        </html>
+    ';
+
+    $dompdf->loadHtml($html);
+    $dompdf->setPaper('A4', 'portrait');
+    $dompdf->render();
+
+    return $dompdf->stream('test-font.pdf');
+});

@@ -232,6 +232,7 @@ class CapacitacionController extends Controller
 
     public function generarDiplomas($id)
     {
+        
         $capacitacion = Capacitacion::findOrFail($id);
         $plantilla = $capacitacion->plantilla;
         $participantes = $capacitacion->participantes;
