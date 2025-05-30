@@ -17,26 +17,11 @@
             margin: 0;
         }
 
-        @font-face {
-            font-family: 'Visby-DemiBold';
-            src: url("{{ asset('fonts/VisbyCF/VisbyCF-DemiBold.otf') }}") format("opentype");
-        }
-
-        @font-face {
-            font-family: 'Visby-Heavy';
-            src: url("{{ asset('fonts/VisbyCF/VisbyCF-Heavy.otf') }}") format("opentype");
-        }
-
-        @font-face {
-            font-family: 'Visby-Light';
-            src: url("{{ asset('fonts/VisbyCF/VisbyCF-Light.otf') }}") format("opentype");
-        }
-
         body {
-            font-family: 'Visby-Light', sans-serif;
+            font-family: 'Visby-Light';
             margin: 0;
             padding: 0;
-            background-image: url("{{ storage_path('app/public/' . $plantilla->fondo) }}");
+            background-image: url('{{ public_path("storage/{$plantilla->fondo}") }}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -62,7 +47,7 @@
         }
 
         .titulo-secundario {
-            font-family: 'Visby-DemiBold', sans-serif;
+            font-family: 'Visby-DemiBold';
             font-size: 20px;
             margin-bottom: 1.8rem;
             max-width: 85%;
@@ -80,7 +65,7 @@
         }
 
         .nombre {
-            font-family: 'Visby-Heavy', sans-serif;
+            font-family: 'Visby-Heavy';
             font-size: 30px;
             font-weight: bold;
             margin: 0.8rem 0;
@@ -92,13 +77,13 @@
         }
 
         .info {
-            font-family: 'Visby-Light', sans-serif;
+            font-family: 'Visby-Light';
             font-size: 20px;
             margin: 0.5rem 0;
         }
 
         .actividad {
-            font-family: 'Visby-Heavy', sans-serif;
+            font-family: 'Visby-Heavy';
             font-size: 20px;
             font-weight: bold;
             margin: 1rem 0;
@@ -134,7 +119,7 @@
         }
 
         .firma-nombre {
-            font-family: 'Visby-DemiBold', sans-serif;
+            font-family: 'Visby-DemiBold';
             font-size: 16px;
             margin-top: 0;
             font-weight: bold;
@@ -152,6 +137,8 @@
             page-break-after: always;
         }
     </style>
+
+
 
 </head>
 

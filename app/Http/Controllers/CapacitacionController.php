@@ -10,6 +10,8 @@ use App\Models\Participante;
 use App\Models\Plantilla;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Illuminate\Support\Str;
+
 
 class CapacitacionController extends Controller
 {
@@ -242,8 +244,12 @@ class CapacitacionController extends Controller
             'participantes' => $participantes
         ])->setPaper('letter', $orientacion);
 
-        return $pdf->stream('diplomas.pdf');
+        // Nombre del archivo: ejemplo "Diplomas_Curso Laravel_2025-05-30.pdf"
+        $nombreArchivo = 'Diplomas_' . Str::slug($capacitacion->nombre) . '_' . now()->format('Y-m-d') . '.pdf';
+
+        return $pdf->download($nombreArchivo);
     }
+
 
 
 
