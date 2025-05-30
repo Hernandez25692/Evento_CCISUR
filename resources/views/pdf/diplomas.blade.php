@@ -40,7 +40,7 @@
         }
         /* Estilos para el título PRINCIPAL */
         .titulo-secundario {
-            font-size: 22px;
+            font-size: 21px;
             margin-bottom: 1.8rem;
             max-width: 85%;
             line-height: 1.5;
@@ -56,9 +56,9 @@
             font-weight: bold;
             margin-bottom: 1.5rem;
         }
-
+        /* Estilos para el nombre del participante */
         .nombre {
-            font-size: 28px;
+            font-size: 27px;
             font-weight: bold;
             margin: 0.8rem 0;
         }
@@ -67,14 +67,14 @@
             color: #004aad;
             text-decoration: underline;
         }
-
+        /* Estilos para la información adicional */
         .info {
-            font-size: 18px;
+            font-size: 21px;
             margin: 0.5rem 0;
         }
-
+        /* Estilos para nombre de formación */
         .actividad {
-            font-size: 22px;
+            font-size: 21px;
             font-weight: bold;
             margin: 1rem 0;
         }
@@ -107,9 +107,9 @@
             width: 155px;
             margin: 4px auto 2px;
         }
-
+        /* Estilos para el nombre debajo de la firma */
         .firma-nombre {
-            font-size: 14px;
+            font-size: 16px;
             margin-top: 0;
             font-weight: bold;
         }
