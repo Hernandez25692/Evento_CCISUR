@@ -4,14 +4,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Diploma de Participación</title>
+    @php
+        $fonts = [
+            'DemiBold' => public_path('fonts/visby/VisbyCF-DemiBold.otf'),
+            'Heavy' => public_path('fonts/visby/VisbyCF-Heavy.otf'),
+            'Light' => public_path('fonts/visby/VisbyCF-Light.otf'),
+        ];
+    @endphp
     <style>
         @page {
             size: letter {{ $plantilla->orientacion == 'vertical' ? 'portrait' : 'landscape' }};
             margin: 0;
         }
 
+        @font-face {
+            font-family: 'Visby-DemiBold';
+            src: url("{{ asset('fonts/VisbyCF/VisbyCF-DemiBold.otf') }}") format("opentype");
+        }
+
+        @font-face {
+            font-family: 'Visby-Heavy';
+            src: url("{{ asset('fonts/VisbyCF/VisbyCF-Heavy.otf') }}") format("opentype");
+        }
+
+        @font-face {
+            font-family: 'Visby-Light';
+            src: url("{{ asset('fonts/VisbyCF/VisbyCF-Light.otf') }}") format("opentype");
+        }
+
         body {
-            font-family: '{{ str_replace('.otf', '', $plantilla->fuente) }}', sans-serif;
+            font-family: 'Visby-Light', sans-serif;
             margin: 0;
             padding: 0;
             background-image: url("{{ storage_path('app/public/' . $plantilla->fondo) }}");
@@ -38,9 +60,10 @@
             height: auto;
             margin-bottom: 0;
         }
-        /* Estilos para el título PRINCIPAL */
+
         .titulo-secundario {
-            font-size: 21px;
+            font-family: 'Visby-DemiBold', sans-serif;
+            font-size: 20px;
             margin-bottom: 1.8rem;
             max-width: 85%;
             line-height: 1.5;
@@ -50,15 +73,15 @@
             text-align: center;
         }
 
-
         .titulo-principal {
             font-size: 30px;
             font-weight: bold;
             margin-bottom: 1.5rem;
         }
-        /* Estilos para el nombre del participante */
+
         .nombre {
-            font-size: 27px;
+            font-family: 'Visby-Heavy', sans-serif;
+            font-size: 30px;
             font-weight: bold;
             margin: 0.8rem 0;
         }
@@ -67,14 +90,16 @@
             color: #004aad;
             text-decoration: underline;
         }
-        /* Estilos para la información adicional */
+
         .info {
-            font-size: 21px;
+            font-family: 'Visby-Light', sans-serif;
+            font-size: 20px;
             margin: 0.5rem 0;
         }
-        /* Estilos para nombre de formación */
+
         .actividad {
-            font-size: 21px;
+            font-family: 'Visby-Heavy', sans-serif;
+            font-size: 20px;
             font-weight: bold;
             margin: 1rem 0;
         }
@@ -107,8 +132,9 @@
             width: 155px;
             margin: 4px auto 2px;
         }
-        /* Estilos para el nombre debajo de la firma */
+
         .firma-nombre {
+            font-family: 'Visby-DemiBold', sans-serif;
             font-size: 16px;
             margin-top: 0;
             font-weight: bold;
@@ -126,10 +152,10 @@
             page-break-after: always;
         }
     </style>
+
 </head>
 
 <body>
-
     @foreach ($participantes as $index => $participante)
         @php
             \Carbon\Carbon::setLocale('es');
@@ -137,16 +163,14 @@
             $mostrarFirma1 = $plantilla->firma_1 && $plantilla->nombre_firma_1;
             $mostrarFirma2 = $plantilla->firma_2 && $plantilla->nombre_firma_2;
 
-            // QR en formato imagen PNG base64
             $qrTexto = route('certificados.validarQR') . '?identidad=' . $participante->identidad;
             $qrSvg = QrCode::format('svg')->size(100)->generate($qrTexto);
             $qrBase64 = base64_encode($qrSvg);
         @endphp
 
         <div class="diploma-container">
-
             <br><br><br><br><br><br><br><br>
-            {{-- Título (centrado dinámico para convenio) --}}
+
             <p class="titulo-secundario">
                 @if ($plantilla->tipo_certificado === 'convenio')
                     {{ $plantilla->titulo_convenio ?? '---' }}
@@ -156,6 +180,7 @@
             </p>
 
             <br>
+
             <div style="display: inline-block; border-bottom: 3px solid #000; padding: 0 30px; margin-bottom: 0.8rem;">
                 <p class="nombre {{ $plantilla->tipo_certificado === 'generico' ? 'generico' : '' }}"
                     style="color: #004aad; text-decoration: none; margin: 0;">
@@ -163,19 +188,15 @@
                 </p>
             </div>
 
-
-
             <p class="info">Por su participación en {{ $capacitacion->tipo_formacion ?? 'virtual' }}:</p>
             <p class="actividad">"{{ $capacitacion->nombre }}"</p>
             <p class="info">en modalidad {{ $capacitacion->modalidad ?? 'virtual' }} con duración de
                 {{ $capacitacion->duracion ?? 'N horas' }} horas.</p>
             <p class="info">{{ $capacitacion->lugar }}, {{ $fechaFormateada }}.</p>
 
-
             @if ($plantilla->tipo_certificado === 'generico')
                 <p class="info"><strong>Impartido por: {{ $capacitacion->impartido_por }}</strong></p>
             @endif
-
 
             {{-- Firmas --}}
             <div class="firmas-nombres">
@@ -206,7 +227,6 @@
             <div class="page-break"></div>
         @endif
     @endforeach
-
 </body>
 
 </html>

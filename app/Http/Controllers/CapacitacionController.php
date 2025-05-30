@@ -183,19 +183,16 @@ class CapacitacionController extends Controller
             'nombre_firma_2' => 'nullable|string|max:255',
             'tipo_certificado' => 'required|in:generico,convenio',
             'titulo_convenio' => 'nullable|string|max:255',
-            'fuente' => 'required|string|max:255',
-
-
         ]);
-
 
         $capacitacion = Capacitacion::findOrFail($id);
         $plantilla = Plantilla::firstOrNew(['capacitacion_id' => $id]);
 
         $plantilla->fecha_emision = $request->fecha_emision;
         $plantilla->orientacion = $request->orientacion;
+        $plantilla->tipo_certificado = $request->input('tipo_certificado');
+        $plantilla->titulo_convenio = $request->input('titulo_convenio');
 
-        // Guardar nombres de firmas
         $plantilla->nombre_firma_1 = $request->input('nombre_firma_1');
         $plantilla->nombre_firma_2 = $request->input('nombre_firma_2');
 
@@ -222,14 +219,14 @@ class CapacitacionController extends Controller
             }
             $plantilla->fondo = $request->file('fondo')->store('plantillas', 'public');
         }
-        $plantilla->tipo_certificado = $request->input('tipo_certificado') ?? 'generico';
-        $plantilla->titulo_convenio = $request->input('titulo_convenio') ?? null;
-        $plantilla->fuente = $request->input('fuente');
+
+
 
         $plantilla->save();
 
         return redirect()->back()->with('success', '✅ Plantilla guardada correctamente.');
     }
+
 
     public function generarDiplomas($id)
     {
@@ -237,30 +234,18 @@ class CapacitacionController extends Controller
         $plantilla = $capacitacion->plantilla;
         $participantes = $capacitacion->participantes;
 
-        $fontPath = public_path('fonts/VisbyCF/' . $plantilla->fuente);
-        $fontName = pathinfo($plantilla->fuente, PATHINFO_FILENAME);
+        $orientacion = $plantilla->orientacion === 'vertical' ? 'portrait' : 'landscape';
 
-        $options = new Options();
-        $options->set('isRemoteEnabled', true);
-        $dompdf = new Dompdf($options);
+        $pdf = PDF::loadView('pdf.diplomas', [
+            'capacitacion' => $capacitacion,
+            'plantilla' => $plantilla,
+            'participantes' => $participantes
+        ])->setPaper('letter', $orientacion);
 
-        // Registrar fuente
-        $dompdf->getOptions()->setChroot(public_path());
-
-        $dompdf->getCanvas()->get_dompdf()->getFontMetrics()->registerFont(
-            $fontName,
-            $fontPath,
-            $fontPath
-        );
-
-        $html = view('pdf.diplomas', compact('capacitacion', 'plantilla', 'participantes'))->render();
-
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('letter', $plantilla->orientacion === 'vertical' ? 'portrait' : 'landscape');
-        $dompdf->render();
-
-        return $dompdf->stream('diplomas.pdf');
+        return $pdf->stream('diplomas.pdf');
     }
+
+
 
     public function vistaPreviaDiploma($id)
     {

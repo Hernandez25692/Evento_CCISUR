@@ -19,7 +19,6 @@ return new class extends Migration {
             $table->enum('tipo_certificado', ['generico', 'convenio'])->default('generico');
             $table->string('titulo_convenio')->nullable();
             $table->date('fecha_emision');
-            $table->string('fuente')->default('Times New Roman');
             $table->timestamps();
         });
     }
