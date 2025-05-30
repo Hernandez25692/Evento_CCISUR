@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+    <link rel="stylesheet" href="{{ asset('css/fonts-visby.css') }}">
+
     <div class="diploma-template-container">
         <!-- Encabezado con efecto gradiente -->
         <div class="template-header">
@@ -163,6 +165,35 @@
                                         Convenio</option>
                                 </select>
                             </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-font"></i> Fuente del texto del diploma
+                                </label>
+                                <div class="select-with-icon">
+                                    <i class="fas fa-font"></i>
+                                    <select id="fuente_selector" class="form-control"
+                                        onchange="actualizarVistaPreviaFuente()" required>
+                                        @foreach (['VisbyCF-RegularOblique.otf', 'VisbyCF-Bold.otf', 'VisbyCF-BoldOblique.otf', 'VisbyCF-DemiBold.otf', 'VisbyCF-DemiBoldOblique.otf', 'VisbyCF-ExtraBold.otf', 'VisbyCF-ExtraBoldOblique.otf', 'VisbyCF-Heavy.otf', 'VisbyCF-HeavyOblique.otf', 'VisbyCF-Light.otf', 'VisbyCF-LightOblique.otf', 'VisbyCF-Medium.otf', 'VisbyCF-MediumOblique.otf', 'VisbyCF-Thin.otf', 'VisbyCF-ThinOblique.otf'] as $fuente)
+                                            <option value="{{ $fuente }}"
+                                                {{ ($plantilla->fuente ?? '') === $fuente ? 'selected' : '' }}>
+                                                {{ str_replace(['VisbyCF-', '.otf'], '', $fuente) }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <!-- Campo oculto que Laravel recibe -->
+                                <input type="hidden" name="fuente" id="fuente"
+                                    value="{{ old('fuente', $plantilla->fuente ?? 'VisbyCF-RegularOblique.otf') }}">
+
+                                <!-- Vista previa -->
+                                <div class="mt-2">
+                                    <span style="display:block;">Vista previa:</span>
+                                    <p id="previewFuente" style="font-size: 20px;">
+                                        Ejemplo de texto con la fuente seleccionada
+                                    </p>
+                                </div>
+                            </div>
 
                             <div class="mb-4" id="titulo_convenio_div"
                                 style="{{ old('tipo_certificado', $plantilla->tipo_certificado ?? '') == 'convenio' ? '' : 'display: none;' }}">
@@ -241,6 +272,27 @@
         vistaPrevia('firma_1', 'preview_firma_1');
         vistaPrevia('firma_2', 'preview_firma_2');
         vistaPrevia('fondo', 'preview_fondo');
+    </script>
+    <script>
+        function actualizarVistaPreviaFuente() {
+            const select = document.getElementById('fuente_selector');
+            const preview = document.getElementById('previewFuente');
+            const hiddenInput = document.getElementById('fuente');
+
+            const fuente = select.value;
+            const nombre = fuente.replace('.otf', '').replace('VisbyCF-', '');
+
+            preview.textContent = 'Ejemplo de texto con fuente ' + nombre;
+            preview.style.fontFamily = fuente.replace('.otf', '');
+
+            hiddenInput.value = fuente;
+        }
+
+
+        // Ejecutar al cargar
+        document.addEventListener('DOMContentLoaded', () => {
+            actualizarVistaPreviaFuente();
+        });
     </script>
 
     <style>

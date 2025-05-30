@@ -11,7 +11,7 @@
         }
 
         body {
-            font-family: 'Times New Roman', serif;
+            font-family: '{{ str_replace('.otf', '', $plantilla->fuente) }}', sans-serif;
             margin: 0;
             padding: 0;
             background-image: url("{{ storage_path('app/public/' . $plantilla->fondo) }}");
@@ -38,7 +38,7 @@
             height: auto;
             margin-bottom: 0;
         }
-
+        /* Estilos para el título PRINCIPAL */
         .titulo-secundario {
             font-size: 22px;
             margin-bottom: 1.8rem;

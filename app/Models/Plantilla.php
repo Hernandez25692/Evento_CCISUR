@@ -20,6 +20,8 @@ class Plantilla extends Model
         'nombre_firma_2',
         'titulo_convenio',
         'tipo_certificado',
+        'fuente',
+
     ];
 
 

@@ -1,0 +1,60 @@
+@font-face {
+    font-family: 'VisbyCF-RegularOblique';
+    src: url('/fonts/VisbyCF/VisbyCF-RegularOblique.otf') format('opentype');
+}
+@font-face {
+    font-family: 'VisbyCF-Bold';
+    src: url('/fonts/VisbyCF/VisbyCF-Bold.otf') format('opentype');
+}
+@font-face {
+    font-family: 'VisbyCF-BoldOblique';
+    src: url('/fonts/VisbyCF/VisbyCF-BoldOblique.otf') format('opentype');
+}
+@font-face {
+    font-family: 'VisbyCF-DemiBold';
+    src: url('/fonts/VisbyCF/VisbyCF-DemiBold.otf') format('opentype');
+}
+@font-face {
+    font-family: 'VisbyCF-DemiBoldOblique';
+    src: url('/fonts/VisbyCF/VisbyCF-DemiBoldOblique.otf') format('opentype');
+}
+@font-face {
+    font-family: 'VisbyCF-ExtraBold';
+    src: url('/fonts/VisbyCF/VisbyCF-ExtraBold.otf') format('opentype');
+}
+@font-face {
+    font-family: 'VisbyCF-ExtraBoldOblique';
+    src: url('/fonts/VisbyCF/VisbyCF-ExtraBoldOblique.otf') format('opentype');
+}
+@font-face {
+    font-family: 'VisbyCF-Heavy';
+    src: url('/fonts/VisbyCF/VisbyCF-Heavy.otf') format('opentype');
+}
+@font-face {
+    font-family: 'VisbyCF-HeavyOblique';
+    src: url('/fonts/VisbyCF/VisbyCF-HeavyOblique.otf') format('opentype');
+}
+@font-face {
+    font-family: 'VisbyCF-Light';
+    src: url('/fonts/VisbyCF/VisbyCF-Light.otf') format('opentype');
+}
+@font-face {
+    font-family: 'VisbyCF-LightOblique';
+    src: url('/fonts/VisbyCF/VisbyCF-LightOblique.otf') format('opentype');
+}
+@font-face {
+    font-family: 'VisbyCF-Medium';
+    src: url('/fonts/VisbyCF/VisbyCF-Medium.otf') format('opentype');
+}
+@font-face {
+    font-family: 'VisbyCF-MediumOblique';
+    src: url('/fonts/VisbyCF/VisbyCF-MediumOblique.otf') format('opentype');
+}
+@font-face {
+    font-family: 'VisbyCF-Thin';
+    src: url('/fonts/VisbyCF/VisbyCF-Thin.otf') format('opentype');
+}
+@font-face {
+    font-family: 'VisbyCF-ThinOblique';
+    src: url('/fonts/VisbyCF/VisbyCF-ThinOblique.otf') format('opentype');
+}
