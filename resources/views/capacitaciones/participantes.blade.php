@@ -41,22 +41,27 @@
             <div class="card action-panel mb-4">
                 <div class="card-body">
                     <div class="row g-3 align-items-center">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <a href="{{ route('capacitaciones.participantes.create', $capacitacion->id) }}"
                                 class="btn btn-primary w-100">
                                 <i class="fas fa-user-plus me-2"></i>Agregar Participante
                             </a>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <a href="{{ route('participantes.exportar', $capacitacion->id) }}"
                                 class="btn btn-success w-100">
                                 <i class="fas fa-file-excel me-2"></i>Exportar Excel
                             </a>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <button class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#importModal">
                                 <i class="fas fa-file-import me-2"></i>Importar Excel
                             </button>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ route('capacitaciones.plantilla', $capacitacion->id) }}" class="btn btn-info w-100">
+                                <i class="fas fa-file-alt me-2"></i>Plantilla/Diploma
+                            </a>
                         </div>
                     </div>
                 </div>
