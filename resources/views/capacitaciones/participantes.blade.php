@@ -195,6 +195,7 @@
                                             <th>Total</th>
                                             <th>Comprobante</th>
                                         @endif
+                                        <th class="text-center">Habilitado Diploma</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
@@ -251,6 +252,16 @@
                                                     @endif
                                                 </td>
                                             @endif
+
+                                            {{-- ✅ Columna Habilitado Diploma --}}
+                                            <td class="text-center">
+                                                <input type="checkbox" class="form-check-input toggle-habilitado"
+                                                    data-capacitacion-id="{{ $capacitacion->id }}"
+                                                    data-participante-id="{{ $p->id }}"
+                                                    {{ $p->pivot->habilitado_diploma ? 'checked' : '' }}>
+                                            </td>
+
+
                                             <td>
                                                 <div class="d-flex gap-2">
                                                     <a href="{{ route('participantes.edit', [$capacitacion->id, $p->id]) }}"
@@ -269,12 +280,11 @@
                                                     </form>
                                                 </div>
                                             </td>
-
                                         </tr>
                                     @endforeach
                                 </tbody>
-
                             </table>
+
                         </div>
                     </div>
                 </div>
@@ -306,6 +316,7 @@
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
     <style>
         :root {
@@ -643,4 +654,44 @@
             });
         });
     </script>
+    <script>
+        document.querySelectorAll('.toggle-habilitado').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const participanteId = this.dataset.participanteId;
+                const capacitacionId = this.dataset.capacitacionId;
+                const isChecked = this.checked;
+
+                console.log("🛠 Enviando actualización...");
+
+                fetch("{{ route('participantes.toggleHabilitado') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                        },
+                        body: JSON.stringify({
+                            participante_id: participanteId,
+                            capacitacion_id: capacitacionId,
+                            habilitado_diploma: isChecked
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log("✅ Actualización guardada");
+                        } else {
+                            alert("❌ Error al actualizar.");
+                            this.checked = !isChecked;
+                        }
+                    })
+                    .catch(() => {
+                        alert("❌ Error de conexión.");
+                        this.checked = !isChecked;
+                    });
+            });
+        });
+    </script>
+
+    @stack('scripts')
+
 @endsection

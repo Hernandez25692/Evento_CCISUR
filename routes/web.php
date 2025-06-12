@@ -16,7 +16,7 @@ use App\Http\Controllers\DiplomaPublicoController;
 //------------------------------------------------------------
 // 🔐 RUTAS DE AUTENTICACIÓN
 //------------------------------------------------------------
-Route::get('/', fn () => redirect()->route('login'))->name('home');
+Route::get('/', fn() => redirect()->route('login'))->name('home');
 require __DIR__ . '/auth.php';
 
 //------------------------------------------------------------
@@ -37,6 +37,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('capacitaciones/{id}/participantes/create', [ParticipanteController::class, 'create'])->name('capacitaciones.participantes.create');
     Route::post('capacitaciones/{id}/participantes', [ParticipanteController::class, 'store'])->name('capacitaciones.participantes.store');
     Route::delete('participantes/{id}', [ParticipanteController::class, 'destroy'])->name('participantes.destroy');
+    Route::post('/participantes/toggle-habilitado', [ParticipanteController::class, 'toggleHabilitado'])->name('participantes.toggleHabilitado');
 
     // Editar participante
     Route::get('capacitaciones/{capacitacion}/participantes/{participante}/editar', [ParticipanteController::class, 'edit'])->name('participantes.edit');
@@ -79,7 +80,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reportes/capacitaciones', [ReporteController::class, 'index'])->name('reportes.capacitaciones');
     Route::get('/reportes/capacitaciones/exportar', [ReporteController::class, 'exportarExcel'])->name('reportes.capacitaciones.exportar');
     Route::get('/reportes/capacitaciones/exportar', [ReporteController::class, 'exportarExcel'])->name('reportes.capacitaciones.export');
-
 });
 
 //------------------------------------------------------------
@@ -106,4 +106,3 @@ Route::get('/certificados/{capacitacion}/{participante}/descargar', [Certificado
 
 // Validar Certificados QR
 Route::get('/validar_qr', [CertificadoController::class, 'validarQR'])->name('certificados.validarQR');
-

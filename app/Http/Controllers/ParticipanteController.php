@@ -9,6 +9,7 @@ use App\Exports\ParticipantesExport;
 use App\Imports\ParticipantesImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class ParticipanteController extends Controller
 {
@@ -87,7 +88,9 @@ class ParticipanteController extends Controller
         $participante->save();
 
         // Asociar sin duplicar
-        $participante->capacitaciones()->syncWithoutDetaching([$capacitacion->id]);
+        $participante->capacitaciones()->syncWithoutDetaching([
+            $capacitacion->id => ['habilitado_diploma' => true],
+        ]);
 
         return redirect()->route('capacitaciones.participantes.create', $capacitacion->id)
             ->with('success', '✅ Participante agregado correctamente.');
@@ -191,5 +194,21 @@ class ParticipanteController extends Controller
 
         return redirect()->route('capacitaciones.participantes', $capacitacion_id)
             ->with('success', '✅ Participante actualizado correctamente.');
+    }
+
+    public function toggleHabilitado(Request $request)
+    {
+        $request->validate([
+            'participante_id' => 'required|exists:participantes,id',
+            'capacitacion_id' => 'required|exists:capacitaciones,id',
+            'habilitado_diploma' => 'required|boolean',
+        ]);
+
+        $updated = DB::table('capacitacion_participante')
+            ->where('participante_id', $request->participante_id)
+            ->where('capacitacion_id', $request->capacitacion_id)
+            ->update(['habilitado_diploma' => $request->habilitado_diploma]);
+
+        return response()->json(['success' => $updated > 0]);
     }
 }

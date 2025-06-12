@@ -161,10 +161,15 @@ class CapacitacionController extends Controller
 
     public function listarParticipantes($id)
     {
-        $capacitacion = Capacitacion::findOrFail($id);
+        $capacitacion = Capacitacion::with(['participantes' => function ($query) {
+            $query->withPivot('habilitado_diploma');
+        }])->findOrFail($id);
+
         $participantes = $capacitacion->participantes;
+
         return view('capacitaciones.participantes', compact('capacitacion', 'participantes'));
     }
+
 
     public function agregarPlantilla($id)
     {
@@ -232,7 +237,7 @@ class CapacitacionController extends Controller
 
     public function generarDiplomas($id)
     {
-        
+
         $capacitacion = Capacitacion::findOrFail($id);
         $plantilla = $capacitacion->plantilla;
         $participantes = $capacitacion->participantes;
