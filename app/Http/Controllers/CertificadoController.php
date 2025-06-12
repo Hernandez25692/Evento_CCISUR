@@ -20,15 +20,20 @@ class CertificadoController extends Controller
         return view('validar_qr');
     }
 
-
+    /**
+     * Muestra el formulario para buscar un participante por su identidad.
+     
+     */
     public function resultado(Request $request)
     {
         $request->validate([
             'identidad' => 'required|string|max:50'
         ]);
 
-        $participante = Participante::with('capacitaciones')
-            ->where('identidad', $request->identidad)
+        $participante = Participante::where('identidad', $request->identidad)
+            ->with(['capacitaciones' => function ($q) {
+                $q->withPivot('habilitado_diploma');
+            }])
             ->first();
 
         return view('certificados.resultado', compact('participante'));

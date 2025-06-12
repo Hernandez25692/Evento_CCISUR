@@ -5,14 +5,19 @@
         <!-- Hero Section -->
         <section class="certificates-hero">
             <div class="hero-content">
-                <div class="hero-icon-container">
-                    <i class="fas fa-certificate"></i>
-                </div>
-                <h1 class="hero-title">Certificados Encontrados</h1>
-                <p class="hero-subtitle">Verifica y descarga tus diplomas de capacitación</p>
+            <div class="hero-icon-container">
+                <i class="fas fa-certificate"></i>
+            </div>
+            <h1 class="hero-title">Certificados Encontrados</h1>
+            <p class="hero-subtitle">Verifica y descarga tus diplomas de capacitación</p>
+            
             </div>
         </section>
-
+        <div style="display: flex; justify-content: center; margin-top: 2rem;">
+            <a href="{{ route('certificados.buscar') }}" class="download-button" style="max-width:220px;">
+                <i class="fas fa-arrow-left"></i> Regresar
+            </a>
+        </div>
         <div class="certificates-content">
             <!-- Resultado de búsqueda -->
             @if (!$participante)
@@ -26,33 +31,40 @@
                     </div>
                 </div>
             @else
-                <!-- Tarjeta de información del participante -->
-                <div class="participant-profile">
-                    <div class="profile-avatar">
-                        <div class="avatar-circle">
-                            <i class="fas fa-user"></i>
+                <!-- Tarjeta de información del participante - Diseño profesional -->
+                <div class="participant-profile" style="background: linear-gradient(120deg, #f8fafc 60%, #e0e7ff 100%); box-shadow: 0 8px 32px rgba(67,97,238,0.10), 0 1.5px 8px rgba(67,97,238,0.06); border: 1.5px solid #e0e7ff; position: relative; overflow: visible;">
+                    <div class="profile-avatar" style="position: relative;">
+                        <div class="avatar-circle" style="background: linear-gradient(135deg, #4361ee 60%, #4cc9f0 100%); box-shadow: 0 4px 16px rgba(67,97,238,0.18); border: 3px solid #fff;">
+                            <i class="fas fa-user" style="font-size: 2.5rem;"></i>
+                        </div>
+                        <span style="position: absolute; bottom: -10px; right: -10px; background: #38b000; color: #fff; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(56,176,0,0.18); font-size: 1.1rem; border: 2px solid #fff;">
+                            <i class="fas fa-check"></i>
+                        </span>
+                    </div>
+                    <div class="profile-info" style="z-index:2; position:relative;">
+                        <h2 class="profile-name" style="margin-bottom: 1.25rem; font-size: 2.1rem; font-weight: 800; letter-spacing: -1px; color: #3a0ca3;">
+                            {{ $participante->nombre_completo }}
+                        </h2>
+                        <div class="profile-details" style="gap: 1.25rem;">
+                            <div class="detail-item" style="background: linear-gradient(90deg, #e0e7ff 60%, #f8fafc 100%); border-radius: 10px; padding: 1rem 1.25rem; box-shadow: 0 2px 8px rgba(67,97,238,0.07); font-size: 1.05rem;">
+                                <i class="fas fa-envelope" style="color: #4361ee;"></i>
+                                <span style="word-break: break-all; color: #22223b;">{{ $participante->correo ?: 'No especificado' }}</span>
+                            </div>
+                            <div class="detail-item" style="background: linear-gradient(90deg, #e0e7ff 60%, #f8fafc 100%); border-radius: 10px; padding: 1rem 1.25rem; box-shadow: 0 2px 8px rgba(67,97,238,0.07); font-size: 1.05rem;">
+                                <i class="fas fa-id-card" style="color: #4361ee;"></i>
+                                <span style="color: #22223b;">{{ $participante->identidad }}</span>
+                            </div>
+                            <div class="detail-item" style="background: linear-gradient(90deg, #e0e7ff 60%, #f8fafc 100%); border-radius: 10px; padding: 1rem 1.25rem; box-shadow: 0 2px 8px rgba(67,97,238,0.07); font-size: 1.05rem;">
+                                <i class="fas fa-award" style="color: #38b000;"></i>
+                                <span style="color: #22223b;">{{ $participante->capacitaciones->count() }} capacitación(es)</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="profile-info">
-                        <h2 class="profile-name">{{ $participante->nombre_completo }}</h2>
-                        <div class="profile-details">
-                            <div class="detail-item">
-                                <i class="fas fa-envelope"></i>
-                                <span>{{ $participante->correo ?: 'No especificado' }}</span>
-                            </div>
-                            <div class="detail-item">
-                                <i class="fas fa-id-card"></i>
-                                <span>{{ $participante->identidad }}</span>
-                            </div>
-                            <div class="detail-item">
-                                <i class="fas fa-award"></i>
-                                <span>{{ $participante->capacitaciones->count() }} capacitación(es)</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="profile-badge">
+                    <div class="profile-badge" style="right: 2rem; top: 50%; transform: translateY(-50%) rotate(-8deg); font-size: 7rem; color: rgba(67,97,238,0.09); z-index: 0;">
                         <i class="fas fa-certificate"></i>
                     </div>
+                    <div style="position: absolute; left: -32px; top: -32px; width: 80px; height: 80px; background: radial-gradient(circle at 30% 30%, #4cc9f0 0%, #fff 100%); opacity: 0.18; border-radius: 50%; z-index:0;"></div>
+                    <div style="position: absolute; right: -24px; bottom: -24px; width: 60px; height: 60px; background: radial-gradient(circle at 70% 70%, #4361ee 0%, #fff 100%); opacity: 0.13; border-radius: 50%; z-index:0;"></div>
                 </div>
 
                 <!-- Listado de capacitaciones -->
@@ -95,12 +107,21 @@
                                         </div>
                                     </div>
 
+                                    @php
+                                        $habilitado = $cap->pivot->habilitado_diploma ?? false;
+                                    @endphp
+
                                     <div class="card-actions">
-                                        <a href="{{ route('certificados.descargar', [$cap->id, $participante->id]) }}"
-                                            class="download-button">
-                                            <i class="fas fa-download"></i> Descargar Diploma
-                                        </a>
+                                        @if ($habilitado)
+                                            <a href="{{ route('certificados.descargar', [$cap->id, $participante->id]) }}"
+                                                class="download-button">
+                                                <i class="fas fa-download"></i> Descargar Diploma
+                                            </a>
+                                        @else
+                                            <span class="badge bg-warning text-dark px-3 py-2">Diploma no habilitado</span>
+                                        @endif
                                     </div>
+
                                 </article>
                             @endforeach
                         </div>
@@ -545,12 +566,13 @@
         // Efecto de aparición gradual para las tarjetas
         document.addEventListener('DOMContentLoaded', function() {
             const animateOnScroll = () => {
-                const elements = document.querySelectorAll('.certificate-card, .participant-profile, .empty-state, .section-title');
-                
+                const elements = document.querySelectorAll(
+                    '.certificate-card, .participant-profile, .empty-state, .section-title');
+
                 elements.forEach((element, index) => {
                     const elementPosition = element.getBoundingClientRect().top;
                     const windowHeight = window.innerHeight;
-                    
+
                     if (elementPosition < windowHeight - 100) {
                         setTimeout(() => {
                             element.style.opacity = '1';

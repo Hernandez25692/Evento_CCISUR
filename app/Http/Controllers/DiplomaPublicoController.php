@@ -25,15 +25,26 @@ class DiplomaPublicoController extends Controller
             return back()->with('error', 'No se encontró ningún participante con esa identidad.');
         }
 
-        $capacitaciones = $participante->capacitaciones;
+        // Filtrar capacitaciones donde esté habilitado
+        $capacitaciones = $participante->capacitaciones()
+            ->withPivot('habilitado_diploma')
+            ->wherePivot('habilitado_diploma', true)
+            ->get();
+
 
         return view('publico.verificar_diploma', compact('participante', 'capacitaciones'));
     }
 
+
     public function descargar($capacitacion_id, $identidad)
     {
         $participante = Participante::where('identidad', $identidad)->firstOrFail();
-        $capacitacion = $participante->capacitaciones()->where('capacitacion_id', $capacitacion_id)->firstOrFail();
+
+        // Verificar que está habilitado
+        $capacitacion = $participante->capacitaciones()
+            ->where('capacitacion_id', $capacitacion_id)
+            ->wherePivot('habilitado_diploma', true)
+            ->firstOrFail();
 
         $pdf = PDF::loadView('diplomas.plantilla_pdf', compact('participante', 'capacitacion'));
         return $pdf->download('Diploma_' . $participante->nombre_completo . '.pdf');
