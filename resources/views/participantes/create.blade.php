@@ -71,18 +71,22 @@
                         </div>
 
 
-                        <div class="mb-3">
-                            <label for="identidad" class="form-label">Número de Identidad</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-                                <input type="text" class="form-control floating-input @error('identidad') is-invalid @enderror"
-                                    id="identidad" name="identidad" placeholder="Ejemplo: 0801199912345" required
-                                    autocomplete="off" autofocus maxlength="13" pattern="\d{13}" inputmode="numeric">
-                            </div>
-                            @error('identidad')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <div class="form-group floating-form-group">
+                            <input type="text" class="form-control floating-input" name="identidad" id="identidad"
+                                maxlength="13" pattern="\d{13}" title="Ingrese 13 dígitos numéricos" required>
+                            <label for="identidad" class="floating-label">Identidad (sin guiones)</label>
+                            <i class="fas fa-id-card input-icon"></i>
                         </div>
+                        <script>
+                            document.getElementById('identidad').addEventListener('input', function() {
+                                // Solo permite números
+                                this.value = this.value.replace(/\D/g, '');
+                                // Limita a 13 caracteres
+                                if (this.value.length > 13) {
+                                    this.value = this.value.slice(0, 13);
+                                }
+                            });
+                        </script>
 
                         <div class="row g-2">
                             <div class="col-md-6 form-group floating-form-group">
