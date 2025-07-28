@@ -1,2 +1,17 @@
+----SERVIDOR FISICO
 Usuario Servidor: ccisur
 password:admin123
+
+---------
+DB_USERNAME=ccisur
+DB_PASSWORD=Admi123$
+
+
+------
+Acceso al sistema web
+user: ccisur@gmail.com 
+pas:admin123
+
+
+----Carpeta proyecto
+cd /var/www/Evento_CCISUR

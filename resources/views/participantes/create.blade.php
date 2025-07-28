@@ -71,11 +71,17 @@
                         </div>
 
 
-                        <div class="form-group floating-form-group">
-                            <input type="text" class="form-control floating-input" name="identidad" id="identidad"
-                                placeholder=" " required>
-                            <label for="identidad" class="floating-label">Identidad (sin guiones)</label>
-                            <i class="fas fa-id-card input-icon"></i>
+                        <div class="mb-3">
+                            <label for="identidad" class="form-label">Número de Identidad</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                <input type="text" class="form-control floating-input @error('identidad') is-invalid @enderror"
+                                    id="identidad" name="identidad" placeholder="Ejemplo: 0801199912345" required
+                                    autocomplete="off" autofocus maxlength="13" pattern="\d{13}" inputmode="numeric">
+                            </div>
+                            @error('identidad')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="row g-2">
