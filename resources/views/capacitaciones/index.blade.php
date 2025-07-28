@@ -113,11 +113,13 @@
                     <div class="training-card">
                         <!-- Imagen con badge de estado -->
                         <div class="card-image">
-                            @if ($capacitacion->imagen)
-                                <img src="{{ asset('storage/' . $capacitacion->imagen) }}" alt="Imagen de la capacitación">
-                            @else
-                                <img src="{{ asset('images/default-training.jpg') }}" alt="Imagen por defecto">
-                            @endif
+                            <a href="{{ route('capacitaciones.participantes', $capacitacion->id) }}">
+                                @if ($capacitacion->imagen)
+                                    <img src="{{ asset('storage/' . $capacitacion->imagen) }}" alt="Imagen de la capacitación">
+                                @else
+                                    <img src="{{ asset('images/default-training.jpg') }}" alt="Imagen por defecto">
+                                @endif
+                            </a>
                             <div class="image-overlay"></div>
                             <div class="card-badge {{ $capacitacion->fecha < now() ? 'past' : 'upcoming' }}">
                                 {{ $capacitacion->fecha < now() ? 'Realizada' : 'Próxima' }}

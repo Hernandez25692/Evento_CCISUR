@@ -197,7 +197,7 @@
         <div class="container">
             <a class="navbar-brand navbar-brand-custom" href="{{ route('home') }}">
                 <img src="{{ asset('storage/logo/Logo-CCISUR.png') }}" alt="CCISUR Logo" class="img-fluid">
-                <span class="d-none d-sm-inline">Evento_CCISUR</span>
+                <span class="d-none d-sm-inline">Formaciones CCISUR</span>
             </a>
             <button class="navbar-toggler navbar-toggler-custom" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
@@ -274,7 +274,7 @@
     <!-- Footer Customizado - Solo esto tiene nuevos estilos -->
     <footer class="footer-custom">
         <div class="container">
-            <p>&copy; {{ date('Y') }} <strong>Evento_CCISUR</strong> - Todos los derechos reservados</p>
+            <p>&copy; {{ date('Y') }} <strong>Formaciones CCISUR</strong> - Todos los derechos reservados</p>
         </div>
     </footer>
 

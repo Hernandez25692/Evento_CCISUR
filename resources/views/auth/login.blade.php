@@ -15,7 +15,7 @@
                     <div class="auth-presentation">
                         <div class="presentation-content">
                             <h1 class="display-4 fw-bold">
-                                Bienvenido a <span class="text-highlight">Evento_CCISUR</span>
+                                Bienvenido a <span class="text-highlight">Formaciones_CCISUR</span>
                             </h1>
                             <p class="lead">
                                 Plataforma de gestión de Formaciones para la Cámara de Comercio e Industrias del Sur.
@@ -95,21 +95,6 @@
                                                 <i class="fas fa-exclamation-circle me-2"></i>{{ $message }}
                                             </div>
                                         @enderror
-                                    </div>
-
-                                    <div class="form-options">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="remember" id="remember"
-                                                {{ old('remember') ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="remember">
-                                                Recuérdame
-                                            </label>
-                                        </div>
-                                        @if (Route::has('password.request-code'))
-                                        <a href="{{ route('password.request-code') }}" class="forgot-password">
-                                            <i class="fas fa-key me-1"></i>¿Olvidaste tu contraseña?
-                                        </a>
-                                        @endif
                                     </div>
 
                                     <button type="submit" class="btn btn-primary w-100 auth-submit">
