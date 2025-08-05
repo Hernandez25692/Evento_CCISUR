@@ -205,7 +205,7 @@
                     </div>
                 @endif
             </div>
-           //QR listo para ser utilizado
+           
            {{-- QR --}}
            {{--
            <img src="data:image/svg+xml;base64,{{ $qrBase64 }}" class="qr" alt="QR">
