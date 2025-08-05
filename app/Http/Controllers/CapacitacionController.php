@@ -110,41 +110,33 @@ class CapacitacionController extends Controller
     {
         $capacitacion = Capacitacion::findOrFail($id);
 
-        $request->validate([
-            'nombre' => 'required',
-            'lugar' => 'required',
-            'fecha' => 'required|date',
-            'impartido_por' => 'required',
-            'descripcion' => 'nullable',
-            'imagen' => 'nullable|image|max:2048',
-            'tipo_formacion' => 'nullable|string',
-            'duracion' => 'nullable|string',
-            'forma' => 'nullable|string',
-            'cupos' => 'required|in:limitado,ilimitado',
-            'limite_participantes' => 'nullable|integer',
-            'medio' => 'required|in:gratis,pago',
-            'precio_afiliado' => 'nullable|numeric',
-            'isv_afiliado' => 'nullable|numeric',
-            'precio_no_afiliado' => 'nullable|numeric',
-            'isv_no_afiliado' => 'nullable|numeric',
-            'hora_inicio' => 'nullable|date_format:H:i',
-            'hora_fin' => 'nullable|date_format:H:i',
+        // Mostrar qué datos llegan y si cambian
+        foreach ($request->except(['_token', '_method']) as $key => $valorNuevo) {
+            $valorActual = $capacitacion->$key ?? 'NO EXISTE';
+            if ($valorActual != $valorNuevo) {
+                \Log::info("CAMBIO detectado en '$key': De '$valorActual' a '$valorNuevo'");
+                $capacitacion->$key = $valorNuevo;
+            } else {
+                \Log::info("SIN CAMBIO en '$key': sigue como '$valorActual'");
+            }
+        }
 
-        ]);
-
-        $data = $request->all();
-
+        // Imagen
         if ($request->hasFile('imagen')) {
             if ($capacitacion->imagen) {
                 Storage::delete('public/' . $capacitacion->imagen);
             }
-            $data['imagen'] = $request->file('imagen')->store('capacitaciones', 'public');
+            $capacitacion->imagen = $request->file('imagen')->store('capacitaciones', 'public');
+            \Log::info("Imagen actualizada: " . $capacitacion->imagen);
         }
 
-        $capacitacion->update($data);
+        $resultado = $capacitacion->save();
 
-        return redirect()->route('capacitaciones.index')->with('success', 'Capacitación actualizada correctamente.');
+        \Log::info("Resultado del guardado: " . ($resultado ? 'ÉXITO' : 'FALLÓ'));
+
+        return redirect()->route('capacitaciones.index')->with('success', '✅ Formación actualizada con éxito');
     }
+
 
     public function destroy($id)
     {
