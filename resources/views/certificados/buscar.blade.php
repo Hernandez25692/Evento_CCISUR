@@ -364,7 +364,9 @@
                     <i class="fas fa-certificate"></i>
                 </div>
                 <div>
-                
+                <a href="{{ route('home') }}" class="me-3" title="Regresar al inicio" style="color: #fff; font-size: 1.5rem;">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
                     <div class="logo-text" style="letter-spacing: 1px; font-size: 1.7rem;">
                         <span style="color: #4cc9f0;">FORMACIONES</span> <span style="color: #fff;">CCISUR</span>
                     </div>
