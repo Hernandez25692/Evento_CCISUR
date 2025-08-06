@@ -118,4 +118,21 @@ class PlantillaGlobalController extends Controller
 
         return redirect()->route('plantillas-globales.index')->with('success', 'Plantilla eliminada correctamente.');
     }
+
+    public function datos($id)
+    {
+        $plantilla = \App\Models\PlantillaGlobal::findOrFail($id);
+
+        return response()->json([
+            'nombre_firma_1' => $plantilla->nombre_firma_1,
+            'nombre_firma_2' => $plantilla->nombre_firma_2,
+            'titulo_convenio' => $plantilla->titulo_convenio,
+            'tipo_certificado' => $plantilla->tipo_certificado,
+            'fecha_emision' => $plantilla->fecha_emision,
+            'orientacion' => $plantilla->orientacion,
+            'fondo' => asset('storage/' . $plantilla->fondo),
+            'firma_1' => $plantilla->firma_1 ? asset('storage/' . $plantilla->firma_1) : null,
+            'firma_2' => $plantilla->firma_2 ? asset('storage/' . $plantilla->firma_2) : null,
+        ]);
+    }
 }

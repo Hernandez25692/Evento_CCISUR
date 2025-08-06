@@ -1,21 +1,21 @@
 @extends('layouts.app')
 
 @section('content')
-    <link rel="stylesheet" href="{{ asset('css/fonts-visby.css') }}">
+<link rel="stylesheet" href="{{ asset('css/fonts-visby.css') }}">
 
-    <div class="diploma-template-container">
-        <!-- Encabezado con efecto gradiente -->
-        <div class="template-header">
-            <div class="header-content">
-                <h2>
-                    <i class="fas fa-certificate"></i>
-                    Plantilla para: {{ $capacitacion->nombre }}
-                </h2>
-                <p>Configuración de diplomas certificados</p>
-            </div>
-            <div class="header-wave">
-                <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
-                    <path
+<div class="diploma-template-container">
+    <!-- Encabezado con efecto gradiente -->
+    <div class="template-header">
+        <div class="header-content">
+            <h2>
+                <i class="fas fa-certificate"></i>
+                Plantilla para: {{ $capacitacion->nombre }}
+            </h2>
+            <p>Configuración de diplomas certificados</p>
+        </div>
+        <div class="header-wave">
+            <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" fill="#4361ee"></path>
                         d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z"
                         opacity=".25" fill="#4361ee"></path>
                     <path
@@ -74,6 +74,66 @@
                                                 </option>
                                             @endforeach
                                         </select>
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                const selector = document.getElementById('plantilla_global_id');
+
+                                                selector.addEventListener('change', async function() {
+                                                    const plantillaId = this.value;
+
+                                                    if (!plantillaId) return;
+
+                                                    try {
+                                                        const response = await fetch(`/plantillas-globales/${plantillaId}/datos`);
+                                                        const data = await response.json();
+
+                                                        // Rellenar campos del formulario
+                                                        document.querySelector('[name="nombre_firma_1"]').value = data.nombre_firma_1 || '';
+                                                        document.querySelector('[name="nombre_firma_2"]').value = data.nombre_firma_2 || '';
+                                                        document.querySelector('[name="titulo_convenio"]').value = data.titulo_convenio ||
+                                                            '';
+                                                        document.querySelector('[name="fecha_emision"]').value = data.fecha_emision || '';
+                                                        document.querySelector('[name="orientacion"]').value = data.orientacion || '';
+                                                        document.querySelector('[name="tipo_certificado"]').value = data.tipo_certificado ||
+                                                            '';
+
+                                                        // Mostrar imagen de fondo
+                                                        if (data.fondo) {
+                                                            const previewFondo = document.getElementById('preview_fondo');
+                                                            previewFondo.src = data.fondo;
+                                                            previewFondo.classList.remove('d-none');
+                                                        }
+
+                                                        // Mostrar firma 1
+                                                        if (data.firma_1) {
+                                                            const previewFirma1 = document.getElementById('preview_firma_1');
+                                                            previewFirma1.src = data.firma_1;
+                                                            previewFirma1.classList.remove('d-none');
+                                                        }
+
+                                                        // Mostrar firma 2
+                                                        if (data.firma_2) {
+                                                            const previewFirma2 = document.getElementById('preview_firma_2');
+                                                            previewFirma2.src = data.firma_2;
+                                                            previewFirma2.classList.remove('d-none');
+                                                        }
+
+                                                        // Mostrar u ocultar campo de título si es convenio
+                                                        const divConvenio = document.getElementById('titulo_convenio_div');
+                                                        if (data.tipo_certificado === 'convenio') {
+                                                            divConvenio.style.display = 'block';
+                                                        } else {
+                                                            divConvenio.style.display = 'none';
+                                                        }
+
+                                                    } catch (error) {
+                                                        console.error('Error al cargar plantilla global:', error);
+                                                        alert('Ocurrió un error al cargar la plantilla global');
+                                                    }
+                                                });
+                                            });
+                                        </script>
+
                                     </div>
                                     <div class="mt-3 text-center">
                                         <button type="submit" class="btn btn-info">
@@ -150,7 +210,7 @@
                                     <i class="fas fa-image"></i> Fondo del Diploma
                                 </label>
                                 <div class="file-upload">
-                                    <input type="file" name="fondo" id="fondo" accept="image/*" required>
+                                    <input type="file" name="fondo" id="fondo" accept="image/*">
                                     <label for="fondo" class="upload-label">
                                         <div class="upload-content">
                                             <i class="fas fa-cloud-upload-alt"></i>

@@ -119,3 +119,6 @@ Route::prefix('plantillas-globales')->name('plantillas-globales.')->group(functi
 
 Route::post('capacitaciones/{id}/plantilla/importar-global', [PlantillaDiplomaController::class, 'importarDesdePlantillaGlobal'])
     ->name('capacitaciones.plantilla.importar-global');
+
+Route::get('/plantillas-globales/{id}/datos', [\App\Http\Controllers\PlantillaGlobalController::class, 'datos'])
+    ->name('plantillas-globales.datos');

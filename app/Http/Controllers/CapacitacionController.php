@@ -185,7 +185,7 @@ class CapacitacionController extends Controller
         $request->validate([
             'firma_1' => 'nullable|image|max:2048',
             'firma_2' => 'nullable|image|max:2048',
-            'fondo' => 'required|image|max:2048',
+            'fondo' => 'nullable|image|max:2048',
             'fecha_emision' => 'required|date',
             'orientacion' => 'required|in:vertical,horizontal',
             'nombre_firma_1' => 'nullable|string|max:255',
