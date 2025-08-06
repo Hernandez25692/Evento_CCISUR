@@ -51,7 +51,40 @@
                 <div class="card-header">
                     <h3><i class="fas fa-cog"></i> Configuración de la Plantilla</h3>
                 </div>
+
                 <div class="card-body">
+
+                    @if (count($plantillas_globales))
+                        <div class="form-card mb-4">
+                            <div class="card-header">
+                                <h3><i class="fas fa-copy"></i> Seleccionar Plantilla Global</h3>
+                            </div>
+                            <div class="card-body">
+                                <form action="{{ route('capacitaciones.plantilla.importar-global', $capacitacion->id) }}"
+                                    method="POST">
+                                    @csrf
+                                    <div class="form-group">
+                                        <label for="plantilla_global_id">Plantilla Global Disponible:</label>
+                                        <select name="plantilla_global_id" id="plantilla_global_id" class="form-control"
+                                            required>
+                                            <option value="">Seleccione una plantilla...</option>
+                                            @foreach ($plantillas_globales as $global)
+                                                <option value="{{ $global->id }}">{{ $global->nombre }}
+                                                    ({{ $global->orientacion }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="mt-3 text-center">
+                                        <button type="submit" class="btn btn-info">
+                                            <i class="fas fa-download"></i> Importar esta plantilla
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    @endif
+
                     <form action="{{ route('capacitaciones.plantilla.store', $capacitacion->id) }}" method="POST"
                         enctype="multipart/form-data">
                         @csrf
@@ -244,7 +277,7 @@
         vistaPrevia('firma_2', 'preview_firma_2');
         vistaPrevia('fondo', 'preview_fondo');
     </script>
-    
+
 
     <style>
         /* Variables de color */

@@ -11,6 +11,7 @@ use App\Http\Controllers\PlantillaDiplomaController;
 use App\Http\Controllers\CertificadoController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\DiplomaPublicoController;
+use App\Http\Controllers\PlantillaGlobalController;
 
 
 //------------------------------------------------------------
@@ -106,3 +107,15 @@ Route::get('/certificados/{capacitacion}/{participante}/descargar', [Certificado
 
 // Validar Certificados QR
 Route::get('/validar_qr', [CertificadoController::class, 'validarQR'])->name('certificados.validarQR');
+
+Route::prefix('plantillas-globales')->name('plantillas-globales.')->group(function () {
+    Route::get('/', [PlantillaGlobalController::class, 'index'])->name('index');
+    Route::get('/crear', [PlantillaGlobalController::class, 'create'])->name('create');
+    Route::post('/guardar', [PlantillaGlobalController::class, 'store'])->name('store');
+    Route::get('/{id}/editar', [PlantillaGlobalController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [PlantillaGlobalController::class, 'update'])->name('update');
+    Route::delete('/{id}', [PlantillaGlobalController::class, 'destroy'])->name('destroy');
+});
+
+Route::post('capacitaciones/{id}/plantilla/importar-global', [PlantillaDiplomaController::class, 'importarDesdePlantillaGlobal'])
+    ->name('capacitaciones.plantilla.importar-global');

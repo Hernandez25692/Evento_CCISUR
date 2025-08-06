@@ -197,7 +197,7 @@
         <div class="container">
             <a class="navbar-brand navbar-brand-custom" href="{{ route('home') }}">
                 <img src="{{ asset('storage/logo/Logo-CCISUR.png') }}" alt="CCISUR Logo" class="img-fluid">
-                <span class="d-none d-sm-inline">Formaciones CCISUR</span>
+                <span class="d-none d-sm-inline">CCISUR</span>
             </a>
             <button class="navbar-toggler navbar-toggler-custom" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
@@ -248,6 +248,11 @@
                                 href="{{ route('reportes.capacitaciones') }}">
                                 <i class="fas fa-chart-line me-1"></i>
                                 Reportes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('plantillas-globales.index') }}">
+                                <i class="fas fa-layer-group"></i> Plantillas Globales
                             </a>
                         </li>
 

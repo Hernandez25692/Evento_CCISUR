@@ -7,6 +7,7 @@ use App\Models\Plantilla;
 use App\Models\Capacitacion;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
+use App\Models\PlantillaGlobal;
 
 class PlantillaDiplomaController extends Controller
 {
@@ -21,7 +22,7 @@ class PlantillaDiplomaController extends Controller
             'tipo_certificado' => 'required|in:generico,convenio',
             'titulo_convenio' => 'nullable|string|max:255',
         ]);
-        
+
         $plantilla = Plantilla::where('capacitacion_id', $capacitacion_id)->first();
         if (!$plantilla) {
             $plantilla = new Plantilla();
@@ -76,22 +77,72 @@ class PlantillaDiplomaController extends Controller
     public function vistaPrevia($capacitacion_id)
     {
         $capacitacion = Capacitacion::findOrFail($capacitacion_id);
-        $plantilla = $capacitacion->plantilla;
         $participantes = $capacitacion->participantes;
 
         if ($participantes->isEmpty()) {
             return back()->with('error', 'No hay participantes en esta capacitación.');
         }
 
+        // Buscar plantilla local
+        $plantilla = $capacitacion->plantilla;
+
+        // Si no hay plantilla específica, usar la primera plantilla global como predeterminada
+        if (!$plantilla) {
+            $plantilla = \App\Models\PlantillaGlobal::latest()->first();
+        }
+
         $pdf = Pdf::loadView('pdf.diplomas', compact('participantes', 'plantilla', 'capacitacion'));
         return $pdf->stream('vista_previa_diploma.pdf');
     }
+
 
     public function configuracionPlantilla($id)
     {
         $capacitacion = Capacitacion::with('plantilla')->findOrFail($id);
         $plantillaExistente = $capacitacion->plantilla !== null;
 
-        return view('capacitaciones.plantilla', compact('capacitacion', 'plantillaExistente'));
+        // Aquí debe ir la carga de plantillas globales
+        $plantillas_globales = \App\Models\PlantillaGlobal::all();
+
+        return view('capacitaciones.plantilla', compact(
+            'capacitacion',
+            'plantillaExistente',
+            'plantillas_globales'
+        ));
+    }
+
+
+
+    public function importarDesdePlantillaGlobal(Request $request, $capacitacion_id)
+    {
+        $request->validate([
+            'plantilla_global_id' => 'required|exists:plantillas_globales,id'
+        ]);
+
+        $global = PlantillaGlobal::findOrFail($request->plantilla_global_id);
+
+        // Duplicar archivos al storage
+        $fondo = Storage::disk('public')->copy($global->fondo, 'fondos/' . basename($global->fondo));
+        $firma1 = $global->firma_1 ? Storage::disk('public')->copy($global->firma_1, 'firmas/' . basename($global->firma_1)) : null;
+        $firma2 = $global->firma_2 ? Storage::disk('public')->copy($global->firma_2, 'firmas/' . basename($global->firma_2)) : null;
+
+        // Crear nueva plantilla para esta capacitación
+        Plantilla::updateOrCreate(
+            ['capacitacion_id' => $capacitacion_id],
+            [
+                'fondo' => $global->fondo,
+                'firma_1' => $global->firma_1,
+                'firma_2' => $global->firma_2,
+                'nombre_firma_1' => $global->nombre_firma_1,
+                'nombre_firma_2' => $global->nombre_firma_2,
+                'orientacion' => $global->orientacion,
+                'tipo_certificado' => $global->tipo_certificado,
+                'titulo_convenio' => $global->titulo_convenio,
+                'fecha_emision' => $global->fecha_emision,
+            ]
+        );
+
+        return redirect()->route('capacitaciones.configuracion.plantilla', $capacitacion_id)
+            ->with('success', 'Plantilla global aplicada correctamente.');
     }
 }

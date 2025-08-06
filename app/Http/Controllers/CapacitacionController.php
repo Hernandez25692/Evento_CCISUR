@@ -11,6 +11,7 @@ use App\Models\Plantilla;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Support\Str;
+use App\Models\PlantillaGlobal;
 
 
 class CapacitacionController extends Controller
@@ -167,8 +168,17 @@ class CapacitacionController extends Controller
     {
         $capacitacion = Capacitacion::findOrFail($id);
         $plantillaExistente = Plantilla::where('capacitacion_id', $id)->exists();
-        return view('capacitaciones.plantilla', compact('capacitacion', 'plantillaExistente'));
+
+        // NUEVO: Obtener todas las plantillas globales
+        $plantillas_globales = PlantillaGlobal::all();
+
+        return view('capacitaciones.plantilla', compact(
+            'capacitacion',
+            'plantillaExistente',
+            'plantillas_globales'
+        ));
     }
+
 
     public function guardarPlantilla(Request $request, $id)
     {
