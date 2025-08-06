@@ -19,3 +19,9 @@ cd /var/www/Evento_CCISUR
 
 sudo nano /etc/netplan/50-cloud-init.yaml
 sudo netplan apply
+
+
+
+----DESCARGAR IMAGENES 
+composer require spatie/browsershot
+

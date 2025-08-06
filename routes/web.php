@@ -122,3 +122,6 @@ Route::post('capacitaciones/{id}/plantilla/importar-global', [PlantillaDiplomaCo
 
 Route::get('/plantillas-globales/{id}/datos', [\App\Http\Controllers\PlantillaGlobalController::class, 'datos'])
     ->name('plantillas-globales.datos');
+
+Route::get('/capacitaciones/{id}/diplomas-imagenes', [CapacitacionController::class, 'descargarDiplomasImagenes'])
+    ->name('capacitaciones.diplomas.imagenes');

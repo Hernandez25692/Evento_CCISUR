@@ -12,7 +12,8 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Support\Str;
 use App\Models\PlantillaGlobal;
-
+use Spatie\Browsershot\Browsershot;
+use ZipArchive;
 
 class CapacitacionController extends Controller
 {
@@ -285,5 +286,56 @@ class CapacitacionController extends Controller
         ])->setPaper('letter', $orientacion);
 
         return $pdf->stream('vista_previa.pdf');
+    }
+
+
+    public function descargarDiplomasImagenes($id)
+    {
+        $capacitacion = Capacitacion::with('plantilla', 'participantes')->findOrFail($id);
+        $plantilla = $capacitacion->plantilla;
+        $participantes = $capacitacion->participantes()->wherePivot('habilitado_diploma', true)->get();
+
+        if (!$plantilla || $participantes->isEmpty()) {
+            return back()->with('error', 'Debe existir una plantilla y al menos un participante.');
+        }
+
+        $folderName = Str::slug($capacitacion->nombre);
+        $outputDir = storage_path("app/diplomas-imagenes/{$folderName}");
+
+        if (!file_exists($outputDir)) {
+            mkdir($outputDir, 0755, true);
+        }
+
+        foreach ($participantes as $participante) {
+            $html = view('pdf.diplomas', [
+                'capacitacion' => $capacitacion,
+                'plantilla' => $plantilla,
+                'participantes' => collect([$participante])
+            ])->render();
+
+            $filename = Str::slug($participante->nombre_completo) . '.png';
+            Browsershot::html($html)
+                ->setNodeBinary('/usr/bin/node') // ajustar si es necesario
+                ->setNpmBinary('/usr/bin/npm')   // ajustar si es necesario
+                ->windowSize(1200, 800)
+                ->waitUntilNetworkIdle()
+                ->deviceScaleFactor(2) // alta resolución
+                ->save("{$outputDir}/{$filename}");
+        }
+
+        // Crear el ZIP
+        $zipName = "Diplomas_{$folderName}.zip";
+        $zipPath = storage_path("app/{$zipName}");
+
+        $zip = new ZipArchive;
+        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
+            foreach (glob("{$outputDir}/*.png") as $file) {
+                $zip->addFile($file, basename($file));
+            }
+            $zip->close();
+        }
+
+        // Descargar ZIP y borrar carpeta temporal
+        return response()->download($zipPath)->deleteFileAfterSend(true);
     }
 }
