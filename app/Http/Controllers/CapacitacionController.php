@@ -317,7 +317,7 @@ class CapacitacionController extends Controller
             Browsershot::html($html)
                 ->setNodeBinary('/usr/bin/node')
                 ->setNpmBinary('/usr/bin/npm')
-                ->setChromePath('/usr/local/bin/puppeteer-chrome') // Ahora es accesible globalmente
+                ->setChromePath('/usr/bin/chromium-browser') // ✅ Ruta correcta
                 ->windowSize(1200, 800)
                 ->waitUntilNetworkIdle()
                 ->deviceScaleFactor(2)

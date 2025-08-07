@@ -212,7 +212,7 @@
                                     <i class="fas fa-image"></i> Fondo del Diploma
                                 </label>
                                 <div class="file-upload">
-                                    <input type="file" name="fondo" id="fondo" accept="image/*">
+                                    <input type="file" name="fondo" id="fondo" accept="image/*" required>
                                     <label for="fondo" class="upload-label">
                                         <div class="upload-content">
                                             <i class="fas fa-cloud-upload-alt"></i>
