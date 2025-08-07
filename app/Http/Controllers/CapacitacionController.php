@@ -223,13 +223,17 @@ class CapacitacionController extends Controller
         }
 
         // Fondo
+        // Fondo
         if ($request->hasFile('fondo')) {
+            // Usuario subió nuevo fondo
             if ($plantilla->fondo) {
                 Storage::delete('public/' . $plantilla->fondo);
             }
             $plantilla->fondo = $request->file('fondo')->store('plantillas', 'public');
+        } elseif ($request->filled('fondo_actual')) {
+            // Se mantuvo el fondo de la plantilla global
+            $plantilla->fondo = str_replace(asset('storage') . '/', '', $request->input('fondo_actual'));
         }
-
 
 
         $plantilla->save();

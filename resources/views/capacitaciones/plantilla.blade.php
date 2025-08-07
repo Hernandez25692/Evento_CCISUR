@@ -104,6 +104,16 @@
                                                             const previewFondo = document.getElementById('preview_fondo');
                                                             previewFondo.src = data.fondo;
                                                             previewFondo.classList.remove('d-none');
+                                                            // Guardar ruta del fondo actual de la plantilla global
+                                                            document.getElementById('fondo_actual').value = data.fondo;
+                                                            document.getElementById('fondo').addEventListener('change', function() {
+                                                                if (this.files.length > 0) {
+                                                                    document.getElementById('fondo_actual').value =
+                                                                    ''; // El usuario está subiendo una nueva
+                                                                }
+                                                            });
+
+
                                                         }
 
                                                         // Mostrar firma 1
@@ -212,7 +222,12 @@
                                     <i class="fas fa-image"></i> Fondo del Diploma
                                 </label>
                                 <div class="file-upload">
-                                    <input type="file" name="fondo" id="fondo" accept="image/*" required>
+                                    <input type="file" name="fondo" id="fondo" accept="image/*">
+                                    <input type="hidden" name="fondo_actual" id="fondo_actual"
+                                        value="{{ $plantilla->fondo ?? '' }}">
+
+                                    
+
                                     <label for="fondo" class="upload-label">
                                         <div class="upload-content">
                                             <i class="fas fa-cloud-upload-alt"></i>
