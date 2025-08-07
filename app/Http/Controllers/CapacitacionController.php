@@ -317,7 +317,7 @@ class CapacitacionController extends Controller
             Browsershot::html($html)
                 ->setNodeBinary('/usr/bin/node')
                 ->setNpmBinary('/usr/bin/npm')
-                ->setChromePath('/usr/bin/chromium-browser') // ✅ Ruta correcta
+                ->setChromePath('/usr/bin/google-chrome') // ✅ Ruta correcta
                 ->windowSize(1200, 800)
                 ->waitUntilNetworkIdle()
                 ->deviceScaleFactor(2)
