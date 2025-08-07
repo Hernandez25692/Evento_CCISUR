@@ -315,11 +315,12 @@ class CapacitacionController extends Controller
 
             $filename = Str::slug($participante->nombre_completo) . '.png';
             Browsershot::html($html)
-                ->setNodeBinary('/usr/bin/node') // ajustar si es necesario
-                ->setNpmBinary('/usr/bin/npm')   // ajustar si es necesario
+                ->setNodeBinary('/usr/bin/node')
+                ->setNpmBinary('/usr/bin/npm')
+                ->setChromePath('/home/ccisur/.cache/puppeteer/chrome/linux-139.0.7258.66/chrome-linux64/chrome') // Ruta confirmada
                 ->windowSize(1200, 800)
                 ->waitUntilNetworkIdle()
-                ->deviceScaleFactor(2) // alta resolución
+                ->deviceScaleFactor(2)
                 ->save("{$outputDir}/{$filename}");
         }
 
