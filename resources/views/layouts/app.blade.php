@@ -339,6 +339,13 @@
     <footer class="footer-custom">
         <div class="container">
             <p>&copy; {{ date('Y') }} <strong>Formaciones CCISUR</strong> - Todos los derechos reservados</p>
+            <p>
+                Desarrollado por 
+                <a href="mailto:delcarmenhernandez@unah.hn">
+                    José Hernández
+                </a>
+                </a>
+            </p>
         </div>
     </footer>
 
