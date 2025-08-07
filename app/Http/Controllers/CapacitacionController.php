@@ -307,27 +307,32 @@ class CapacitacionController extends Controller
         }
 
         foreach ($participantes as $participante) {
+            // Generar PDF temporal
             $html = view('pdf.diplomas', [
                 'capacitacion' => $capacitacion,
                 'plantilla' => $plantilla,
                 'participantes' => collect([$participante])
             ])->render();
 
-            $filename = Str::slug($participante->nombre_completo) . '.png';
-            Browsershot::html($html)
-                ->setNodeBinary('/usr/bin/node')
-                ->setNpmBinary('/usr/bin/npm')
-                ->setChromePath(env('PUPPETEER_EXECUTABLE_PATH'))
-                ->useEnvironment([
-                    'PUPPETEER_CACHE_DIR' => env('PUPPETEER_CACHE_DIR')
-                ])
-                ->windowSize(1200, 800)
-                ->waitUntilNetworkIdle()
-                ->deviceScaleFactor(2)
-                ->save("{$outputDir}/{$filename}");
+            $pdfPath = "{$outputDir}/" . Str::slug($participante->nombre_completo) . ".pdf";
+            $pngPath = "{$outputDir}/" . Str::slug($participante->nombre_completo) . ".png";
+
+            PDF::loadHTML($html)->setPaper('letter', $plantilla->orientacion === 'vertical' ? 'portrait' : 'landscape')->save($pdfPath);
+
+            // Convertir PDF a PNG con Imagick
+            $imagick = new \Imagick();
+            $imagick->setResolution(300, 300); // Alta calidad
+            $imagick->readImage($pdfPath);
+            $imagick->setImageFormat('png');
+            $imagick->writeImage($pngPath);
+            $imagick->clear();
+            $imagick->destroy();
+
+            // Opcional: borrar PDF temporal
+            unlink($pdfPath);
         }
 
-        // Crear el ZIP
+        // Crear ZIP
         $zipName = "Diplomas_{$folderName}.zip";
         $zipPath = storage_path("app/{$zipName}");
 
@@ -339,7 +344,6 @@ class CapacitacionController extends Controller
             $zip->close();
         }
 
-        // Descargar ZIP y borrar carpeta temporal
         return response()->download($zipPath)->deleteFileAfterSend(true);
     }
 }
