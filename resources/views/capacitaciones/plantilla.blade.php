@@ -311,18 +311,24 @@
                     <div class="card-body">
                         <div class="action-buttons">
                             <a href="{{ route('capacitaciones.diplomas.preview', $capacitacion->id) }}" target="_blank"
-                                class="action-btn preview">
-                                <i class="fas fa-eye"></i> Vista Previa
+                                class="action-btn preview" title="Ver cómo se verá el diploma">
+                                <i class="fas fa-eye"></i>
+                                <span>Vista Previa</span>
                             </a>
                             <a href="{{ route('capacitaciones.diplomas', $capacitacion->id) }}"
-                                class="action-btn generate">
-                                <i class="fas fa-certificate"></i> Generar Diplomas
+                                class="action-btn generate" title="Generar todos los diplomas en PDF">
+                                <i class="fas fa-file-pdf"></i>
+                                <span>Generar Diplomas PDF</span>
                             </a>
                             <a href="{{ route('capacitaciones.diplomas.imagenes', $capacitacion->id) }}"
-                                class="action-btn generate">
-                                <i class="fas fa-image"></i> Descargar Imágenes
+                                class="action-btn generate" style="background: #21c87a; color: #fff; border: none;" title="Generar todos los diplomas en PNG">
+                                <i class="fas fa-image"></i>
+                                <span>Generar Diplomas PNG</span>
                             </a>
-
+                        </div>
+                        <div style="margin-top: 1.5rem; text-align: center; color: #6c757d; font-size: 0.98rem;">
+                            <i class="fas fa-info-circle"></i>
+                            Puedes previsualizar el diploma antes de generar los archivos finales.
                         </div>
                     </div>
                 </div>

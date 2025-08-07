@@ -468,12 +468,9 @@
                         <p>Para asistencia personalizada, contacta a nuestro equipo de soporte:</p>
                         <p>
                             <i class="fas fa-envelope me-2"></i>
-                            <a href="mailto:soporte@ccisur.edu.hn" class="contact-link">soporte@ccisur.edu.hn</a>
+                            <a href="mailto:it@ccisur.org" class="contact-link">it@ccisur.org</a>
                         </p>
-                        <p>
-                            <i class="fas fa-phone me-2"></i>
-                            <a href="tel:+50412345678" class="contact-link">+504 1234-5678</a>
-                        </p>
+                       
                     </div>
                 </div>
                 <div class="modal-footer">
