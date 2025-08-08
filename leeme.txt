@@ -22,6 +22,16 @@ sudo netplan apply
 
 
 
-----DESCARGAR IMAGENES 
-composer require spatie/browsershot
+----Libreria para generar IMAGENES 
+-Instalar imagick y php-imagick en el servidor
+sudo apt update
+sudo apt install -y imagemagick php-imagick
+sudo service php8.4-fpm restart  
+-Verifica que esté disponible
+php -m | grep imagick
+
+
+----Ver errores de la VM
+sudo /usr/local/bin/net-watch.sh
+
 

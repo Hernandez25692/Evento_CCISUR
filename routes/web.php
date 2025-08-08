@@ -12,6 +12,8 @@ use App\Http\Controllers\CertificadoController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\DiplomaPublicoController;
 use App\Http\Controllers\PlantillaGlobalController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserPasswordController;
 
 
 //------------------------------------------------------------
@@ -20,6 +22,14 @@ use App\Http\Controllers\PlantillaGlobalController;
 Route::get('/', fn() => redirect()->route('login'))->name('home');
 require __DIR__ . '/auth.php';
 
+Route::middleware(['auth'])->group(function () {
+    // CRUD usuarios
+    Route::resource('usuarios', UserController::class)->except(['show']);
+
+    // Cambiar contraseña del usuario logueado
+    Route::get('perfil/password', [UserPasswordController::class, 'edit'])->name('password.edit');
+    Route::put('perfil/password', [UserPasswordController::class, 'update'])->name('password.update');
+});
 //------------------------------------------------------------
 // 🔒 RUTAS PROTEGIDAS (AUTENTICADO)
 //------------------------------------------------------------
