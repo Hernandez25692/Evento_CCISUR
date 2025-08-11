@@ -11,10 +11,10 @@ class AdminUserSeeder extends Seeder
     public function run(): void
     {
         DB::table('users')->updateOrInsert(
-            ['email' => 'ccisur@gmail.com'],
+            ['email' => 'asistenciasocios@ccisur.org'],
             [
-                'name' => 'Administrador CCISUR',
-                'password' => Hash::make('admin123ccisur'),
+                'name' => 'Aaron Espinal Reyes',
+                'password' => Hash::make('CCISUR2025'),
                 'email_verified_at' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
