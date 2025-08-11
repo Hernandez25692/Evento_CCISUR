@@ -158,7 +158,9 @@
         <div class="container">
             <a class="navbar-brand" href="{{ route('home') }}">
                 <img src="{{ asset('storage/logo/Logo-CCISUR.png') }}" alt="Logo">
-                CCISUR
+                <span>
+                    <span style="color: #FFD700; font-family: Arial, Arial Black, sans-serif; font-weight: 900; letter-spacing: 1px;">CCI</span><span style="color: #002147; font-family: Arial, Arial Black, sans-serif; font-weight: 900; letter-spacing: 1px;">SUR</span>
+                </span>
             </a>
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
                 data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false"
