@@ -10,9 +10,26 @@
         $anchoIn = $plantilla->fondo_width ? $plantilla->fondo_width / 96 : null;
         $altoIn = $plantilla->fondo_height ? $plantilla->fondo_height / 96 : null;
 
-        // Posiciones configurables de cada campo (o valores por defecto si
-        // la plantilla nunca se configuró en el editor de posiciones).
+        // Posiciones y estilos configurables de cada campo (o valores por
+        // defecto si la plantilla nunca se configuró en el editor).
         $campos = \App\Services\DiplomaCamposService::resolve($plantilla->campos ?? null);
+        $fuentes = \App\Services\DiplomaCamposService::FUENTES;
+
+        // Arma el bloque de estilo inline (posición + tipografía) de un campo.
+        $estiloCampo = function (string $clave) use ($campos, $fuentes) {
+            $c = $campos[$clave];
+            $fuente = $fuentes[$c['font_family']]['pdf'] ?? $fuentes['visby-light']['pdf'];
+
+            return sprintf(
+                'left:%s%%; top:%s%%; font-size:%dpx; font-family:%s; font-weight:%s; text-decoration:%s;',
+                $c['x'],
+                $c['y'],
+                $c['font_size'],
+                $fuente,
+                $c['bold'] ? 'bold' : 'normal',
+                $c['underline'] ? 'underline' : 'none'
+            );
+        };
     @endphp
     <style>
         @page {
@@ -42,9 +59,10 @@
             box-sizing: border-box;
         }
 
-        /* Cada campo se posiciona con left/top (en % del lienzo) definidos
-           inline por campo, ancla en su punto central para que el texto
-           crezca simétricamente si se ajusta a varias líneas. */
+        /* Cada campo se posiciona con left/top (en % del lienzo) y su
+           tipografía definidos inline por campo (ver $estiloCampo arriba),
+           anclado en su punto central para que el texto crezca
+           simétricamente si se ajusta a varias líneas. */
         .campo {
             position: absolute;
             transform: translate(-50%, -50%);
@@ -54,24 +72,8 @@
             line-height: 1.4;
         }
 
-        .titulo-secundario {
-            font-family: 'Visby-DemiBold';
-            line-height: 1.5;
-            word-wrap: break-word;
-        }
-
         .nombre {
-            font-family: 'Visby-Heavy';
-            font-weight: bold;
-        }
-
-        .info {
-            font-family: 'Visby-Light';
-        }
-
-        .actividad {
-            font-family: 'Visby-Heavy';
-            font-weight: bold;
+            color: #004aad;
         }
 
         .firma-box {
@@ -92,9 +94,7 @@
         }
 
         .firma-nombre {
-            font-family: 'Visby-DemiBold';
             margin-top: 0;
-            font-weight: bold;
         }
 
         .page-break {
@@ -108,8 +108,8 @@
         @php
             \Carbon\Carbon::setLocale('es');
             $fechaFormateada = \Carbon\Carbon::parse($plantilla->fecha_emision)->isoFormat('D [de] MMMM [de] YYYY');
-            $mostrarFirma1 = $plantilla->firma_1 && $plantilla->nombre_firma_1;
-            $mostrarFirma2 = $plantilla->firma_2 && $plantilla->nombre_firma_2;
+            $mostrarFirma1 = $plantilla->firma_1 && $plantilla->nombre_firma_1 && $campos['firma_1']['visible'];
+            $mostrarFirma2 = $plantilla->firma_2 && $plantilla->nombre_firma_2 && $campos['firma_2']['visible'];
 
             $qrTexto = route('certificados.validarQR') . '?identidad=' . $participante->identidad;
             $qrSvg = QrCode::format('svg')->size(100)->generate($qrTexto);
@@ -118,76 +118,70 @@
 
         <div class="diploma-container">
 
-            <div class="campo"
-                style="left:{{ $campos['titulo_secundario']['x'] }}%; top:{{ $campos['titulo_secundario']['y'] }}%; font-size:{{ $campos['titulo_secundario']['font_size'] }}px;">
-                <p class="titulo-secundario">
+            @if ($campos['titulo_secundario']['visible'])
+                <div class="campo" style="{{ $estiloCampo('titulo_secundario') }}">
                     @if ($plantilla->tipo_certificado === 'convenio')
                         {{ $plantilla->titulo_convenio ?? '---' }}
                     @else
                         La Cámara de Comercio e Industrias del Sur otorga el presente <br>certificado de
                         participación a:
                     @endif
-                </p>
-            </div>
-
-            <div class="campo" style="left:{{ $campos['nombre']['x'] }}%; top:{{ $campos['nombre']['y'] }}%;">
-                <div
-                    style="display: inline-block; border-bottom: 3px solid #000; padding: 0 30px; margin-bottom: 0.8rem;">
-                    <p class="nombre {{ $plantilla->tipo_certificado === 'generico' ? 'generico' : '' }}"
-                        style="color: #004aad; text-decoration: none; margin: 0; font-size:{{ $campos['nombre']['font_size'] }}px;">
-                        {{ $participante->nombre_completo }}
-                    </p>
                 </div>
-            </div>
+            @endif
 
-            <div class="campo"
-                style="left:{{ $campos['participacion']['x'] }}%; top:{{ $campos['participacion']['y'] }}%; font-size:{{ $campos['participacion']['font_size'] }}px;">
-                <p class="info">Por su participación en {{ $capacitacion->tipo_formacion ?? 'virtual' }}:</p>
-            </div>
+            @if ($campos['nombre']['visible'])
+                <div class="campo nombre" style="{{ $estiloCampo('nombre') }}">
+                    {{ $participante->nombre_completo }}
+                </div>
+            @endif
 
-            <div class="campo"
-                style="left:{{ $campos['actividad']['x'] }}%; top:{{ $campos['actividad']['y'] }}%; font-size:{{ $campos['actividad']['font_size'] }}px;">
-                <p class="actividad">"{{ $capacitacion->nombre }}"</p>
-            </div>
+            @if ($campos['participacion']['visible'])
+                <div class="campo" style="{{ $estiloCampo('participacion') }}">
+                    Por su participación en {{ $capacitacion->tipo_formacion ?? 'virtual' }}:
+                </div>
+            @endif
 
-            <div class="campo"
-                style="left:{{ $campos['modalidad_duracion']['x'] }}%; top:{{ $campos['modalidad_duracion']['y'] }}%; font-size:{{ $campos['modalidad_duracion']['font_size'] }}px;">
-                <p class="info">en modalidad {{ $capacitacion->modalidad ?? 'virtual' }} con duración de
-                    {{ $capacitacion->duracion ?? 'N horas' }} horas.</p>
-            </div>
+            @if ($campos['actividad']['visible'])
+                <div class="campo" style="{{ $estiloCampo('actividad') }}">
+                    "{{ $capacitacion->nombre }}"
+                </div>
+            @endif
 
-            <div class="campo"
-                style="left:{{ $campos['lugar_fecha']['x'] }}%; top:{{ $campos['lugar_fecha']['y'] }}%; font-size:{{ $campos['lugar_fecha']['font_size'] }}px;">
-                <p class="info">{{ $capacitacion->lugar }}, {{ $fechaFormateada }}.</p>
-            </div>
+            @if ($campos['modalidad_duracion']['visible'])
+                <div class="campo" style="{{ $estiloCampo('modalidad_duracion') }}">
+                    en modalidad {{ $capacitacion->modalidad ?? 'virtual' }} con duración de
+                    {{ $capacitacion->duracion ?? 'N horas' }} horas.
+                </div>
+            @endif
 
-            @if ($plantilla->tipo_certificado === 'generico')
-                <div class="campo"
-                    style="left:{{ $campos['impartido_por']['x'] }}%; top:{{ $campos['impartido_por']['y'] }}%; font-size:{{ $campos['impartido_por']['font_size'] }}px;">
-                    <p class="info"><strong>Impartido por: {{ $capacitacion->impartido_por }}</strong></p>
+            @if ($campos['lugar_fecha']['visible'])
+                <div class="campo" style="{{ $estiloCampo('lugar_fecha') }}">
+                    {{ $capacitacion->lugar }}, {{ $fechaFormateada }}.
+                </div>
+            @endif
+
+            @if ($plantilla->tipo_certificado === 'generico' && $campos['impartido_por']['visible'])
+                <div class="campo" style="{{ $estiloCampo('impartido_por') }}">
+                    Impartido por: {{ $capacitacion->impartido_por }}
                 </div>
             @endif
 
             {{-- Firmas --}}
             @if ($mostrarFirma1)
-                <div class="campo firma-box"
-                    style="left:{{ $campos['firma_1']['x'] }}%; top:{{ $campos['firma_1']['y'] }}%;">
+                <div class="campo firma-box" style="{{ $estiloCampo('firma_1') }}">
                     <img src="{{ storage_path('app/public/' . $plantilla->firma_1) }}" class="firma-img"
                         alt="Firma 1">
                     <div class="firma-linea"></div>
-                    <p class="firma-nombre" style="font-size:{{ $campos['firma_1']['font_size'] }}px;">
-                        {{ $plantilla->nombre_firma_1 }}</p>
+                    <p class="firma-nombre">{{ $plantilla->nombre_firma_1 }}</p>
                 </div>
             @endif
 
             @if ($mostrarFirma2)
-                <div class="campo firma-box"
-                    style="left:{{ $campos['firma_2']['x'] }}%; top:{{ $campos['firma_2']['y'] }}%;">
+                <div class="campo firma-box" style="{{ $estiloCampo('firma_2') }}">
                     <img src="{{ storage_path('app/public/' . $plantilla->firma_2) }}" class="firma-img"
                         alt="Firma 2">
                     <div class="firma-linea"></div>
-                    <p class="firma-nombre" style="font-size:{{ $campos['firma_2']['font_size'] }}px;">
-                        {{ $plantilla->nombre_firma_2 }}</p>
+                    <p class="firma-nombre">{{ $plantilla->nombre_firma_2 }}</p>
                 </div>
             @endif
 

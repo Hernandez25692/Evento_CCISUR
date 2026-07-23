@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+    <link rel="stylesheet" href="{{ asset('css/fonts-visby.css') }}">
+
     <div class="container py-4">
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
@@ -19,7 +21,9 @@
             <div class="card-body">
                 <x-diploma-campos-editor :image-url="asset('storage/' . $plantilla->fondo)"
                     :fondo-width="$plantilla->fondo_width" :fondo-height="$plantilla->fondo_height" :campos="$campos"
-                    :etiquetas="$etiquetas" :save-url="route('capacitaciones.plantilla.campos.store', $capacitacion->id)"
+                    :etiquetas="$etiquetas" :fuentes="$fuentes" :contenidos="$contenidos" :firmas="$firmas"
+                    :participantes="$participantes" :participante-inicial="$participanteInicial"
+                    :save-url="route('capacitaciones.plantilla.campos.store', $capacitacion->id)"
                     :back-url="route('capacitaciones.plantilla', $capacitacion->id)" />
             </div>
         </div>

@@ -152,10 +152,40 @@ class PlantillaGlobalController extends Controller
     {
         $plantilla = PlantillaGlobal::findOrFail($id);
 
+        // Una plantilla global no está ligada a una capacitación/participantes
+        // reales, así que la vista previa usa contenido de ejemplo.
+        $contenidos = [
+            'nombre' => 'Nombre del Participante',
+            'titulo_secundario' => $plantilla->tipo_certificado === 'convenio'
+                ? ($plantilla->titulo_convenio ?? '---')
+                : 'La Cámara de Comercio e Industrias del Sur otorga el presente certificado de participación a:',
+            'participacion' => 'Por su participación en la capacitación:',
+            'actividad' => '"Nombre de la Capacitación"',
+            'modalidad_duracion' => 'en modalidad virtual con duración de 20 horas.',
+            'lugar_fecha' => 'Comayagua, ' . now()->locale('es')->isoFormat('D [de] MMMM [de] YYYY') . '.',
+            'impartido_por' => 'Impartido por: Nombre del Facilitador',
+        ];
+
+        $firmas = [
+            'firma_1' => [
+                'url' => $plantilla->firma_1 ? asset('storage/' . $plantilla->firma_1) : null,
+                'nombre' => $plantilla->nombre_firma_1,
+            ],
+            'firma_2' => [
+                'url' => $plantilla->firma_2 ? asset('storage/' . $plantilla->firma_2) : null,
+                'nombre' => $plantilla->nombre_firma_2,
+            ],
+        ];
+
         return view('plantillas_globales.campos', [
             'plantilla' => $plantilla,
             'campos' => DiplomaCamposService::resolve($plantilla->campos),
             'etiquetas' => DiplomaCamposService::ETIQUETAS,
+            'fuentes' => DiplomaCamposService::FUENTES,
+            'contenidos' => $contenidos,
+            'firmas' => $firmas,
+            'participantes' => collect(),
+            'participanteInicial' => null,
         ]);
     }
 

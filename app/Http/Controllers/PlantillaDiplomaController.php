@@ -160,11 +160,46 @@ class PlantillaDiplomaController extends Controller
                 ->with('error', 'Primero debes guardar una plantilla con imagen de fondo.');
         }
 
+        $participantes = $capacitacion->participantes()
+            ->wherePivot('habilitado_diploma', true)
+            ->get(['participantes.id', 'participantes.nombre_completo']);
+
+        \Carbon\Carbon::setLocale('es');
+        $fechaFormateada = \Carbon\Carbon::parse($plantilla->fecha_emision)->isoFormat('D [de] MMMM [de] YYYY');
+
+        $contenidos = [
+            'nombre' => '(agrega participantes habilitados para previsualizar con un nombre real)',
+            'titulo_secundario' => $plantilla->tipo_certificado === 'convenio'
+                ? ($plantilla->titulo_convenio ?? '---')
+                : 'La Cámara de Comercio e Industrias del Sur otorga el presente certificado de participación a:',
+            'participacion' => 'Por su participación en ' . ($capacitacion->tipo_formacion ?? 'virtual') . ':',
+            'actividad' => '"' . $capacitacion->nombre . '"',
+            'modalidad_duracion' => 'en modalidad ' . ($capacitacion->modalidad ?? 'virtual') . ' con duración de ' . ($capacitacion->duracion ?? 'N horas') . ' horas.',
+            'lugar_fecha' => $capacitacion->lugar . ', ' . $fechaFormateada . '.',
+            'impartido_por' => 'Impartido por: ' . $capacitacion->impartido_por,
+        ];
+
+        $firmas = [
+            'firma_1' => [
+                'url' => $plantilla->firma_1 ? asset('storage/' . $plantilla->firma_1) : null,
+                'nombre' => $plantilla->nombre_firma_1,
+            ],
+            'firma_2' => [
+                'url' => $plantilla->firma_2 ? asset('storage/' . $plantilla->firma_2) : null,
+                'nombre' => $plantilla->nombre_firma_2,
+            ],
+        ];
+
         return view('capacitaciones.plantilla-campos', [
             'capacitacion' => $capacitacion,
             'plantilla' => $plantilla,
             'campos' => DiplomaCamposService::resolve($plantilla->campos),
             'etiquetas' => DiplomaCamposService::ETIQUETAS,
+            'fuentes' => DiplomaCamposService::FUENTES,
+            'contenidos' => $contenidos,
+            'firmas' => $firmas,
+            'participantes' => $participantes->pluck('nombre_completo', 'id'),
+            'participanteInicial' => $participantes->first()->id ?? null,
         ]);
     }
 

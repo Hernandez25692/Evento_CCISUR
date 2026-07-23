@@ -37,29 +37,49 @@ class DiplomaCamposService
     ];
 
     /**
-     * Posiciones por defecto (porcentaje del lienzo) calibradas para
-     * reproducir el layout fijo que el sistema usaba antes de que las
-     * posiciones fueran configurables. Cualquier plantilla sin "campos"
-     * guardados se sigue viendo igual que antes de este cambio.
+     * Fuentes permitidas por campo. Los nombres "pdf"/"web" son distintos
+     * porque la misma fuente está registrada con nombres diferentes en
+     * config/dompdf.php (para el PDF) y en public/css/fonts-visby.css
+     * (para el navegador) — la clave lógica evita que se desincronicen.
+     */
+    public const FUENTES = [
+        'visby-light' => ['label' => 'Visby Light', 'pdf' => 'Visby-Light', 'web' => 'VisbyCF-Light'],
+        'visby-demibold' => ['label' => 'Visby DemiBold', 'pdf' => 'Visby-DemiBold', 'web' => 'VisbyCF-DemiBold'],
+        'visby-heavy' => ['label' => 'Visby Heavy', 'pdf' => 'Visby-Heavy', 'web' => 'VisbyCF-Heavy'],
+        'helvetica' => ['label' => 'Helvetica (genérica)', 'pdf' => 'Helvetica, sans-serif', 'web' => 'Helvetica, Arial, sans-serif'],
+        'times' => ['label' => 'Times (genérica)', 'pdf' => 'Times, serif', 'web' => "'Times New Roman', Times, serif"],
+    ];
+
+    /**
+     * Posiciones y estilos por defecto (porcentaje del lienzo) calibrados
+     * para reproducir el layout fijo que el sistema usaba antes de que las
+     * posiciones/estilos fueran configurables. Cualquier plantilla sin
+     * "campos" guardados se sigue viendo casi igual que antes de este
+     * cambio (única diferencia intencional: "nombre" pasa de una caja con
+     * borde inferior a texto subrayado, ahora que el subrayado es un
+     * control genérico reusable en cualquier campo).
      */
     public static function defaults(): array
     {
         return [
-            'titulo_secundario'  => ['x' => 50, 'y' => 20, 'align' => 'center', 'font_size' => 20],
-            'nombre'              => ['x' => 50, 'y' => 34, 'align' => 'center', 'font_size' => 30],
-            'participacion'       => ['x' => 50, 'y' => 42, 'align' => 'center', 'font_size' => 20],
-            'actividad'           => ['x' => 50, 'y' => 47, 'align' => 'center', 'font_size' => 20],
-            'modalidad_duracion'  => ['x' => 50, 'y' => 52, 'align' => 'center', 'font_size' => 20],
-            'lugar_fecha'         => ['x' => 50, 'y' => 57, 'align' => 'center', 'font_size' => 20],
-            'impartido_por'       => ['x' => 50, 'y' => 62, 'align' => 'center', 'font_size' => 20],
-            'firma_1'             => ['x' => 30, 'y' => 88, 'align' => 'center', 'font_size' => 16],
-            'firma_2'             => ['x' => 70, 'y' => 88, 'align' => 'center', 'font_size' => 16],
+            'titulo_secundario'  => ['x' => 50, 'y' => 20, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-demibold', 'bold' => false, 'underline' => false, 'visible' => true],
+            'nombre'              => ['x' => 50, 'y' => 34, 'align' => 'center', 'font_size' => 30, 'font_family' => 'visby-heavy', 'bold' => true, 'underline' => true, 'visible' => true],
+            'participacion'       => ['x' => 50, 'y' => 42, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true],
+            'actividad'           => ['x' => 50, 'y' => 47, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-heavy', 'bold' => true, 'underline' => false, 'visible' => true],
+            'modalidad_duracion'  => ['x' => 50, 'y' => 52, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true],
+            'lugar_fecha'         => ['x' => 50, 'y' => 57, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true],
+            'impartido_por'       => ['x' => 50, 'y' => 62, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => true, 'underline' => false, 'visible' => true],
+            'firma_1'             => ['x' => 30, 'y' => 88, 'align' => 'center', 'font_size' => 16, 'font_family' => 'visby-demibold', 'bold' => true, 'underline' => false, 'visible' => true],
+            'firma_2'             => ['x' => 70, 'y' => 88, 'align' => 'center', 'font_size' => 16, 'font_family' => 'visby-demibold', 'bold' => true, 'underline' => false, 'visible' => true],
         ];
     }
 
     /**
-     * Combina las posiciones guardadas de una plantilla sobre los valores
-     * por defecto, campo por campo, e ignora cualquier clave desconocida.
+     * Combina las posiciones/estilos guardados de una plantilla sobre los
+     * valores por defecto, campo por campo, e ignora cualquier clave
+     * desconocida. Como el merge es genérico (por clave), cualquier
+     * propiedad nueva agregada a defaults() fluye automáticamente sin
+     * tener que tocar este método.
      */
     public static function resolve(?array $campos): array
     {
@@ -100,6 +120,12 @@ class DiplomaCamposService
                     ? $valores['align']
                     : 'center',
                 'font_size' => max(8, min(80, (int) ($valores['font_size'] ?? 20))),
+                'font_family' => array_key_exists($valores['font_family'] ?? null, self::FUENTES)
+                    ? $valores['font_family']
+                    : 'visby-light',
+                'bold' => filter_var($valores['bold'] ?? false, FILTER_VALIDATE_BOOLEAN),
+                'underline' => filter_var($valores['underline'] ?? false, FILTER_VALIDATE_BOOLEAN),
+                'visible' => filter_var($valores['visible'] ?? true, FILTER_VALIDATE_BOOLEAN),
             ];
         }
 
