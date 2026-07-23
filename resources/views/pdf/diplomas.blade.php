@@ -102,6 +102,11 @@
         .page-break {
             page-break-after: always;
         }
+
+        .qr-img {
+            position: absolute;
+            transform: translate(-50%, -50%);
+        }
     </style>
 </head>
 
@@ -111,8 +116,9 @@
             $mostrarFirma1 = $plantilla->firma_1 && $plantilla->nombre_firma_1 && $campos['firma_1']['visible'];
             $mostrarFirma2 = $plantilla->firma_2 && $plantilla->nombre_firma_2 && $campos['firma_2']['visible'];
 
-            $qrTexto = route('certificados.validarQR') . '?identidad=' . $participante->identidad;
-            $qrSvg = QrCode::format('svg')->size(100)->generate($qrTexto);
+            $codigoVerificacion = \App\Services\VerificacionDiplomaService::codigoPara($capacitacion->id, $participante->id);
+            $qrTexto = route('diplomas.verificar', $codigoVerificacion);
+            $qrSvg = QrCode::format('svg')->size(300)->generate($qrTexto);
             $qrBase64 = base64_encode($qrSvg);
         @endphp
 
@@ -180,9 +186,11 @@
             @endif
 
             {{-- QR --}}
-            {{--
-            <img src="data:image/svg+xml;base64,{{ $qrBase64 }}" class="qr" alt="QR">
-            --}}
+            @if ($campos['qr_verificacion']['visible'])
+                <img src="data:image/svg+xml;base64,{{ $qrBase64 }}" class="qr-img"
+                    style="left:{{ $campos['qr_verificacion']['x'] }}%; top:{{ $campos['qr_verificacion']['y'] }}%; width:{{ $campos['qr_verificacion']['font_size'] }}px; height:{{ $campos['qr_verificacion']['font_size'] }}px;"
+                    alt="Código QR de verificación">
+            @endif
 
         </div>
 

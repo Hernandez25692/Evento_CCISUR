@@ -10,6 +10,7 @@
     'defaults' => [],
     'participantes' => [],
     'participanteInicial' => null,
+    'qrPreview' => null,
     'saveUrl',
     'backUrl' => null,
 ])
@@ -24,6 +25,7 @@
         defaults: @js($defaults),
         participantes: @js($participantes),
         participanteId: @js($participanteInicial),
+        qrPreview: @js($qrPreview),
         fondoWidth: {{ $fondoWidth ?? 0 }},
         dragging: null,
         seleccionado: null,
@@ -49,8 +51,12 @@
             return clave === 'firma_1' || clave === 'firma_2';
         },
 
+        esQr(clave) {
+            return clave === 'qr_verificacion';
+        },
+
         esEditable(clave) {
-            return clave !== 'nombre' && !this.esFirma(clave);
+            return clave !== 'nombre' && !this.esFirma(clave) && !this.esQr(clave);
         },
 
         contenidoDe(clave) {
@@ -77,6 +83,9 @@
             // el resultado final, en vez de una sola línea siempre.
             if (this.esFirma(clave)) {
                 base += `width:${Math.round(220 * this.escala)}px;`;
+            } else if (this.esQr(clave)) {
+                const lado = Math.max(16, Math.round((c.font_size || 90) * this.escala));
+                base += `width:${lado}px; height:${lado}px;`;
             } else {
                 base += `max-width:80%; white-space:normal; line-height:1.4;`;
             }
@@ -237,6 +246,10 @@
             opacity: .35;
         }
 
+        .campo-handle.es-qr {
+            outline: 1px dashed rgba(37, 99, 235, .65);
+        }
+
         .campo-handle.seleccionado {
             outline: 2px solid #2563eb;
             outline-offset: 2px;
@@ -320,11 +333,11 @@
 
         <template x-for="clave in Object.keys(campos)" :key="clave">
             <div class="campo-handle"
-                :class="{ 'oculto': !campos[clave].visible, 'es-texto': !esFirma(clave), 'seleccionado': seleccionado === clave }"
+                :class="{ 'oculto': !campos[clave].visible, 'es-texto': !esFirma(clave) && !esQr(clave), 'es-qr': esQr(clave), 'seleccionado': seleccionado === clave }"
                 @pointerdown="iniciarArrastre(clave, $event)" @touchstart="iniciarArrastre(clave, $event)"
                 @click.stop :style="estiloBadge(clave)">
 
-                <template x-if="!esFirma(clave)">
+                <template x-if="!esFirma(clave) && !esQr(clave)">
                     <span x-text="contenidoDe(clave)"></span>
                 </template>
 
@@ -339,6 +352,11 @@
                         <div class="firma-nombre-preview"
                             x-text="(firmas[clave] && firmas[clave].nombre) || 'Nombre del firmante'"></div>
                     </div>
+                </template>
+
+                <template x-if="esQr(clave)">
+                    <img :src="qrPreview" draggable="false" style="width:100%; height:100%; display:block;"
+                        alt="Vista previa del QR de verificación">
                 </template>
             </div>
         </template>
@@ -377,12 +395,12 @@
                     </div>
                     <div class="flex-fill">
                         <label class="d-block" style="font-size:10px;">Tamaño</label>
-                        <input type="number" min="8" max="80" step="1" class="form-control form-control-sm"
+                        <input type="number" min="8" max="200" step="1" class="form-control form-control-sm"
                             x-model.number="campos[seleccionado].font_size">
                     </div>
                 </div>
 
-                <div class="mb-2">
+                <div class="mb-2" x-show="!esQr(seleccionado)">
                     <label class="d-block" style="font-size:10px;">Fuente</label>
                     <select class="form-select form-select-sm" x-model="campos[seleccionado].font_family"
                         x-init="$nextTick(() => { if (seleccionado) $el.value = campos[seleccionado].font_family })">
@@ -392,7 +410,7 @@
                     </select>
                 </div>
 
-                <div class="d-flex gap-3 align-items-end mb-2">
+                <div class="d-flex gap-3 align-items-end mb-2" x-show="!esQr(seleccionado)">
                     <div>
                         <label class="d-block" style="font-size:10px;">Color</label>
                         <input type="color" class="form-control form-control-color form-control-sm"
@@ -417,7 +435,7 @@
                     </div>
                 </div>
 
-                <div class="d-flex gap-3 mb-2">
+                <div class="d-flex gap-3 mb-2" x-show="!esQr(seleccionado)">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" x-model="campos[seleccionado].bold"
                             id="pop-bold">

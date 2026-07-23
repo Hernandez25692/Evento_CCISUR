@@ -131,6 +131,7 @@ Route::post('/password/reset-with-code', [ResetCodeController::class, 'resetPass
 Route::get('/verificar-diploma', [DiplomaPublicoController::class, 'index'])->name('diploma.publico.index');
 Route::post('/verificar-diploma', [DiplomaPublicoController::class, 'buscar'])->name('diploma.publico.buscar');
 Route::get('/diplomas/descargar/{capacitacion_id}/{identidad}', [DiplomaPublicoController::class, 'descargar'])->name('diplomas.descargar');
+Route::get('/diplomas/verificar/{codigo}', [DiplomaPublicoController::class, 'verificar'])->name('diplomas.verificar');
 
 // Certificados públicos
 Route::get('/buscar-certificados', [CertificadoController::class, 'buscar'])->name('certificados.buscar');

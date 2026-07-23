@@ -19,6 +19,7 @@ class DiplomaCamposService
         'impartido_por',
         'firma_1',
         'firma_2',
+        'qr_verificacion',
     ];
 
     /**
@@ -34,6 +35,7 @@ class DiplomaCamposService
         'impartido_por' => 'Impartido por',
         'firma_1' => 'Firma 1 (imagen y nombre)',
         'firma_2' => 'Firma 2 (imagen y nombre)',
+        'qr_verificacion' => 'Código QR de verificación',
     ];
 
     /**
@@ -71,6 +73,10 @@ class DiplomaCamposService
             'impartido_por'       => ['x' => 50, 'y' => 62, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => ''],
             'firma_1'             => ['x' => 30, 'y' => 88, 'align' => 'center', 'font_size' => 16, 'font_family' => 'visby-demibold', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => ''],
             'firma_2'             => ['x' => 70, 'y' => 88, 'align' => 'center', 'font_size' => 16, 'font_family' => 'visby-demibold', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => ''],
+            // 'font_size' se reutiliza como el tamaño en píxeles del cuadro
+            // del QR (mismo patrón que el ancho fijo de las firmas, pero
+            // configurable como cualquier otro campo).
+            'qr_verificacion'     => ['x' => 88, 'y' => 90, 'align' => 'center', 'font_size' => 90, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => ''],
         ];
     }
 
@@ -143,7 +149,7 @@ class DiplomaCamposService
                 'align' => in_array($valores['align'] ?? 'center', ['left', 'center', 'right'], true)
                     ? $valores['align']
                     : 'center',
-                'font_size' => max(8, min(80, (int) ($valores['font_size'] ?? 20))),
+                'font_size' => max(8, min(200, (int) ($valores['font_size'] ?? 20))),
                 'font_family' => array_key_exists($valores['font_family'] ?? null, self::FUENTES)
                     ? $valores['font_family']
                     : 'visby-light',

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\PlantillaGlobal;
 use App\Services\DiplomaCamposService;
 use Illuminate\Support\Facades\Storage;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class PlantillaGlobalController extends Controller
 {
@@ -179,6 +180,12 @@ class PlantillaGlobalController extends Controller
             ],
         ];
 
+        // Una plantilla global nunca está ligada a un diploma real, así que
+        // el QR de previsualización solo sirve para posicionar/dimensionar
+        // el campo (nunca se escanea de verdad).
+        $qrPreview = 'data:image/svg+xml;base64,'
+            . base64_encode(QrCode::format('svg')->size(200)->generate(route('diplomas.verificar', 'demo')));
+
         return view('plantillas_globales.campos', [
             'plantilla' => $plantilla,
             'campos' => DiplomaCamposService::resolve($plantilla->campos),
@@ -189,6 +196,7 @@ class PlantillaGlobalController extends Controller
             'firmas' => $firmas,
             'participantes' => collect(),
             'participanteInicial' => null,
+            'qrPreview' => $qrPreview,
         ]);
     }
 

@@ -9,6 +9,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use App\Models\PlantillaGlobal;
 use App\Services\DiplomaCamposService;
+use App\Services\VerificacionDiplomaService;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class PlantillaDiplomaController extends Controller
 {
@@ -178,6 +180,15 @@ class PlantillaDiplomaController extends Controller
             ],
         ];
 
+        // QR de muestra para el editor: el contenido codificado no cambia
+        // el aspecto visual del QR, así que un solo QR (apuntando a la URL
+        // real de verificación del primer participante, si hay alguno)
+        // sirve para posicionar/dimensionar el campo.
+        $urlQrPreview = $participantes->first()
+            ? route('diplomas.verificar', VerificacionDiplomaService::codigoPara($capacitacion->id, $participantes->first()->id))
+            : route('diplomas.verificar', 'demo');
+        $qrPreview = 'data:image/svg+xml;base64,' . base64_encode(QrCode::format('svg')->size(200)->generate($urlQrPreview));
+
         return view('capacitaciones.plantilla-campos', [
             'capacitacion' => $capacitacion,
             'plantilla' => $plantilla,
@@ -189,6 +200,7 @@ class PlantillaDiplomaController extends Controller
             'firmas' => $firmas,
             'participantes' => $participantes->pluck('nombre_completo', 'id'),
             'participanteInicial' => $participantes->first()->id ?? null,
+            'qrPreview' => $qrPreview,
         ]);
     }
 
