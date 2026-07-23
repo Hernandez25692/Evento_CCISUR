@@ -8,6 +8,7 @@ use App\Models\Capacitacion;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use App\Models\PlantillaGlobal;
+use App\Services\DiplomaCamposService;
 
 class PlantillaDiplomaController extends Controller
 {
@@ -131,6 +132,9 @@ class PlantillaDiplomaController extends Controller
             ['capacitacion_id' => $capacitacion_id],
             [
                 'fondo' => $global->fondo,
+                'fondo_width' => $global->fondo_width,
+                'fondo_height' => $global->fondo_height,
+                'campos' => $global->campos,
                 'firma_1' => $global->firma_1,
                 'firma_2' => $global->firma_2,
                 'nombre_firma_1' => $global->nombre_firma_1,
@@ -144,5 +148,39 @@ class PlantillaDiplomaController extends Controller
 
         return redirect()->route('capacitaciones.configuracion.plantilla', $capacitacion_id)
             ->with('success', 'Plantilla global aplicada correctamente.');
+    }
+
+    public function editorCampos($capacitacion_id)
+    {
+        $capacitacion = Capacitacion::with('plantilla')->findOrFail($capacitacion_id);
+        $plantilla = $capacitacion->plantilla;
+
+        if (!$plantilla || !$plantilla->fondo) {
+            return redirect()->route('capacitaciones.plantilla', $capacitacion_id)
+                ->with('error', 'Primero debes guardar una plantilla con imagen de fondo.');
+        }
+
+        return view('capacitaciones.plantilla-campos', [
+            'capacitacion' => $capacitacion,
+            'plantilla' => $plantilla,
+            'campos' => DiplomaCamposService::resolve($plantilla->campos),
+            'etiquetas' => DiplomaCamposService::ETIQUETAS,
+        ]);
+    }
+
+    public function guardarCampos(Request $request, $capacitacion_id)
+    {
+        $request->validate([
+            'campos' => 'required|string',
+        ]);
+
+        $plantilla = Plantilla::where('capacitacion_id', $capacitacion_id)->firstOrFail();
+
+        $campos = json_decode($request->input('campos'), true) ?? [];
+        $plantilla->campos = DiplomaCamposService::sanitize($campos);
+        $plantilla->save();
+
+        return redirect()->route('capacitaciones.plantilla.campos', $capacitacion_id)
+            ->with('success', '✅ Posiciones guardadas correctamente.');
     }
 }

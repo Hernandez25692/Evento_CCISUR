@@ -24,4 +24,8 @@ return [
     'isHtml5ParserEnabled' => true,
     'isRemoteEnabled' => true,
 
+    // Sube la resolución de rasterizado (por defecto dompdf usa 96) para que
+    // las plantillas de diploma no se vean borrosas al exportar.
+    'dpi' => 200,
+
 ];

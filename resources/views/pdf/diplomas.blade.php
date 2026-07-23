@@ -5,15 +5,22 @@
     <meta charset="UTF-8">
     <title>Diploma de Participación</title>
     @php
-        $fonts = [
-            'DemiBold' => public_path('fonts/visby/VisbyCF-DemiBold.otf'),
-            'Heavy' => public_path('fonts/visby/VisbyCF-Heavy.otf'),
-            'Light' => public_path('fonts/visby/VisbyCF-Light.otf'),
-        ];
+        // Dimensiones reales de la plantilla (si se conocen) para que el PDF
+        // respete su proporción en vez de forzar siempre tamaño "letter".
+        $anchoIn = $plantilla->fondo_width ? $plantilla->fondo_width / 96 : null;
+        $altoIn = $plantilla->fondo_height ? $plantilla->fondo_height / 96 : null;
+
+        // Posiciones configurables de cada campo (o valores por defecto si
+        // la plantilla nunca se configuró en el editor de posiciones).
+        $campos = \App\Services\DiplomaCamposService::resolve($plantilla->campos ?? null);
     @endphp
     <style>
         @page {
-            size: letter {{ $plantilla->orientacion == 'vertical' ? 'portrait' : 'landscape' }};
+            @if ($anchoIn && $altoIn)
+                size: {{ $anchoIn }}in {{ $altoIn }}in;
+            @else
+                size: letter {{ $plantilla->orientacion == 'vertical' ? 'portrait' : 'landscape' }};
+            @endif
             margin: 0;
         }
 
@@ -22,86 +29,52 @@
             margin: 0;
             padding: 0;
             background-image: url('{{ public_path("storage/{$plantilla->fondo}") }}');
-            background-size: cover;
+            background-size: {{ $anchoIn && $altoIn ? '100% 100%' : 'cover' }};
             background-position: center;
             background-repeat: no-repeat;
             color: #000;
         }
 
         .diploma-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            text-align: center;
-            height: 100vh;
-            padding: 2rem 6rem 6rem;
-            box-sizing: border-box;
             position: relative;
+            width: 100%;
+            height: 100vh;
+            box-sizing: border-box;
         }
 
-        .logo {
-            width: 380px;
-            height: auto;
-            margin-bottom: 0;
+        /* Cada campo se posiciona con left/top (en % del lienzo) definidos
+           inline por campo, ancla en su punto central para que el texto
+           crezca simétricamente si se ajusta a varias líneas. */
+        .campo {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            max-width: 80%;
+            white-space: normal;
+            line-height: 1.4;
         }
 
         .titulo-secundario {
             font-family: 'Visby-DemiBold';
-            font-size: 20px;
-            margin-bottom: 1.8rem;
-            max-width: 85%;
             line-height: 1.5;
             word-wrap: break-word;
-            white-space: normal;
-            display: inline-block;
-            text-align: center;
-        }
-
-        .titulo-principal {
-            font-size: 30px;
-            font-weight: bold;
-            margin-bottom: 1.5rem;
         }
 
         .nombre {
             font-family: 'Visby-Heavy';
-            font-size: 30px;
             font-weight: bold;
-            margin: 0.8rem 0;
-        }
-
-        .nombre.generico {
-            color: #004aad;
-            text-decoration: underline;
         }
 
         .info {
             font-family: 'Visby-Light';
-            font-size: 20px;
-            margin: 0.5rem 0;
         }
 
         .actividad {
             font-family: 'Visby-Heavy';
-            font-size: 20px;
             font-weight: bold;
-            margin: 1rem 0;
-        }
-
-        .firmas-nombres {
-            position: absolute;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            justify-content: center;
-            gap: 100px;
         }
 
         .firma-box {
-            display: inline-block;
-            text-align: center;
             width: 220px;
         }
 
@@ -120,26 +93,14 @@
 
         .firma-nombre {
             font-family: 'Visby-DemiBold';
-            font-size: 16px;
             margin-top: 0;
             font-weight: bold;
-        }
-
-        .qr {
-            position: absolute;
-            bottom: 100px;
-            right: 190px;
-            width: 60px;
-            opacity: 0.9;
         }
 
         .page-break {
             page-break-after: always;
         }
     </style>
-
-
-
 </head>
 
 <body>
@@ -156,60 +117,84 @@
         @endphp
 
         <div class="diploma-container">
-            <br><br><br><br><br><br><br><br>
 
-            <p class="titulo-secundario">
-                @if ($plantilla->tipo_certificado === 'convenio')
-                    {{ $plantilla->titulo_convenio ?? '---' }}
-                @else
-                    La Cámara de Comercio e Industrias del Sur otorga el presente <br>certificado de participación a:
-                @endif
-            </p>
-
-            <br>
-
-            <div style="display: inline-block; border-bottom: 3px solid #000; padding: 0 30px; margin-bottom: 0.8rem;">
-                <p class="nombre {{ $plantilla->tipo_certificado === 'generico' ? 'generico' : '' }}"
-                    style="color: #004aad; text-decoration: none; margin: 0;">
-                    {{ $participante->nombre_completo }}
+            <div class="campo"
+                style="left:{{ $campos['titulo_secundario']['x'] }}%; top:{{ $campos['titulo_secundario']['y'] }}%; font-size:{{ $campos['titulo_secundario']['font_size'] }}px;">
+                <p class="titulo-secundario">
+                    @if ($plantilla->tipo_certificado === 'convenio')
+                        {{ $plantilla->titulo_convenio ?? '---' }}
+                    @else
+                        La Cámara de Comercio e Industrias del Sur otorga el presente <br>certificado de
+                        participación a:
+                    @endif
                 </p>
             </div>
 
-            <p class="info">Por su participación en {{ $capacitacion->tipo_formacion ?? 'virtual' }}:</p>
-            <p class="actividad">"{{ $capacitacion->nombre }}"</p>
-            <p class="info">en modalidad {{ $capacitacion->modalidad ?? 'virtual' }} con duración de
-                {{ $capacitacion->duracion ?? 'N horas' }} horas.</p>
-            <p class="info">{{ $capacitacion->lugar }}, {{ $fechaFormateada }}.</p>
+            <div class="campo" style="left:{{ $campos['nombre']['x'] }}%; top:{{ $campos['nombre']['y'] }}%;">
+                <div
+                    style="display: inline-block; border-bottom: 3px solid #000; padding: 0 30px; margin-bottom: 0.8rem;">
+                    <p class="nombre {{ $plantilla->tipo_certificado === 'generico' ? 'generico' : '' }}"
+                        style="color: #004aad; text-decoration: none; margin: 0; font-size:{{ $campos['nombre']['font_size'] }}px;">
+                        {{ $participante->nombre_completo }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="campo"
+                style="left:{{ $campos['participacion']['x'] }}%; top:{{ $campos['participacion']['y'] }}%; font-size:{{ $campos['participacion']['font_size'] }}px;">
+                <p class="info">Por su participación en {{ $capacitacion->tipo_formacion ?? 'virtual' }}:</p>
+            </div>
+
+            <div class="campo"
+                style="left:{{ $campos['actividad']['x'] }}%; top:{{ $campos['actividad']['y'] }}%; font-size:{{ $campos['actividad']['font_size'] }}px;">
+                <p class="actividad">"{{ $capacitacion->nombre }}"</p>
+            </div>
+
+            <div class="campo"
+                style="left:{{ $campos['modalidad_duracion']['x'] }}%; top:{{ $campos['modalidad_duracion']['y'] }}%; font-size:{{ $campos['modalidad_duracion']['font_size'] }}px;">
+                <p class="info">en modalidad {{ $capacitacion->modalidad ?? 'virtual' }} con duración de
+                    {{ $capacitacion->duracion ?? 'N horas' }} horas.</p>
+            </div>
+
+            <div class="campo"
+                style="left:{{ $campos['lugar_fecha']['x'] }}%; top:{{ $campos['lugar_fecha']['y'] }}%; font-size:{{ $campos['lugar_fecha']['font_size'] }}px;">
+                <p class="info">{{ $capacitacion->lugar }}, {{ $fechaFormateada }}.</p>
+            </div>
 
             @if ($plantilla->tipo_certificado === 'generico')
-                <p class="info"><strong>Impartido por: {{ $capacitacion->impartido_por }}</strong></p>
+                <div class="campo"
+                    style="left:{{ $campos['impartido_por']['x'] }}%; top:{{ $campos['impartido_por']['y'] }}%; font-size:{{ $campos['impartido_por']['font_size'] }}px;">
+                    <p class="info"><strong>Impartido por: {{ $capacitacion->impartido_por }}</strong></p>
+                </div>
             @endif
 
             {{-- Firmas --}}
-            <div class="firmas-nombres">
-                @if ($mostrarFirma1)
-                    <div class="firma-box">
-                        <img src="{{ storage_path('app/public/' . $plantilla->firma_1) }}" class="firma-img"
-                            alt="Firma 1">
-                        <div class="firma-linea"></div>
-                        <p class="firma-nombre">{{ $plantilla->nombre_firma_1 }}</p>
-                    </div>
-                @endif
+            @if ($mostrarFirma1)
+                <div class="campo firma-box"
+                    style="left:{{ $campos['firma_1']['x'] }}%; top:{{ $campos['firma_1']['y'] }}%;">
+                    <img src="{{ storage_path('app/public/' . $plantilla->firma_1) }}" class="firma-img"
+                        alt="Firma 1">
+                    <div class="firma-linea"></div>
+                    <p class="firma-nombre" style="font-size:{{ $campos['firma_1']['font_size'] }}px;">
+                        {{ $plantilla->nombre_firma_1 }}</p>
+                </div>
+            @endif
 
-                @if ($mostrarFirma2)
-                    <div class="firma-box">
-                        <img src="{{ storage_path('app/public/' . $plantilla->firma_2) }}" class="firma-img"
-                            alt="Firma 2">
-                        <div class="firma-linea"></div>
-                        <p class="firma-nombre">{{ $plantilla->nombre_firma_2 }}</p>
-                    </div>
-                @endif
-            </div>
-           
-           {{-- QR --}}
-           {{--
-           <img src="data:image/svg+xml;base64,{{ $qrBase64 }}" class="qr" alt="QR">
-           --}}
+            @if ($mostrarFirma2)
+                <div class="campo firma-box"
+                    style="left:{{ $campos['firma_2']['x'] }}%; top:{{ $campos['firma_2']['y'] }}%;">
+                    <img src="{{ storage_path('app/public/' . $plantilla->firma_2) }}" class="firma-img"
+                        alt="Firma 2">
+                    <div class="firma-linea"></div>
+                    <p class="firma-nombre" style="font-size:{{ $campos['firma_2']['font_size'] }}px;">
+                        {{ $plantilla->nombre_firma_2 }}</p>
+                </div>
+            @endif
+
+            {{-- QR --}}
+            {{--
+            <img src="data:image/svg+xml;base64,{{ $qrBase64 }}" class="qr" alt="QR">
+            --}}
 
         </div>
 

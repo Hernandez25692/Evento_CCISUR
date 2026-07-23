@@ -155,6 +155,14 @@
             <a href="{{ route('plantillas-globales.index') }}" class="custom-btn-secondary">Cancelar</a>
         </div>
     </form>
+
+    @if ($plantilla->fondo)
+        <div class="text-center mt-3">
+            <a href="{{ route('plantillas-globales.campos', $plantilla->id) }}" class="custom-btn-secondary">
+                <i class="fas fa-arrows-alt"></i> Posicionar Campos
+            </a>
+        </div>
+    @endif
 </div>
 
 <script>

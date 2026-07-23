@@ -64,6 +64,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('capacitaciones/{id}/plantilla', [CapacitacionController::class, 'agregarPlantilla'])->name('capacitaciones.plantilla');
     Route::post('capacitaciones/{id}/plantilla', [CapacitacionController::class, 'guardarPlantilla'])->name('capacitaciones.plantilla.store');
     Route::get('capacitaciones/{id}/plantilla/configurar', [PlantillaDiplomaController::class, 'configuracionPlantilla'])->name('capacitaciones.configuracion.plantilla');
+    Route::get('capacitaciones/{id}/plantilla/campos', [PlantillaDiplomaController::class, 'editorCampos'])->name('capacitaciones.plantilla.campos');
+    Route::post('capacitaciones/{id}/plantilla/campos', [PlantillaDiplomaController::class, 'guardarCampos'])->name('capacitaciones.plantilla.campos.store');
     Route::get('capacitaciones/{id}/diplomas', [CapacitacionController::class, 'generarDiplomas'])->name('capacitaciones.diplomas');
     Route::get('capacitaciones/{id}/diplomas/preview', [CapacitacionController::class, 'vistaPreviaDiploma'])->name('capacitaciones.diplomas.preview');
 
@@ -91,6 +93,27 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reportes/capacitaciones', [ReporteController::class, 'index'])->name('reportes.capacitaciones');
     Route::get('/reportes/capacitaciones/exportar', [ReporteController::class, 'exportarExcel'])->name('reportes.capacitaciones.exportar');
     Route::get('/reportes/capacitaciones/exportar', [ReporteController::class, 'exportarExcel'])->name('reportes.capacitaciones.export');
+
+    //--------------------------------------------------------
+    // 🧾 PLANTILLAS GLOBALES (gestión, requiere sesión)
+    //--------------------------------------------------------
+    Route::prefix('plantillas-globales')->name('plantillas-globales.')->group(function () {
+        Route::get('/', [PlantillaGlobalController::class, 'index'])->name('index');
+        Route::get('/crear', [PlantillaGlobalController::class, 'create'])->name('create');
+        Route::post('/guardar', [PlantillaGlobalController::class, 'store'])->name('store');
+        Route::get('/{id}/editar', [PlantillaGlobalController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [PlantillaGlobalController::class, 'update'])->name('update');
+        Route::delete('/{id}', [PlantillaGlobalController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/campos', [PlantillaGlobalController::class, 'editorCampos'])->name('campos');
+        Route::post('/{id}/campos', [PlantillaGlobalController::class, 'guardarCampos'])->name('campos.store');
+        Route::get('/{id}/datos', [PlantillaGlobalController::class, 'datos'])->name('datos');
+    });
+
+    Route::post('capacitaciones/{id}/plantilla/importar-global', [PlantillaDiplomaController::class, 'importarDesdePlantillaGlobal'])
+        ->name('capacitaciones.plantilla.importar-global');
+
+    Route::get('/capacitaciones/{id}/diplomas-imagenes', [CapacitacionController::class, 'descargarDiplomasImagenes'])
+        ->name('capacitaciones.diplomas.imagenes');
 });
 
 //------------------------------------------------------------
@@ -117,21 +140,3 @@ Route::get('/certificados/{capacitacion}/{participante}/descargar', [Certificado
 
 // Validar Certificados QR
 Route::get('/validar_qr', [CertificadoController::class, 'validarQR'])->name('certificados.validarQR');
-
-Route::prefix('plantillas-globales')->name('plantillas-globales.')->group(function () {
-    Route::get('/', [PlantillaGlobalController::class, 'index'])->name('index');
-    Route::get('/crear', [PlantillaGlobalController::class, 'create'])->name('create');
-    Route::post('/guardar', [PlantillaGlobalController::class, 'store'])->name('store');
-    Route::get('/{id}/editar', [PlantillaGlobalController::class, 'edit'])->name('edit');
-    Route::put('/{id}', [PlantillaGlobalController::class, 'update'])->name('update');
-    Route::delete('/{id}', [PlantillaGlobalController::class, 'destroy'])->name('destroy');
-});
-
-Route::post('capacitaciones/{id}/plantilla/importar-global', [PlantillaDiplomaController::class, 'importarDesdePlantillaGlobal'])
-    ->name('capacitaciones.plantilla.importar-global');
-
-Route::get('/plantillas-globales/{id}/datos', [\App\Http\Controllers\PlantillaGlobalController::class, 'datos'])
-    ->name('plantillas-globales.datos');
-
-Route::get('/capacitaciones/{id}/diplomas-imagenes', [CapacitacionController::class, 'descargarDiplomasImagenes'])
-    ->name('capacitaciones.diplomas.imagenes');

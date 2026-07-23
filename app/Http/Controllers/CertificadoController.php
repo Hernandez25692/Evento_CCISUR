@@ -6,6 +6,7 @@ use App\Models\Participante;
 use Illuminate\Http\Request;
 use App\Models\Capacitacion;
 use Illuminate\Support\Facades\Storage;
+use App\Services\DiplomaCamposService;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class CertificadoController extends Controller
@@ -62,8 +63,11 @@ class CertificadoController extends Controller
         // Usamos la misma vista que en la vista previa, pero con un solo participante
         $participantes = collect([$participante]);
 
+        $papel = DiplomaCamposService::paperSize($plantilla->fondo_width, $plantilla->fondo_height);
+        $orientacion = $papel['orientation'] ?? ($plantilla->orientacion == 'vertical' ? 'portrait' : 'landscape');
+
         $pdf = Pdf::loadView('pdf.diplomas', compact('participantes', 'plantilla', 'capacitacion'))
-            ->setPaper('letter', $plantilla->orientacion == 'vertical' ? 'portrait' : 'landscape');
+            ->setPaper($papel['size'], $orientacion);
 
         return $pdf->download("Diploma_{$participante->identidad}.pdf");
     }

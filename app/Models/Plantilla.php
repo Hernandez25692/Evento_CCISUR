@@ -14,13 +14,19 @@ class Plantilla extends Model
         'firma_1',
         'firma_2',
         'fondo',
+        'fondo_width',
+        'fondo_height',
         'fecha_emision',
         'orientacion',
         'nombre_firma_1',
         'nombre_firma_2',
         'titulo_convenio',
         'tipo_certificado',
+        'campos',
+    ];
 
+    protected $casts = [
+        'campos' => 'array',
     ];
 
 

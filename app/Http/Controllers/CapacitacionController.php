@@ -12,6 +12,7 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Support\Str;
 use App\Models\PlantillaGlobal;
+use App\Services\DiplomaCamposService;
 use Spatie\Browsershot\Browsershot;
 use ZipArchive;
 
@@ -223,16 +224,26 @@ class CapacitacionController extends Controller
         }
 
         // Fondo
-        // Fondo
         if ($request->hasFile('fondo')) {
             // Usuario subió nuevo fondo
             if ($plantilla->fondo) {
                 Storage::delete('public/' . $plantilla->fondo);
             }
             $plantilla->fondo = $request->file('fondo')->store('plantillas', 'public');
+
+            [$ancho, $alto] = getimagesize($request->file('fondo')->getRealPath()) ?: [null, null];
+            $plantilla->fondo_width = $ancho;
+            $plantilla->fondo_height = $alto;
         } elseif ($request->filled('fondo_actual')) {
             // Se mantuvo el fondo de la plantilla global
             $plantilla->fondo = str_replace(asset('storage') . '/', '', $request->input('fondo_actual'));
+
+            $rutaFondo = Storage::disk('public')->path($plantilla->fondo);
+            if (Storage::disk('public')->exists($plantilla->fondo)) {
+                [$ancho, $alto] = getimagesize($rutaFondo) ?: [null, null];
+                $plantilla->fondo_width = $ancho;
+                $plantilla->fondo_height = $alto;
+            }
         }
 
 
@@ -252,12 +263,13 @@ class CapacitacionController extends Controller
             ->get();
 
         $orientacion = $plantilla->orientacion === 'vertical' ? 'portrait' : 'landscape';
+        $papel = DiplomaCamposService::paperSize($plantilla->fondo_width, $plantilla->fondo_height);
 
         $pdf = PDF::loadView('pdf.diplomas', [
             'capacitacion' => $capacitacion,
             'plantilla' => $plantilla,
             'participantes' => $participantes
-        ])->setPaper('letter', $orientacion);
+        ])->setPaper($papel['size'], $papel['orientation'] ?? $orientacion);
 
         // Nombre del archivo: ejemplo "Diplomas_Curso Laravel_2025-05-30.pdf"
         $nombreArchivo = 'Diplomas_' . Str::slug($capacitacion->nombre) . '_' . now()->format('Y-m-d') . '.pdf';
@@ -282,12 +294,13 @@ class CapacitacionController extends Controller
         }
 
         $orientacion = $plantilla->orientacion === 'vertical' ? 'portrait' : 'landscape';
+        $papel = DiplomaCamposService::paperSize($plantilla->fondo_width, $plantilla->fondo_height);
 
         $pdf = PDF::loadView('pdf.diplomas', [
             'capacitacion' => $capacitacion,
             'plantilla' => $plantilla,
             'participantes' => collect([$participante])
-        ])->setPaper('letter', $orientacion);
+        ])->setPaper($papel['size'], $papel['orientation'] ?? $orientacion);
 
         return $pdf->stream('vista_previa.pdf');
     }
@@ -321,7 +334,9 @@ class CapacitacionController extends Controller
             $pdfPath = "{$outputDir}/" . Str::slug($participante->nombre_completo) . ".pdf";
             $pngPath = "{$outputDir}/" . Str::slug($participante->nombre_completo) . ".png";
 
-            PDF::loadHTML($html)->setPaper('letter', $plantilla->orientacion === 'vertical' ? 'portrait' : 'landscape')->save($pdfPath);
+            $papel = DiplomaCamposService::paperSize($plantilla->fondo_width, $plantilla->fondo_height);
+            $orientacionPdf = $papel['orientation'] ?? ($plantilla->orientacion === 'vertical' ? 'portrait' : 'landscape');
+            PDF::loadHTML($html)->setPaper($papel['size'], $orientacionPdf)->save($pdfPath);
 
             // Convertir PDF a PNG con Imagick
             $imagick = new \Imagick();

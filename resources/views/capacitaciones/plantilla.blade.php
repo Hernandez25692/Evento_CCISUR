@@ -310,6 +310,12 @@
                     </div>
                     <div class="card-body">
                         <div class="action-buttons">
+                            <a href="{{ route('capacitaciones.plantilla.campos', $capacitacion->id) }}"
+                                class="action-btn generate" style="background: #6c4ee0; color: #fff; border: none;"
+                                title="Elegir dónde va cada dato sobre la plantilla">
+                                <i class="fas fa-arrows-alt"></i>
+                                <span>Posicionar Campos</span>
+                            </a>
                             <a href="{{ route('capacitaciones.diplomas.preview', $capacitacion->id) }}" target="_blank"
                                 class="action-btn preview" title="Ver cómo se verá el diploma">
                                 <i class="fas fa-eye"></i>

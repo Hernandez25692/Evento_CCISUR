@@ -13,6 +13,8 @@ class PlantillaGlobal extends Model
     protected $fillable = [
         'nombre',
         'fondo',
+        'fondo_width',
+        'fondo_height',
         'firma_1',
         'firma_2',
         'nombre_firma_1',
@@ -21,5 +23,10 @@ class PlantillaGlobal extends Model
         'tipo_certificado',
         'titulo_convenio',
         'fecha_emision',
+        'campos',
+    ];
+
+    protected $casts = [
+        'campos' => 'array',
     ];
 }

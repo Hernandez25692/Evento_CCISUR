@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PlantillaGlobal;
+use App\Services\DiplomaCamposService;
 use Illuminate\Support\Facades\Storage;
 
 class PlantillaGlobalController extends Controller
@@ -43,6 +44,10 @@ class PlantillaGlobalController extends Controller
         ]);
 
         $data['fondo'] = $request->file('fondo')->store('fondos', 'public');
+        [$ancho, $alto] = getimagesize($request->file('fondo')->getRealPath()) ?: [null, null];
+        $data['fondo_width'] = $ancho;
+        $data['fondo_height'] = $alto;
+
         if ($request->hasFile('firma_1')) {
             $data['firma_1'] = $request->file('firma_1')->store('firmas', 'public');
         }
@@ -89,6 +94,10 @@ class PlantillaGlobalController extends Controller
         if ($request->hasFile('fondo')) {
             Storage::disk('public')->delete($plantilla->fondo);
             $plantilla->fondo = $request->file('fondo')->store('fondos', 'public');
+
+            [$ancho, $alto] = getimagesize($request->file('fondo')->getRealPath()) ?: [null, null];
+            $plantilla->fondo_width = $ancho;
+            $plantilla->fondo_height = $alto;
         }
 
         if ($request->hasFile('firma_1')) {
@@ -131,8 +140,38 @@ class PlantillaGlobalController extends Controller
             'fecha_emision' => $plantilla->fecha_emision,
             'orientacion' => $plantilla->orientacion,
             'fondo' => asset('storage/' . $plantilla->fondo),
+            'fondo_width' => $plantilla->fondo_width,
+            'fondo_height' => $plantilla->fondo_height,
+            'campos' => $plantilla->campos,
             'firma_1' => $plantilla->firma_1 ? asset('storage/' . $plantilla->firma_1) : null,
             'firma_2' => $plantilla->firma_2 ? asset('storage/' . $plantilla->firma_2) : null,
         ]);
+    }
+
+    public function editorCampos($id)
+    {
+        $plantilla = PlantillaGlobal::findOrFail($id);
+
+        return view('plantillas_globales.campos', [
+            'plantilla' => $plantilla,
+            'campos' => DiplomaCamposService::resolve($plantilla->campos),
+            'etiquetas' => DiplomaCamposService::ETIQUETAS,
+        ]);
+    }
+
+    public function guardarCampos(Request $request, $id)
+    {
+        $request->validate([
+            'campos' => 'required|string',
+        ]);
+
+        $plantilla = PlantillaGlobal::findOrFail($id);
+
+        $campos = json_decode($request->input('campos'), true) ?? [];
+        $plantilla->campos = DiplomaCamposService::sanitize($campos);
+        $plantilla->save();
+
+        return redirect()->route('plantillas-globales.campos', $id)
+            ->with('success', '✅ Posiciones guardadas correctamente.');
     }
 }
