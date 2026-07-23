@@ -115,7 +115,8 @@
                         <div class="card-image">
                             <a href="{{ route('capacitaciones.participantes', $capacitacion->id) }}">
                                 @if ($capacitacion->imagen)
-                                    <img src="{{ asset('storage/' . $capacitacion->imagen) }}" alt="Imagen de la capacitación">
+                                    <img src="{{ asset('storage/' . $capacitacion->imagen) }}"
+                                        alt="Imagen de la capacitación">
                                 @else
                                     <img src="{{ asset('images/default-training.jpg') }}" alt="Imagen por defecto">
                                 @endif
@@ -179,7 +180,7 @@
                             <div class="card-actions">
                                 <!-- Botón que abre el modal --
 
-                                                <!-- Dropdown de acciones -->
+                                                    <!-- Dropdown de acciones -->
                                 <div class="dropdown">
                                     <button class="btn btn-primary btn-sm w-100 mb-2" type="button"
                                         data-bs-toggle="dropdown" aria-expanded="false">

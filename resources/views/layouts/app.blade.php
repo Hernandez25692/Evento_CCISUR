@@ -272,7 +272,10 @@
             </p>
         </div>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {{-- El JS de Bootstrap ya se carga vía @vite('resources/js/app.js') en el <head>
+         (resources/js/bootstrap.js hace `import 'bootstrap'`) — cargarlo también por
+         CDN aquí duplicaba la inicialización y hacía que los dropdowns (data-bs-toggle)
+         se abrieran y cerraran solos. --}}
 </body>
 
 </html>

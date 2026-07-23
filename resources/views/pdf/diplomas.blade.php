@@ -15,20 +15,26 @@
         $campos = \App\Services\DiplomaCamposService::resolve($plantilla->campos ?? null);
         $fuentes = \App\Services\DiplomaCamposService::FUENTES;
 
+        // Textos automáticos (se usan cuando el campo no tiene texto
+        // personalizado) — misma fuente que usa el editor, para que ambos
+        // coincidan siempre.
+        $defecto = \App\Services\DiplomaCamposService::contenidoPorDefecto($capacitacion, $plantilla);
+
         // Arma el bloque de estilo inline (posición + tipografía) de un campo.
         $estiloCampo = function (string $clave) use ($campos, $fuentes) {
             $c = $campos[$clave];
             $fuente = $fuentes[$c['font_family']]['pdf'] ?? $fuentes['visby-light']['pdf'];
 
             return sprintf(
-                'left:%s%%; top:%s%%; font-size:%dpx; font-family:%s; font-weight:%s; text-decoration:%s; color:%s;',
+                'left:%s%%; top:%s%%; font-size:%dpx; font-family:%s; font-weight:%s; text-decoration:%s; color:%s; text-align:%s;',
                 $c['x'],
                 $c['y'],
                 $c['font_size'],
                 $fuente,
                 $c['bold'] ? 'bold' : 'normal',
                 $c['underline'] ? 'underline' : 'none',
-                $c['color']
+                $c['color'],
+                $c['align']
             );
         };
     @endphp
@@ -67,7 +73,6 @@
         .campo {
             position: absolute;
             transform: translate(-50%, -50%);
-            text-align: center;
             max-width: 80%;
             white-space: normal;
             line-height: 1.4;
@@ -103,8 +108,6 @@
 <body>
     @foreach ($participantes as $index => $participante)
         @php
-            \Carbon\Carbon::setLocale('es');
-            $fechaFormateada = \Carbon\Carbon::parse($plantilla->fecha_emision)->isoFormat('D [de] MMMM [de] YYYY');
             $mostrarFirma1 = $plantilla->firma_1 && $plantilla->nombre_firma_1 && $campos['firma_1']['visible'];
             $mostrarFirma2 = $plantilla->firma_2 && $plantilla->nombre_firma_2 && $campos['firma_2']['visible'];
 
@@ -117,12 +120,7 @@
 
             @if ($campos['titulo_secundario']['visible'])
                 <div class="campo" style="{{ $estiloCampo('titulo_secundario') }}">
-                    @if ($plantilla->tipo_certificado === 'convenio')
-                        {{ $plantilla->titulo_convenio ?? '---' }}
-                    @else
-                        La Cámara de Comercio e Industrias del Sur otorga el presente <br>certificado de
-                        participación a:
-                    @endif
+                    {{ $campos['titulo_secundario']['texto'] ?: $defecto['titulo_secundario'] }}
                 </div>
             @endif
 
@@ -134,32 +132,31 @@
 
             @if ($campos['participacion']['visible'])
                 <div class="campo" style="{{ $estiloCampo('participacion') }}">
-                    Por su participación en {{ $capacitacion->tipo_formacion ?? 'virtual' }}:
+                    {{ $campos['participacion']['texto'] ?: $defecto['participacion'] }}
                 </div>
             @endif
 
             @if ($campos['actividad']['visible'])
                 <div class="campo" style="{{ $estiloCampo('actividad') }}">
-                    "{{ $capacitacion->nombre }}"
+                    {{ $campos['actividad']['texto'] ?: $defecto['actividad'] }}
                 </div>
             @endif
 
             @if ($campos['modalidad_duracion']['visible'])
                 <div class="campo" style="{{ $estiloCampo('modalidad_duracion') }}">
-                    en modalidad {{ $capacitacion->modalidad ?? 'virtual' }} con duración de
-                    {{ $capacitacion->duracion ?? 'N horas' }} horas.
+                    {{ $campos['modalidad_duracion']['texto'] ?: $defecto['modalidad_duracion'] }}
                 </div>
             @endif
 
             @if ($campos['lugar_fecha']['visible'])
                 <div class="campo" style="{{ $estiloCampo('lugar_fecha') }}">
-                    {{ $capacitacion->lugar }}, {{ $fechaFormateada }}.
+                    {{ $campos['lugar_fecha']['texto'] ?: $defecto['lugar_fecha'] }}
                 </div>
             @endif
 
             @if ($plantilla->tipo_certificado === 'generico' && $campos['impartido_por']['visible'])
                 <div class="campo" style="{{ $estiloCampo('impartido_por') }}">
-                    Impartido por: {{ $capacitacion->impartido_por }}
+                    {{ $campos['impartido_por']['texto'] ?: $defecto['impartido_por'] }}
                 </div>
             @endif
 

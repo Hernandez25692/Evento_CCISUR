@@ -62,15 +62,39 @@ class DiplomaCamposService
     public static function defaults(): array
     {
         return [
-            'titulo_secundario'  => ['x' => 50, 'y' => 20, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-demibold', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000'],
-            'nombre'              => ['x' => 50, 'y' => 34, 'align' => 'center', 'font_size' => 30, 'font_family' => 'visby-heavy', 'bold' => true, 'underline' => true, 'visible' => true, 'color' => '#004aad'],
-            'participacion'       => ['x' => 50, 'y' => 42, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000'],
-            'actividad'           => ['x' => 50, 'y' => 47, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-heavy', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000'],
-            'modalidad_duracion'  => ['x' => 50, 'y' => 52, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000'],
-            'lugar_fecha'         => ['x' => 50, 'y' => 57, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000'],
-            'impartido_por'       => ['x' => 50, 'y' => 62, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000'],
-            'firma_1'             => ['x' => 30, 'y' => 88, 'align' => 'center', 'font_size' => 16, 'font_family' => 'visby-demibold', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000'],
-            'firma_2'             => ['x' => 70, 'y' => 88, 'align' => 'center', 'font_size' => 16, 'font_family' => 'visby-demibold', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000'],
+            'titulo_secundario'  => ['x' => 50, 'y' => 20, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-demibold', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => ''],
+            'nombre'              => ['x' => 50, 'y' => 34, 'align' => 'center', 'font_size' => 30, 'font_family' => 'visby-heavy', 'bold' => true, 'underline' => true, 'visible' => true, 'color' => '#004aad', 'texto' => ''],
+            'participacion'       => ['x' => 50, 'y' => 42, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => ''],
+            'actividad'           => ['x' => 50, 'y' => 47, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-heavy', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => ''],
+            'modalidad_duracion'  => ['x' => 50, 'y' => 52, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => ''],
+            'lugar_fecha'         => ['x' => 50, 'y' => 57, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => ''],
+            'impartido_por'       => ['x' => 50, 'y' => 62, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => ''],
+            'firma_1'             => ['x' => 30, 'y' => 88, 'align' => 'center', 'font_size' => 16, 'font_family' => 'visby-demibold', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => ''],
+            'firma_2'             => ['x' => 70, 'y' => 88, 'align' => 'center', 'font_size' => 16, 'font_family' => 'visby-demibold', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => ''],
+        ];
+    }
+
+    /**
+     * Textos que se generan automáticamente a partir de la capacitación y la
+     * plantilla cuando el admin no escribió un texto personalizado para ese
+     * campo. Única fuente de verdad: la usan tanto el editor (como
+     * placeholder/valor por defecto) como la vista que genera el PDF final,
+     * así los dos quedan sincronizados por construcción.
+     */
+    public static function contenidoPorDefecto($capacitacion, $plantilla): array
+    {
+        \Carbon\Carbon::setLocale('es');
+        $fechaFormateada = \Carbon\Carbon::parse($plantilla->fecha_emision)->isoFormat('D [de] MMMM [de] YYYY');
+
+        return [
+            'titulo_secundario' => $plantilla->tipo_certificado === 'convenio'
+                ? ($plantilla->titulo_convenio ?? '---')
+                : 'La Cámara de Comercio e Industrias del Sur otorga el presente certificado de participación a:',
+            'participacion' => 'Por su participación en ' . ($capacitacion->tipo_formacion ?? 'virtual') . ':',
+            'actividad' => '"' . $capacitacion->nombre . '"',
+            'modalidad_duracion' => 'en modalidad ' . ($capacitacion->modalidad ?? 'virtual') . ' con duración de ' . ($capacitacion->duracion ?? 'N horas') . ' horas.',
+            'lugar_fecha' => $capacitacion->lugar . ', ' . $fechaFormateada . '.',
+            'impartido_por' => 'Impartido por: ' . $capacitacion->impartido_por,
         ];
     }
 
@@ -129,6 +153,9 @@ class DiplomaCamposService
                 'color' => preg_match('/^#[0-9a-f]{6}$/i', $valores['color'] ?? '')
                     ? $valores['color']
                     : '#000000',
+                'texto' => is_string($valores['texto'] ?? null)
+                    ? mb_substr(trim($valores['texto']), 0, 500)
+                    : '',
             ];
         }
 

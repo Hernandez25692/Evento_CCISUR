@@ -28,6 +28,9 @@
         dragging: null,
         seleccionado: null,
         escala: 1,
+        panelPos: null,
+        arrastrandoPanel: false,
+        offsetArrastrePanel: { x: 0, y: 0 },
 
         init() {
             this.actualizarEscala();
@@ -46,9 +49,16 @@
             return clave === 'firma_1' || clave === 'firma_2';
         },
 
+        esEditable(clave) {
+            return clave !== 'nombre' && !this.esFirma(clave);
+        },
+
         contenidoDe(clave) {
             if (clave === 'nombre' && Object.keys(this.participantes).length) {
                 return this.participantes[this.participanteId] ?? Object.values(this.participantes)[0];
+            }
+            if (this.esEditable(clave) && this.campos[clave].texto) {
+                return this.campos[clave].texto;
             }
             return this.contenidos[clave] ?? this.etiquetas[clave] ?? clave;
         },
@@ -61,15 +71,23 @@
         estiloBadge(clave) {
             const c = this.campos[clave];
             const tam = Math.max(7, Math.round((c.font_size || 16) * this.escala));
-            return `left:${c.x}%; top:${c.y}%; font-size:${tam}px; font-family:${this.fuenteWebDe(clave)}; font-weight:${c.bold ? 'bold' : 'normal'}; text-decoration:${c.underline ? 'underline' : 'none'}; color:${c.color};`;
+            let base = `left:${c.x}%; top:${c.y}%; font-size:${tam}px; font-family:${this.fuenteWebDe(clave)}; font-weight:${c.bold ? 'bold' : 'normal'}; text-decoration:${c.underline ? 'underline' : 'none'}; color:${c.color}; text-align:${c.align || 'center'};`;
+            // Mismo max-width/wrap que usa el PDF (pdf/diplomas.blade.php .campo)
+            // para que el editor muestre el texto partido en líneas igual que
+            // el resultado final, en vez de una sola línea siempre.
+            if (this.esFirma(clave)) {
+                base += `width:${Math.round(220 * this.escala)}px;`;
+            } else {
+                base += `max-width:80%; white-space:normal; line-height:1.4;`;
+            }
+            return base;
         },
 
         estiloFirmaImg() {
             return `height:${Math.max(20, Math.round(155 * this.escala))}px; object-fit:contain; display:block; margin:0 auto;`;
         },
 
-        estiloPopover() {
-            if (!this.seleccionado || !this.$refs.lienzo) return '';
+        posicionAutoPopover() {
             const rect = this.$refs.lienzo.getBoundingClientRect();
             const c = this.campos[this.seleccionado];
             const anchoPop = 270;
@@ -80,11 +98,38 @@
             if (x < 4) x = 4;
             if (y + altoPop > rect.height) y = rect.height - altoPop - 4;
             if (y < 4) y = 4;
-            return `left:${Math.round(x)}px; top:${Math.round(y)}px;`;
+            return { x, y };
+        },
+
+        estiloPopover() {
+            if (!this.seleccionado || !this.$refs.lienzo) return '';
+            const pos = this.panelPos ?? this.posicionAutoPopover();
+            return `left:${Math.round(pos.x)}px; top:${Math.round(pos.y)}px;`;
+        },
+
+        activarSeleccion(clave) {
+            if (this.seleccionado !== clave) {
+                this.panelPos = null;
+            }
+            this.seleccionado = clave;
         },
 
         seleccionar(clave) {
-            this.seleccionado = clave;
+            this.activarSeleccion(clave);
+        },
+
+        iniciarArrastrePanel(event) {
+            event.preventDefault();
+            if (!this.$refs.lienzo) return;
+            const rect = this.$refs.lienzo.getBoundingClientRect();
+            const actual = this.panelPos ?? this.posicionAutoPopover();
+            const punto = event.touches ? event.touches[0] : event;
+            this.offsetArrastrePanel = {
+                x: punto.clientX - rect.left - actual.x,
+                y: punto.clientY - rect.top - actual.y,
+            };
+            this.panelPos = actual;
+            this.arrastrandoPanel = true;
         },
 
         restablecerCampo() {
@@ -113,7 +158,7 @@
 
         iniciarArrastre(clave, event) {
             this.dragging = clave;
-            this.seleccionado = clave;
+            this.activarSeleccion(clave);
             event.preventDefault();
         },
 
@@ -129,6 +174,18 @@
         },
 
         mover(event) {
+            if (this.arrastrandoPanel) {
+                const rect = this.$refs.lienzo.getBoundingClientRect();
+                const punto = event.touches ? event.touches[0] : event;
+                const anchoPop = 270;
+                const altoPop = 400;
+                let x = punto.clientX - rect.left - this.offsetArrastrePanel.x;
+                let y = punto.clientY - rect.top - this.offsetArrastrePanel.y;
+                x = Math.max(0, Math.min(Math.max(0, rect.width - anchoPop), x));
+                y = Math.max(0, Math.min(Math.max(0, rect.height - altoPop), y));
+                this.panelPos = { x, y };
+                return;
+            }
             if (!this.dragging) return;
             const punto = this.posicionDesdeEvento(event);
             this.campos[this.dragging].x = punto.x;
@@ -137,6 +194,7 @@
 
         soltar() {
             this.dragging = null;
+            this.arrastrandoPanel = false;
         },
 
         guardarPosiciones() {
@@ -161,8 +219,6 @@
             transform: translate(-50%, -50%);
             cursor: move;
             touch-action: none;
-            white-space: nowrap;
-            text-align: center;
             border-radius: 4px;
             padding: 2px 6px;
             transition: background-color .1s;
@@ -210,6 +266,12 @@
             padding: 12px;
             z-index: 50;
             font-size: 12px;
+        }
+
+        .panel-header {
+            cursor: move;
+            touch-action: none;
+            user-select: none;
         }
 
         .campo-chip.oculto-chip {
@@ -283,11 +345,24 @@
 
         <template x-if="seleccionado">
             <div class="panel-flotante" :style="estiloPopover()" @click.stop>
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <strong x-text="etiquetas[seleccionado]"></strong>
-                    <button type="button" class="btn-close" style="font-size:10px;" @click="seleccionado = null"
-                        aria-label="Cerrar"></button>
+                <div class="d-flex justify-content-between align-items-center mb-2 panel-header"
+                    @pointerdown="iniciarArrastrePanel($event)" @touchstart="iniciarArrastrePanel($event)">
+                    <span>
+                        <i class="fas fa-grip-lines text-muted me-1" style="font-size:11px;"></i>
+                        <strong x-text="etiquetas[seleccionado]"></strong>
+                    </span>
+                    <button type="button" class="btn-close" style="font-size:10px;" @pointerdown.stop
+                        @click="seleccionado = null" aria-label="Cerrar"></button>
                 </div>
+
+                <template x-if="esEditable(seleccionado)">
+                    <div class="mb-2">
+                        <label class="d-block" style="font-size:10px;">Texto (vacío = automático)</label>
+                        <textarea class="form-control form-control-sm" rows="2"
+                            :placeholder="contenidos[seleccionado] ?? ''"
+                            x-model="campos[seleccionado].texto"></textarea>
+                    </div>
+                </template>
 
                 <div class="d-flex gap-2 mb-2">
                     <div class="flex-fill">

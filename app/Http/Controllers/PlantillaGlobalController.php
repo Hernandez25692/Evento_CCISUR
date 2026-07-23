@@ -153,18 +153,20 @@ class PlantillaGlobalController extends Controller
         $plantilla = PlantillaGlobal::findOrFail($id);
 
         // Una plantilla global no está ligada a una capacitación/participantes
-        // reales, así que la vista previa usa contenido de ejemplo.
-        $contenidos = [
-            'nombre' => 'Nombre del Participante',
-            'titulo_secundario' => $plantilla->tipo_certificado === 'convenio'
-                ? ($plantilla->titulo_convenio ?? '---')
-                : 'La Cámara de Comercio e Industrias del Sur otorga el presente certificado de participación a:',
-            'participacion' => 'Por su participación en la capacitación:',
-            'actividad' => '"Nombre de la Capacitación"',
-            'modalidad_duracion' => 'en modalidad virtual con duración de 20 horas.',
-            'lugar_fecha' => 'Comayagua, ' . now()->locale('es')->isoFormat('D [de] MMMM [de] YYYY') . '.',
-            'impartido_por' => 'Impartido por: Nombre del Facilitador',
+        // reales, así que la vista previa usa una capacitación de ejemplo
+        // (mismo generador de textos que usa el editor por capacitación y el
+        // PDF final, para que los tres queden sincronizados).
+        $capacitacionEjemplo = (object) [
+            'tipo_formacion' => 'la capacitación',
+            'nombre' => 'Nombre de la Capacitación',
+            'modalidad' => 'virtual',
+            'duracion' => '20',
+            'lugar' => 'Comayagua',
+            'impartido_por' => 'Nombre del Facilitador',
         ];
+
+        $contenidos = DiplomaCamposService::contenidoPorDefecto($capacitacionEjemplo, $plantilla);
+        $contenidos['nombre'] = 'Nombre del Participante';
 
         $firmas = [
             'firma_1' => [

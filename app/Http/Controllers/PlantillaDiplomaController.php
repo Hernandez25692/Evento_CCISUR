@@ -164,20 +164,8 @@ class PlantillaDiplomaController extends Controller
             ->wherePivot('habilitado_diploma', true)
             ->get(['participantes.id', 'participantes.nombre_completo']);
 
-        \Carbon\Carbon::setLocale('es');
-        $fechaFormateada = \Carbon\Carbon::parse($plantilla->fecha_emision)->isoFormat('D [de] MMMM [de] YYYY');
-
-        $contenidos = [
-            'nombre' => '(agrega participantes habilitados para previsualizar con un nombre real)',
-            'titulo_secundario' => $plantilla->tipo_certificado === 'convenio'
-                ? ($plantilla->titulo_convenio ?? '---')
-                : 'La Cámara de Comercio e Industrias del Sur otorga el presente certificado de participación a:',
-            'participacion' => 'Por su participación en ' . ($capacitacion->tipo_formacion ?? 'virtual') . ':',
-            'actividad' => '"' . $capacitacion->nombre . '"',
-            'modalidad_duracion' => 'en modalidad ' . ($capacitacion->modalidad ?? 'virtual') . ' con duración de ' . ($capacitacion->duracion ?? 'N horas') . ' horas.',
-            'lugar_fecha' => $capacitacion->lugar . ', ' . $fechaFormateada . '.',
-            'impartido_por' => 'Impartido por: ' . $capacitacion->impartido_por,
-        ];
+        $contenidos = DiplomaCamposService::contenidoPorDefecto($capacitacion, $plantilla);
+        $contenidos['nombre'] = '(agrega participantes habilitados para previsualizar con un nombre real)';
 
         $firmas = [
             'firma_1' => [
