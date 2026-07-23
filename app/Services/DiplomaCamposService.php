@@ -62,15 +62,15 @@ class DiplomaCamposService
     public static function defaults(): array
     {
         return [
-            'titulo_secundario'  => ['x' => 50, 'y' => 20, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-demibold', 'bold' => false, 'underline' => false, 'visible' => true],
-            'nombre'              => ['x' => 50, 'y' => 34, 'align' => 'center', 'font_size' => 30, 'font_family' => 'visby-heavy', 'bold' => true, 'underline' => true, 'visible' => true],
-            'participacion'       => ['x' => 50, 'y' => 42, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true],
-            'actividad'           => ['x' => 50, 'y' => 47, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-heavy', 'bold' => true, 'underline' => false, 'visible' => true],
-            'modalidad_duracion'  => ['x' => 50, 'y' => 52, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true],
-            'lugar_fecha'         => ['x' => 50, 'y' => 57, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true],
-            'impartido_por'       => ['x' => 50, 'y' => 62, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => true, 'underline' => false, 'visible' => true],
-            'firma_1'             => ['x' => 30, 'y' => 88, 'align' => 'center', 'font_size' => 16, 'font_family' => 'visby-demibold', 'bold' => true, 'underline' => false, 'visible' => true],
-            'firma_2'             => ['x' => 70, 'y' => 88, 'align' => 'center', 'font_size' => 16, 'font_family' => 'visby-demibold', 'bold' => true, 'underline' => false, 'visible' => true],
+            'titulo_secundario'  => ['x' => 50, 'y' => 20, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-demibold', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000'],
+            'nombre'              => ['x' => 50, 'y' => 34, 'align' => 'center', 'font_size' => 30, 'font_family' => 'visby-heavy', 'bold' => true, 'underline' => true, 'visible' => true, 'color' => '#004aad'],
+            'participacion'       => ['x' => 50, 'y' => 42, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000'],
+            'actividad'           => ['x' => 50, 'y' => 47, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-heavy', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000'],
+            'modalidad_duracion'  => ['x' => 50, 'y' => 52, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000'],
+            'lugar_fecha'         => ['x' => 50, 'y' => 57, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000'],
+            'impartido_por'       => ['x' => 50, 'y' => 62, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000'],
+            'firma_1'             => ['x' => 30, 'y' => 88, 'align' => 'center', 'font_size' => 16, 'font_family' => 'visby-demibold', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000'],
+            'firma_2'             => ['x' => 70, 'y' => 88, 'align' => 'center', 'font_size' => 16, 'font_family' => 'visby-demibold', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000'],
         ];
     }
 
@@ -126,6 +126,9 @@ class DiplomaCamposService
                 'bold' => filter_var($valores['bold'] ?? false, FILTER_VALIDATE_BOOLEAN),
                 'underline' => filter_var($valores['underline'] ?? false, FILTER_VALIDATE_BOOLEAN),
                 'visible' => filter_var($valores['visible'] ?? true, FILTER_VALIDATE_BOOLEAN),
+                'color' => preg_match('/^#[0-9a-f]{6}$/i', $valores['color'] ?? '')
+                    ? $valores['color']
+                    : '#000000',
             ];
         }
 

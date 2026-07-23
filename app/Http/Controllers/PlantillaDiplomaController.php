@@ -196,6 +196,7 @@ class PlantillaDiplomaController extends Controller
             'campos' => DiplomaCamposService::resolve($plantilla->campos),
             'etiquetas' => DiplomaCamposService::ETIQUETAS,
             'fuentes' => DiplomaCamposService::FUENTES,
+            'defaults' => DiplomaCamposService::defaults(),
             'contenidos' => $contenidos,
             'firmas' => $firmas,
             'participantes' => $participantes->pluck('nombre_completo', 'id'),

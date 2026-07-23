@@ -21,8 +21,8 @@
             <div class="card-body">
                 <x-diploma-campos-editor :image-url="asset('storage/' . $plantilla->fondo)"
                     :fondo-width="$plantilla->fondo_width" :fondo-height="$plantilla->fondo_height" :campos="$campos"
-                    :etiquetas="$etiquetas" :fuentes="$fuentes" :contenidos="$contenidos" :firmas="$firmas"
-                    :participantes="$participantes" :participante-inicial="$participanteInicial"
+                    :etiquetas="$etiquetas" :fuentes="$fuentes" :defaults="$defaults" :contenidos="$contenidos"
+                    :firmas="$firmas" :participantes="$participantes" :participante-inicial="$participanteInicial"
                     :save-url="route('plantillas-globales.campos.store', $plantilla->id)"
                     :back-url="route('plantillas-globales.edit', $plantilla->id)" />
             </div>

@@ -21,13 +21,14 @@
             $fuente = $fuentes[$c['font_family']]['pdf'] ?? $fuentes['visby-light']['pdf'];
 
             return sprintf(
-                'left:%s%%; top:%s%%; font-size:%dpx; font-family:%s; font-weight:%s; text-decoration:%s;',
+                'left:%s%%; top:%s%%; font-size:%dpx; font-family:%s; font-weight:%s; text-decoration:%s; color:%s;',
                 $c['x'],
                 $c['y'],
                 $c['font_size'],
                 $fuente,
                 $c['bold'] ? 'bold' : 'normal',
-                $c['underline'] ? 'underline' : 'none'
+                $c['underline'] ? 'underline' : 'none',
+                $c['color']
             );
         };
     @endphp
@@ -70,10 +71,6 @@
             max-width: 80%;
             white-space: normal;
             line-height: 1.4;
-        }
-
-        .nombre {
-            color: #004aad;
         }
 
         .firma-box {
@@ -130,7 +127,7 @@
             @endif
 
             @if ($campos['nombre']['visible'])
-                <div class="campo nombre" style="{{ $estiloCampo('nombre') }}">
+                <div class="campo" style="{{ $estiloCampo('nombre') }}">
                     {{ $participante->nombre_completo }}
                 </div>
             @endif

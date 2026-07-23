@@ -7,6 +7,7 @@
     'contenidos' => [],
     'firmas' => [],
     'fuentes' => [],
+    'defaults' => [],
     'participantes' => [],
     'participanteInicial' => null,
     'saveUrl',
@@ -20,10 +21,12 @@
         contenidos: @js($contenidos),
         firmas: @js($firmas),
         fuentes: @js($fuentes),
+        defaults: @js($defaults),
         participantes: @js($participantes),
         participanteId: @js($participanteInicial),
         fondoWidth: {{ $fondoWidth ?? 0 }},
         dragging: null,
+        seleccionado: null,
         escala: 1,
 
         init() {
@@ -58,15 +61,59 @@
         estiloBadge(clave) {
             const c = this.campos[clave];
             const tam = Math.max(7, Math.round((c.font_size || 16) * this.escala));
-            return `left:${c.x}%; top:${c.y}%; font-size:${tam}px; font-family:${this.fuenteWebDe(clave)}; font-weight:${c.bold ? 'bold' : 'normal'}; text-decoration:${c.underline ? 'underline' : 'none'};`;
+            return `left:${c.x}%; top:${c.y}%; font-size:${tam}px; font-family:${this.fuenteWebDe(clave)}; font-weight:${c.bold ? 'bold' : 'normal'}; text-decoration:${c.underline ? 'underline' : 'none'}; color:${c.color};`;
         },
 
         estiloFirmaImg() {
             return `height:${Math.max(20, Math.round(155 * this.escala))}px; object-fit:contain; display:block; margin:0 auto;`;
         },
 
+        estiloPopover() {
+            if (!this.seleccionado || !this.$refs.lienzo) return '';
+            const rect = this.$refs.lienzo.getBoundingClientRect();
+            const c = this.campos[this.seleccionado];
+            const anchoPop = 270;
+            const altoPop = 400;
+            let x = (c.x / 100) * rect.width + 18;
+            let y = (c.y / 100) * rect.height - 20;
+            if (x + anchoPop > rect.width) x = (c.x / 100) * rect.width - anchoPop - 18;
+            if (x < 4) x = 4;
+            if (y + altoPop > rect.height) y = rect.height - altoPop - 4;
+            if (y < 4) y = 4;
+            return `left:${Math.round(x)}px; top:${Math.round(y)}px;`;
+        },
+
+        seleccionar(clave) {
+            this.seleccionado = clave;
+        },
+
+        restablecerCampo() {
+            if (!this.seleccionado) return;
+            this.campos[this.seleccionado] = { ...this.defaults[this.seleccionado] };
+        },
+
+        moverConTeclado(event) {
+            if (!this.seleccionado) return;
+            const activo = document.activeElement;
+            if (activo && ['INPUT', 'SELECT', 'TEXTAREA'].includes(activo.tagName)) return;
+
+            const paso = event.shiftKey ? 1 : 0.1;
+            let dx = 0, dy = 0;
+            if (event.key === 'ArrowLeft') dx = -paso;
+            else if (event.key === 'ArrowRight') dx = paso;
+            else if (event.key === 'ArrowUp') dy = -paso;
+            else if (event.key === 'ArrowDown') dy = paso;
+            else return;
+
+            event.preventDefault();
+            const c = this.campos[this.seleccionado];
+            c.x = Math.max(0, Math.min(100, Math.round((c.x + dx) * 10) / 10));
+            c.y = Math.max(0, Math.min(100, Math.round((c.y + dy) * 10) / 10));
+        },
+
         iniciarArrastre(clave, event) {
             this.dragging = clave;
+            this.seleccionado = clave;
             event.preventDefault();
         },
 
@@ -102,6 +149,8 @@
     @touchmove.window="mover($event)"
     @touchend.window="soltar()"
     @resize.window="actualizarEscala()"
+    @keydown.window="moverConTeclado($event)"
+    @keydown.escape.window="seleccionado = null"
 >
     <style>
         /* Alpine reemplaza (no fusiona) el atributo style cuando se usa
@@ -132,6 +181,12 @@
             opacity: .35;
         }
 
+        .campo-handle.seleccionado {
+            outline: 2px solid #2563eb;
+            outline-offset: 2px;
+            z-index: 10;
+        }
+
         .campo-handle .firma-nombre-preview {
             font-size: .85em;
         }
@@ -143,6 +198,22 @@
             padding: 2px 6px;
             border-radius: 4px;
             outline: 1px dashed rgba(37, 99, 235, .65);
+        }
+
+        .panel-flotante {
+            position: absolute;
+            width: 270px;
+            background: #fff;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, .2);
+            padding: 12px;
+            z-index: 50;
+            font-size: 12px;
+        }
+
+        .campo-chip.oculto-chip {
+            opacity: .55;
         }
     </style>
 
@@ -156,8 +227,8 @@
 
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <p class="text-muted mb-0" style="font-size: 13px; max-width: 520px;">
-            Arrastra cada elemento sobre la imagen para ubicarlo. El texto y las firmas se muestran con su
-            tipografía y tamaño reales.
+            Haz clic en un elemento para editar sus opciones, o arrástralo para moverlo. Usa las flechas del teclado
+            para ajustes finos.
         </p>
         <div class="d-flex gap-2">
             @if ($backUrl)
@@ -179,16 +250,17 @@
         </div>
     @endif
 
-    <div x-ref="lienzo" x-init="$nextTick(() => actualizarEscala())"
+    <div x-ref="lienzo" x-init="$nextTick(() => actualizarEscala())" @click="seleccionado = null"
         style="position:relative; width:100%; max-width:900px; margin:0 auto; aspect-ratio:{{ $fondoWidth && $fondoHeight ? "{$fondoWidth}/{$fondoHeight}" : '16/11' }}; background:#e9ecef; border:1px solid #ccc; overflow:hidden; user-select:none;">
         <img src="{{ $imageUrl }}" draggable="false"
             style="width:100%; height:100%; object-fit:contain; display:block; pointer-events:none;"
             alt="Fondo de la plantilla">
 
         <template x-for="clave in Object.keys(campos)" :key="clave">
-            <div class="campo-handle" :class="{ 'oculto': !campos[clave].visible, 'es-texto': !esFirma(clave) }"
+            <div class="campo-handle"
+                :class="{ 'oculto': !campos[clave].visible, 'es-texto': !esFirma(clave), 'seleccionado': seleccionado === clave }"
                 @pointerdown="iniciarArrastre(clave, $event)" @touchstart="iniciarArrastre(clave, $event)"
-                :style="estiloBadge(clave)">
+                @click.stop :style="estiloBadge(clave)">
 
                 <template x-if="!esFirma(clave)">
                     <span x-text="contenidoDe(clave)"></span>
@@ -208,67 +280,103 @@
                 </template>
             </div>
         </template>
-    </div>
 
-    <div class="row mt-4 g-3">
-        <template x-for="clave in Object.keys(campos)" :key="'panel-' + clave">
-            <div class="col-md-4">
-                <div class="border rounded p-2" :class="{ 'bg-light': !campos[clave].visible }">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <p class="fw-bold mb-0" style="font-size:13px;" x-text="etiquetas[clave] ?? clave"></p>
-                        <div class="form-check form-switch mb-0">
-                            <input class="form-check-input" type="checkbox" role="switch"
-                                x-model="campos[clave].visible" :id="'visible-' + clave">
-                            <label class="form-check-label" style="font-size:11px;" :for="'visible-' + clave">
-                                Mostrar
-                            </label>
-                        </div>
-                    </div>
+        <template x-if="seleccionado">
+            <div class="panel-flotante" :style="estiloPopover()" @click.stop>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong x-text="etiquetas[seleccionado]"></strong>
+                    <button type="button" class="btn-close" style="font-size:10px;" @click="seleccionado = null"
+                        aria-label="Cerrar"></button>
+                </div>
 
-                    <div class="d-flex gap-2 align-items-center mb-1">
-                        <label style="font-size:11px; width:55px;">X %</label>
+                <div class="d-flex gap-2 mb-2">
+                    <div class="flex-fill">
+                        <label class="d-block" style="font-size:10px;">X %</label>
                         <input type="number" min="0" max="100" step="0.1" class="form-control form-control-sm"
-                            x-model.number="campos[clave].x">
+                            x-model.number="campos[seleccionado].x">
                     </div>
-                    <div class="d-flex gap-2 align-items-center mb-1">
-                        <label style="font-size:11px; width:55px;">Y %</label>
+                    <div class="flex-fill">
+                        <label class="d-block" style="font-size:10px;">Y %</label>
                         <input type="number" min="0" max="100" step="0.1" class="form-control form-control-sm"
-                            x-model.number="campos[clave].y">
+                            x-model.number="campos[seleccionado].y">
                     </div>
-                    <div class="d-flex gap-2 align-items-center mb-2">
-                        <label style="font-size:11px; width:55px;">Tamaño</label>
+                    <div class="flex-fill">
+                        <label class="d-block" style="font-size:10px;">Tamaño</label>
                         <input type="number" min="8" max="80" step="1" class="form-control form-control-sm"
-                            x-model.number="campos[clave].font_size">
-                    </div>
-
-                    <div class="mb-2">
-                        <label style="font-size:11px;">Fuente</label>
-                        <select class="form-select form-select-sm" x-model="campos[clave].font_family"
-                            x-init="$nextTick(() => { $el.value = campos[clave].font_family })">
-                            <template x-for="fclave in Object.keys(fuentes)" :key="fclave">
-                                <option :value="fclave" x-text="fuentes[fclave].label"></option>
-                            </template>
-                        </select>
-                    </div>
-
-                    <div class="d-flex gap-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" x-model="campos[clave].bold"
-                                :id="'bold-' + clave">
-                            <label class="form-check-label" style="font-size:12px;" :for="'bold-' + clave">
-                                Negrita
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" x-model="campos[clave].underline"
-                                :id="'underline-' + clave">
-                            <label class="form-check-label" style="font-size:12px;" :for="'underline-' + clave">
-                                Subrayado
-                            </label>
-                        </div>
+                            x-model.number="campos[seleccionado].font_size">
                     </div>
                 </div>
+
+                <div class="mb-2">
+                    <label class="d-block" style="font-size:10px;">Fuente</label>
+                    <select class="form-select form-select-sm" x-model="campos[seleccionado].font_family"
+                        x-init="$nextTick(() => { if (seleccionado) $el.value = campos[seleccionado].font_family })">
+                        <template x-for="fclave in Object.keys(fuentes)" :key="fclave">
+                            <option :value="fclave" x-text="fuentes[fclave].label"></option>
+                        </template>
+                    </select>
+                </div>
+
+                <div class="d-flex gap-3 align-items-end mb-2">
+                    <div>
+                        <label class="d-block" style="font-size:10px;">Color</label>
+                        <input type="color" class="form-control form-control-color form-control-sm"
+                            x-model="campos[seleccionado].color" style="width:44px; height:31px; padding:2px;">
+                    </div>
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Alineación">
+                        <button type="button" class="btn btn-outline-secondary"
+                            :class="{ active: campos[seleccionado].align === 'left' }"
+                            @click="campos[seleccionado].align = 'left'" title="Izquierda">
+                            <i class="fas fa-align-left"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary"
+                            :class="{ active: campos[seleccionado].align === 'center' }"
+                            @click="campos[seleccionado].align = 'center'" title="Centro">
+                            <i class="fas fa-align-center"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary"
+                            :class="{ active: campos[seleccionado].align === 'right' }"
+                            @click="campos[seleccionado].align = 'right'" title="Derecha">
+                            <i class="fas fa-align-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 mb-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" x-model="campos[seleccionado].bold"
+                            id="pop-bold">
+                        <label class="form-check-label" for="pop-bold">Negrita</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" x-model="campos[seleccionado].underline"
+                            id="pop-underline">
+                        <label class="form-check-label" for="pop-underline">Subrayado</label>
+                    </div>
+                </div>
+
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch"
+                        x-model="campos[seleccionado].visible" id="pop-visible">
+                    <label class="form-check-label" for="pop-visible">Mostrar</label>
+                </div>
+
+                <button type="button" class="btn btn-outline-danger btn-sm w-100" @click="restablecerCampo()">
+                    Restablecer este campo
+                </button>
             </div>
+        </template>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 mt-3">
+        <template x-for="clave in Object.keys(campos)" :key="'chip-' + clave">
+            <button type="button" class="btn btn-sm campo-chip" :class="[
+                seleccionado === clave ? 'btn-primary' : 'btn-outline-secondary',
+                !campos[clave].visible ? 'oculto-chip' : '',
+            ]" @click="seleccionar(clave)">
+                <i class="fas fa-eye-slash me-1" x-show="!campos[clave].visible"></i>
+                <span x-text="etiquetas[clave]"></span>
+            </button>
         </template>
     </div>
 
