@@ -114,29 +114,35 @@ class CapacitacionController extends Controller
     {
         $capacitacion = Capacitacion::findOrFail($id);
 
-        // Mostrar qué datos llegan y si cambian
-        foreach ($request->except(['_token', '_method']) as $key => $valorNuevo) {
-            $valorActual = $capacitacion->$key ?? 'NO EXISTE';
-            if ($valorActual != $valorNuevo) {
-                \Log::info("CAMBIO detectado en '$key': De '$valorActual' a '$valorNuevo'");
-                $capacitacion->$key = $valorNuevo;
-            } else {
-                \Log::info("SIN CAMBIO en '$key': sigue como '$valorActual'");
-            }
-        }
+        $data = $request->validate([
+            'nombre' => 'required',
+            'lugar' => 'required',
+            'fecha' => 'required|date',
+            'impartido_por' => 'required',
+            'descripcion' => 'nullable',
+            'imagen' => 'nullable|image|max:2048',
+            'tipo_formacion' => 'nullable|string',
+            'duracion' => 'nullable|string',
+            'forma' => 'nullable|string',
+            'cupos' => 'required|in:limitado,ilimitado',
+            'limite_participantes' => 'nullable|integer',
+            'medio' => 'required|in:gratis,pago',
+            'precio_afiliado' => 'nullable|numeric',
+            'isv_afiliado' => 'nullable|numeric',
+            'precio_no_afiliado' => 'nullable|numeric',
+            'isv_no_afiliado' => 'nullable|numeric',
+            'hora_inicio' => 'nullable|date_format:H:i',
+            'hora_fin' => 'nullable|date_format:H:i',
+        ]);
 
-        // Imagen
         if ($request->hasFile('imagen')) {
             if ($capacitacion->imagen) {
                 Storage::delete('public/' . $capacitacion->imagen);
             }
-            $capacitacion->imagen = $request->file('imagen')->store('capacitaciones', 'public');
-            \Log::info("Imagen actualizada: " . $capacitacion->imagen);
+            $data['imagen'] = $request->file('imagen')->store('capacitaciones', 'public');
         }
 
-        $resultado = $capacitacion->save();
-
-        \Log::info("Resultado del guardado: " . ($resultado ? 'ÉXITO' : 'FALLÓ'));
+        $capacitacion->update($data);
 
         return redirect()->route('capacitaciones.index')->with('success', '✅ Formación actualizada con éxito');
     }
@@ -251,6 +257,34 @@ class CapacitacionController extends Controller
         $plantilla->save();
 
         return redirect()->back()->with('success', '✅ Plantilla guardada correctamente.');
+    }
+
+    /**
+     * Interruptor manual del admin para publicar/despublicar los diplomas de
+     * una capacitación en la vista pública. Mientras esté apagado, nadie
+     * puede ver ni descargar diplomas de esta capacitación desde fuera,
+     * aunque cada participante individual esté habilitado.
+     */
+    public function publicarDiplomas($id)
+    {
+        $capacitacion = Capacitacion::with('plantilla')->findOrFail($id);
+        $plantilla = $capacitacion->plantilla;
+
+        if (!$capacitacion->diplomas_publicados) {
+            if (!$plantilla || !$plantilla->fondo) {
+                return redirect()->back()->with('error', '❌ Debes guardar una plantilla con imagen de fondo antes de publicar los diplomas.');
+            }
+
+            $capacitacion->diplomas_publicados = true;
+            $capacitacion->save();
+
+            return redirect()->back()->with('success', '✅ Diplomas publicados. Ya son visibles y descargables desde la búsqueda pública.');
+        }
+
+        $capacitacion->diplomas_publicados = false;
+        $capacitacion->save();
+
+        return redirect()->back()->with('success', 'Diplomas despublicados. Ya no son accesibles desde la búsqueda pública.');
     }
 
 

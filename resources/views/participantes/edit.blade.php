@@ -203,7 +203,7 @@
                                     </span>
                                     @if ($participante->comprobante)
                                         <span class="file-upload-text">
-                                            Actual: <a href="{{ asset('storage/' . $participante->comprobante) }}"
+                                            Actual: <a href="{{ route('participantes.comprobante', $participante->id) }}"
                                                 target="_blank" class="file-link">Ver comprobante</a>
                                         </span>
                                     @else

@@ -506,6 +506,7 @@
                                 @foreach ($participante->capacitaciones as $capacitacion)
                                     @php
                                         $habilitado = $capacitacion->pivot->habilitado_diploma ?? false;
+                                        $publicado = $capacitacion->diplomas_publicados;
                                     @endphp
                                     <tr data-nombre="{{ mb_strtolower($capacitacion->nombre) }}">
                                         <td data-label="Curso">
@@ -523,11 +524,15 @@
                                             {{ $capacitacion->duracion ?: 'No especificada' }}
                                         </td>
                                         <td data-label="Diploma" class="col-accion">
-                                            @if ($habilitado)
+                                            @if ($publicado && $habilitado)
                                                 <a href="{{ route('certificados.descargar', [$capacitacion->id, $participante->identidad]) }}"
                                                     class="download-btn" target="_blank">
                                                     <i class="fas fa-download"></i> Descargar
                                                 </a>
+                                            @elseif (!$publicado)
+                                                <span class="badge-no">
+                                                    <i class="fas fa-clock"></i> Aún no disponible
+                                                </span>
                                             @else
                                                 <span class="badge-no">
                                                     <i class="fas fa-lock"></i> No habilitado

@@ -91,9 +91,12 @@ class ParticipanteController extends Controller
 
             if ($request->hasFile('comprobante')) {
                 if ($participante->comprobante) {
-                    Storage::delete('public/' . $participante->comprobante);
+                    Storage::disk('local')->delete($participante->comprobante);
                 }
-                $participante->comprobante = $request->file('comprobante')->store('comprobantes', 'public');
+                // Disco privado (no 'public'): son comprobantes de pago con
+                // datos personales/financieros, no deben quedar accesibles
+                // por URL directa sin pasar por verComprobante().
+                $participante->comprobante = $request->file('comprobante')->store('comprobantes', 'local');
             }
         }
 
@@ -109,13 +112,29 @@ class ParticipanteController extends Controller
     }
 
 
+    /**
+     * Sirve el comprobante de pago de un participante. Requiere sesión
+     * iniciada (grupo de rutas 'auth'): son documentos con datos personales
+     * y financieros, no deben ser accesibles por URL pública directa.
+     */
+    public function verComprobante($id)
+    {
+        $participante = Participante::findOrFail($id);
+
+        if (!$participante->comprobante || !Storage::disk('local')->exists($participante->comprobante)) {
+            abort(404);
+        }
+
+        return Storage::disk('local')->response($participante->comprobante);
+    }
+
     public function destroy($id)
     {
         $participante = Participante::findOrFail($id);
         $capacitacion_id = $participante->capacitaciones->first()->id ?? null;
 
         if ($participante->comprobante) {
-            Storage::delete('public/' . $participante->comprobante);
+            Storage::disk('local')->delete($participante->comprobante);
         }
 
         $participante->capacitaciones()->detach();
@@ -208,9 +227,12 @@ class ParticipanteController extends Controller
 
             if ($request->hasFile('comprobante')) {
                 if ($participante->comprobante) {
-                    Storage::delete('public/' . $participante->comprobante);
+                    Storage::disk('local')->delete($participante->comprobante);
                 }
-                $participante->comprobante = $request->file('comprobante')->store('comprobantes', 'public');
+                // Disco privado (no 'public'): son comprobantes de pago con
+                // datos personales/financieros, no deben quedar accesibles
+                // por URL directa sin pasar por verComprobante().
+                $participante->comprobante = $request->file('comprobante')->store('comprobantes', 'local');
             }
         }
 

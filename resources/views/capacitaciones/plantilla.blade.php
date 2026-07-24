@@ -338,6 +338,44 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="actions-card">
+                    <div class="card-header" style="background: linear-gradient(135deg, {{ $capacitacion->diplomas_publicados ? '#21c87a, #1aa863' : '#6c757d, #545b62' }});">
+                        <h3><i class="fas fa-globe"></i> Diplomas públicos</h3>
+                    </div>
+                    <div class="card-body" style="text-align: center;">
+                        @if ($capacitacion->diplomas_publicados)
+                            <p style="color: #21c87a; font-weight: 600;">
+                                <i class="fas fa-check-circle"></i>
+                                Publicados: cualquier participante habilitado ya puede buscar y descargar su diploma en
+                                <code>/buscar-certificados</code>.
+                            </p>
+                        @else
+                            <p style="color: #6c757d;">
+                                <i class="fas fa-eye-slash"></i>
+                                Aún no publicados: la búsqueda pública no mostrará el botón de descarga para ninguna
+                                persona de esta capacitación hasta que los publiques.
+                            </p>
+                        @endif
+
+                        @if (!$capacitacion->plantilla || !$capacitacion->plantilla->fondo)
+                            <p style="color: #dc3545; font-size: 0.92rem;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Guarda una plantilla con imagen de fondo antes de poder publicar.
+                            </p>
+                        @else
+                            <form action="{{ route('capacitaciones.diplomas.publicar', $capacitacion->id) }}" method="POST"
+                                onsubmit="return confirm('{{ $capacitacion->diplomas_publicados ? '¿Ocultar los diplomas de la búsqueda pública?' : '¿Publicar los diplomas para que sean visibles y descargables en la búsqueda pública?' }}');">
+                                @csrf
+                                <button type="submit" class="action-btn generate"
+                                    style="{{ $capacitacion->diplomas_publicados ? 'background:#dc3545;color:#fff;border:none;' : 'background:#21c87a;color:#fff;border:none;' }}">
+                                    <i class="fas {{ $capacitacion->diplomas_publicados ? 'fa-eye-slash' : 'fa-globe' }}"></i>
+                                    <span>{{ $capacitacion->diplomas_publicados ? 'Despublicar diplomas' : 'Publicar diplomas' }}</span>
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+                </div>
             @endif
         </div>
     </div>

@@ -248,7 +248,7 @@
                                                 <td>{{ number_format($p->total ?? 0, 2) }}</td>
                                                 <td>
                                                     @if ($p->comprobante)
-                                                        <a href="{{ asset('storage/' . $p->comprobante) }}"
+                                                        <a href="{{ route('participantes.comprobante', $p->id) }}"
                                                             target="_blank" class="btn btn-sm btn-outline-primary">
                                                             Ver
                                                         </a>

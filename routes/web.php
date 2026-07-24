@@ -47,6 +47,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('capacitaciones/{id}/participantes/create', [ParticipanteController::class, 'create'])->name('capacitaciones.participantes.create');
     Route::post('capacitaciones/{id}/participantes', [ParticipanteController::class, 'store'])->name('capacitaciones.participantes.store');
     Route::delete('participantes/{id}', [ParticipanteController::class, 'destroy'])->name('participantes.destroy');
+    Route::get('participantes/{id}/comprobante', [ParticipanteController::class, 'verComprobante'])->name('participantes.comprobante');
     Route::post('/participantes/toggle-habilitado', [ParticipanteController::class, 'toggleHabilitado'])->name('participantes.toggleHabilitado');
 
     // Editar participante
@@ -62,11 +63,11 @@ Route::middleware(['auth'])->group(function () {
     //--------------------------------------------------------
     Route::get('capacitaciones/{id}/plantilla', [CapacitacionController::class, 'agregarPlantilla'])->name('capacitaciones.plantilla');
     Route::post('capacitaciones/{id}/plantilla', [CapacitacionController::class, 'guardarPlantilla'])->name('capacitaciones.plantilla.store');
-    Route::get('capacitaciones/{id}/plantilla/configurar', [PlantillaDiplomaController::class, 'configuracionPlantilla'])->name('capacitaciones.configuracion.plantilla');
     Route::get('capacitaciones/{id}/plantilla/campos', [PlantillaDiplomaController::class, 'editorCampos'])->name('capacitaciones.plantilla.campos');
     Route::post('capacitaciones/{id}/plantilla/campos', [PlantillaDiplomaController::class, 'guardarCampos'])->name('capacitaciones.plantilla.campos.store');
     Route::get('capacitaciones/{id}/diplomas', [CapacitacionController::class, 'generarDiplomas'])->name('capacitaciones.diplomas');
     Route::get('capacitaciones/{id}/diplomas/preview', [CapacitacionController::class, 'vistaPreviaDiploma'])->name('capacitaciones.diplomas.preview');
+    Route::post('capacitaciones/{id}/diplomas/publicar', [CapacitacionController::class, 'publicarDiplomas'])->name('capacitaciones.diplomas.publicar');
 
     //--------------------------------------------------------
     // 📊 DASHBOARD
@@ -122,18 +123,20 @@ Route::middleware('throttle:10,1')->group(function () {
     Route::post('/password/reset-with-code', [ResetCodeController::class, 'resetPassword'])->name('password.reset-with-code');
 });
 
-// Validación de diplomas públicos (con límite de tasa para evitar
-// enumeración/scraping masivo de identidades y diplomas)
+// Enlace antiguo de verificación (flujo reemplazado por /buscar-certificados,
+// que ya cubre lo mismo con una sola búsqueda por identidad). Se mantiene
+// como redirección por si ya se compartió/impreso en algún lado.
+Route::get('/verificar-diploma', fn() => redirect()->route('certificados.buscar', request()->query()))
+    ->name('diploma.publico.index');
+
+// Verificación pública de diplomas vía código QR (con límite de tasa para
+// evitar enumeración/scraping masivo de identidades y diplomas)
 Route::middleware('throttle:30,1')->group(function () {
-    Route::get('/verificar-diploma', [DiplomaPublicoController::class, 'index'])->name('diploma.publico.index');
-    Route::post('/verificar-diploma', [DiplomaPublicoController::class, 'buscar'])->name('diploma.publico.buscar');
-    Route::get('/diplomas/descargar/{capacitacion_id}/{identidad}', [DiplomaPublicoController::class, 'descargar'])->name('diplomas.descargar');
     Route::get('/diplomas/verificar/{codigo}', [DiplomaPublicoController::class, 'verificar'])->name('diplomas.verificar');
 
     // Certificados públicos
     Route::get('/buscar-certificados', [CertificadoController::class, 'buscar'])->name('certificados.buscar');
     Route::post('/buscar-certificados', [CertificadoController::class, 'resultado'])->name('certificados.resultado');
-    Route::get('/certificados/{capacitacion}/plantilla', [CertificadoController::class, 'agregarPlantilla'])->name('certificados.plantilla');
     Route::get('/certificados/{capacitacion}/{identidad}/descargar', [CertificadoController::class, 'descargar'])->name('certificados.descargar');
 
     // Validar Certificados QR
