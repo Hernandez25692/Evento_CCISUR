@@ -40,14 +40,17 @@ class CertificadoController extends Controller
         return view('certificados.resultado', compact('participante'));
     }
 
-    public function descargar($capacitacion_id, $participante_id)
+    public function descargar($capacitacion_id, $identidad)
     {
         $capacitacion = Capacitacion::with('plantilla')->findOrFail($capacitacion_id);
 
-        // Verificamos que el participante esté vinculado a la capacitación
-        // y que el diploma esté habilitado para descarga (mismo criterio que
-        // usa la vista pública para mostrar el botón de descarga).
-        $participante = Participante::where('id', $participante_id)
+        // Se busca por identidad (DNI), no por el id interno de la fila, para
+        // que la descarga solo sea accesible a quien conoce ese dato personal
+        // en vez de poder enumerarse recorriendo IDs consecutivos. Además se
+        // exige que el participante esté vinculado a la capacitación y que el
+        // diploma esté habilitado (mismo criterio que usa la vista pública
+        // para mostrar el botón de descarga).
+        $participante = Participante::where('identidad', $identidad)
             ->whereHas('capacitaciones', function ($query) use ($capacitacion_id) {
                 $query->where('capacitacion_id', $capacitacion_id)
                     ->where('habilitado_diploma', true);

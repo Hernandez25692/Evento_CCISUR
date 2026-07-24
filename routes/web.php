@@ -134,7 +134,7 @@ Route::middleware('throttle:30,1')->group(function () {
     Route::get('/buscar-certificados', [CertificadoController::class, 'buscar'])->name('certificados.buscar');
     Route::post('/buscar-certificados', [CertificadoController::class, 'resultado'])->name('certificados.resultado');
     Route::get('/certificados/{capacitacion}/plantilla', [CertificadoController::class, 'agregarPlantilla'])->name('certificados.plantilla');
-    Route::get('/certificados/{capacitacion}/{participante}/descargar', [CertificadoController::class, 'descargar'])->name('certificados.descargar');
+    Route::get('/certificados/{capacitacion}/{identidad}/descargar', [CertificadoController::class, 'descargar'])->name('certificados.descargar');
 
     // Validar Certificados QR
     Route::get('/validar_qr', [CertificadoController::class, 'validarQR'])->name('certificados.validarQR');

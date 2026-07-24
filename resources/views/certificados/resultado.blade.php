@@ -524,7 +524,7 @@
                                         </td>
                                         <td data-label="Diploma" class="col-accion">
                                             @if ($habilitado)
-                                                <a href="{{ route('certificados.descargar', [$capacitacion->id, $participante->id]) }}"
+                                                <a href="{{ route('certificados.descargar', [$capacitacion->id, $participante->identidad]) }}"
                                                     class="download-btn" target="_blank">
                                                     <i class="fas fa-download"></i> Descargar
                                                 </a>
