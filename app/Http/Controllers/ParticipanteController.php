@@ -63,7 +63,19 @@ class ParticipanteController extends Controller
             $participante = new Participante();
         }
 
-        $participante->fill($request->except('comprobante', 'afiliado'));
+        $participante->fill($request->only([
+            'nombre_completo',
+            'correo',
+            'telefono',
+            'empresa',
+            'puesto',
+            'edad',
+            'identidad',
+            'nivel_educativo',
+            'genero',
+            'municipio',
+            'ciudad',
+        ]));
         $participante->afiliado = $request->boolean('afiliado');
 
         // Si la capacitación es de pago, calcular precios
@@ -170,7 +182,19 @@ class ParticipanteController extends Controller
             return redirect()->back()->with('warning', '⚠️ Ya existe otro participante con esta identidad.');
         }
 
-        $participante->fill($request->except('comprobante', 'afiliado'));
+        $participante->fill($request->only([
+            'nombre_completo',
+            'correo',
+            'telefono',
+            'empresa',
+            'puesto',
+            'edad',
+            'identidad',
+            'nivel_educativo',
+            'genero',
+            'municipio',
+            'ciudad',
+        ]));
         $participante->afiliado = $request->boolean('afiliado');
 
         if (strtolower($capacitacion->medio) === 'pago') {

@@ -1,13 +1,10 @@
 services:
   - type: web
-    name: Evento_CCISUR
-    env: php
+    name: evento-ccisur
+    env: docker
     plan: free
-    buildCommand: |
-      composer install --optimize-autoloader --no-dev
-      php artisan key:generate
-      php artisan migrate --force
-    startCommand: php artisan serve --host 0.0.0.0 --port 10000
+    autoDeploy: true
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: APP_ENV
         value: production
@@ -18,19 +15,14 @@ services:
       - key: DB_CONNECTION
         value: mysql
       - key: DB_HOST
-        value: mysql.railway.internal
+        sync: false
       - key: DB_PORT
         value: 3306
       - key: DB_DATABASE
-        value: railway
+        sync: false
       - key: DB_USERNAME
-        value: root
+        sync: false
       - key: DB_PASSWORD
-        value: fPAQlShwskbNDSVYOVCzVoveRThZjJwj
-
-services:
-  - type: web
-    name: evento-ccisur
-    env: docker
-    plan: free
-    autoDeploy: true
+        sync: false
+      - key: SESSION_SECURE_COOKIE
+        value: true

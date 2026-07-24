@@ -8,6 +8,7 @@
         @csrf
 
         <input type="hidden" name="email" value="{{ $email }}">
+        <input type="hidden" name="code" value="{{ $code }}">
 
         <div class="mb-3">
             <label for="password" class="form-label">Nueva contraseña</label>

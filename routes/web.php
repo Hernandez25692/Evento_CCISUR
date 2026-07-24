@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetCodeController;
 use App\Http\Controllers\CapacitacionController;
 use App\Http\Controllers\ParticipanteController;
@@ -83,15 +82,9 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     //--------------------------------------------------------
-    // 🔚 CERRAR SESIÓN
-    //--------------------------------------------------------
-    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
-    //--------------------------------------------------------
     // 📑 REPORTES
     //--------------------------------------------------------
     Route::get('/reportes/capacitaciones', [ReporteController::class, 'index'])->name('reportes.capacitaciones');
-    Route::get('/reportes/capacitaciones/exportar', [ReporteController::class, 'exportarExcel'])->name('reportes.capacitaciones.exportar');
     Route::get('/reportes/capacitaciones/exportar', [ReporteController::class, 'exportarExcel'])->name('reportes.capacitaciones.export');
 
     //--------------------------------------------------------
@@ -121,23 +114,28 @@ Route::middleware(['auth'])->group(function () {
 //------------------------------------------------------------
 
 // Recuperación de contraseña con código
-Route::get('/password/request-code', [ResetCodeController::class, 'showRequestForm'])->name('password.request-code');
-Route::post('/password/send-code', [ResetCodeController::class, 'sendCode'])->name('password.send-code');
-Route::get('/password/verify-code', [ResetCodeController::class, 'showVerifyForm'])->name('password.verify-code-form');
-Route::post('/password/verify-code', [ResetCodeController::class, 'verifyCode'])->name('password.verify-code');
-Route::post('/password/reset-with-code', [ResetCodeController::class, 'resetPassword'])->name('password.reset-with-code');
+Route::middleware('throttle:10,1')->group(function () {
+    Route::get('/password/request-code', [ResetCodeController::class, 'showRequestForm'])->name('password.request-code');
+    Route::post('/password/send-code', [ResetCodeController::class, 'sendCode'])->name('password.send-code');
+    Route::get('/password/verify-code', [ResetCodeController::class, 'showVerifyForm'])->name('password.verify-code-form');
+    Route::post('/password/verify-code', [ResetCodeController::class, 'verifyCode'])->name('password.verify-code');
+    Route::post('/password/reset-with-code', [ResetCodeController::class, 'resetPassword'])->name('password.reset-with-code');
+});
 
-// Validación de diplomas públicos
-Route::get('/verificar-diploma', [DiplomaPublicoController::class, 'index'])->name('diploma.publico.index');
-Route::post('/verificar-diploma', [DiplomaPublicoController::class, 'buscar'])->name('diploma.publico.buscar');
-Route::get('/diplomas/descargar/{capacitacion_id}/{identidad}', [DiplomaPublicoController::class, 'descargar'])->name('diplomas.descargar');
-Route::get('/diplomas/verificar/{codigo}', [DiplomaPublicoController::class, 'verificar'])->name('diplomas.verificar');
+// Validación de diplomas públicos (con límite de tasa para evitar
+// enumeración/scraping masivo de identidades y diplomas)
+Route::middleware('throttle:30,1')->group(function () {
+    Route::get('/verificar-diploma', [DiplomaPublicoController::class, 'index'])->name('diploma.publico.index');
+    Route::post('/verificar-diploma', [DiplomaPublicoController::class, 'buscar'])->name('diploma.publico.buscar');
+    Route::get('/diplomas/descargar/{capacitacion_id}/{identidad}', [DiplomaPublicoController::class, 'descargar'])->name('diplomas.descargar');
+    Route::get('/diplomas/verificar/{codigo}', [DiplomaPublicoController::class, 'verificar'])->name('diplomas.verificar');
 
-// Certificados públicos
-Route::get('/buscar-certificados', [CertificadoController::class, 'buscar'])->name('certificados.buscar');
-Route::post('/buscar-certificados', [CertificadoController::class, 'resultado'])->name('certificados.resultado');
-Route::get('/certificados/{capacitacion}/plantilla', [CertificadoController::class, 'agregarPlantilla'])->name('certificados.plantilla');
-Route::get('/certificados/{capacitacion}/{participante}/descargar', [CertificadoController::class, 'descargar'])->name('certificados.descargar');
+    // Certificados públicos
+    Route::get('/buscar-certificados', [CertificadoController::class, 'buscar'])->name('certificados.buscar');
+    Route::post('/buscar-certificados', [CertificadoController::class, 'resultado'])->name('certificados.resultado');
+    Route::get('/certificados/{capacitacion}/plantilla', [CertificadoController::class, 'agregarPlantilla'])->name('certificados.plantilla');
+    Route::get('/certificados/{capacitacion}/{participante}/descargar', [CertificadoController::class, 'descargar'])->name('certificados.descargar');
 
-// Validar Certificados QR
-Route::get('/validar_qr', [CertificadoController::class, 'validarQR'])->name('certificados.validarQR');
+    // Validar Certificados QR
+    Route::get('/validar_qr', [CertificadoController::class, 'validarQR'])->name('certificados.validarQR');
+});

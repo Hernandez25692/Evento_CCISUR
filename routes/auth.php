@@ -52,7 +52,12 @@ Route::middleware('auth')->group(function () {
 
     Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
 
-    Route::put('password', [PasswordController::class, 'update'])->name('password.update');
+    // Nombrada distinto de 'password.update' porque ese nombre ya lo usa
+    // UserPasswordController (formulario propio de "Cambiar contraseña" en
+    // /perfil/password). Tener dos rutas con el mismo nombre hacía que
+    // route('password.update') resolviera siempre a /perfil/password,
+    // rompiendo el formulario de contraseña embebido en /profile.
+    Route::put('password', [PasswordController::class, 'update'])->name('password.update.breeze');
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');

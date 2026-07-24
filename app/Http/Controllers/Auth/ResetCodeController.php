@@ -8,8 +8,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
 
 class ResetCodeController extends Controller
 {
@@ -22,12 +22,20 @@ class ResetCodeController extends Controller
     {
         $request->validate(['email' => 'required|email|exists:users,email']);
 
-        $code = mt_rand(100000, 999999); // Código de 6 dígitos
+        $throttleKey = 'reset-send|' . Str::lower($request->email) . '|' . $request->ip();
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            return back()->withErrors([
+                'email' => 'Demasiados intentos. Inténtalo de nuevo en ' . ceil(RateLimiter::availableIn($throttleKey) / 60) . ' minuto(s).',
+            ]);
+        }
+        RateLimiter::hit($throttleKey, 3600);
+
+        $code = random_int(100000, 999999); // Código de 6 dígitos, generador criptográficamente seguro
 
         PasswordResetCode::updateOrCreate(
             ['email' => $request->email],
             [
-                'code' => $code,
+                'code' => Hash::make((string) $code),
                 'expires_at' => now()->addMinutes(10),
             ]
         );
@@ -51,23 +59,36 @@ class ResetCodeController extends Controller
             'code' => 'required|string'
         ]);
 
-        $record = PasswordResetCode::where('email', $request->email)
-            ->where('code', $request->code)
-            ->first();
+        $throttleKey = 'reset-verify|' . Str::lower($request->email) . '|' . $request->ip();
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            return back()->withErrors(['code' => 'Demasiados intentos. Solicita un nuevo código en unos minutos.']);
+        }
 
-        if (!$record || $record->isExpired()) {
+        $record = PasswordResetCode::where('email', $request->email)->first();
+
+        if (!$record || $record->isExpired() || !Hash::check($request->code, $record->code)) {
+            RateLimiter::hit($throttleKey, 600);
             return back()->withErrors(['code' => 'Código inválido o expirado']);
         }
 
-        return view('auth.reset-with-code', ['email' => $request->email]);
+        RateLimiter::clear($throttleKey);
+
+        return view('auth.reset-with-code', ['email' => $request->email, 'code' => $request->code]);
     }
 
     public function resetPassword(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
+            'code' => 'required|string',
             'password' => 'required|min:6|confirmed'
         ]);
+
+        $record = PasswordResetCode::where('email', $request->email)->first();
+
+        if (!$record || $record->isExpired() || !Hash::check($request->code, $record->code)) {
+            return back()->withErrors(['code' => 'Código inválido o expirado. Solicita uno nuevo.']);
+        }
 
         $user = User::where('email', $request->email)->firstOrFail();
         $user->update(['password' => Hash::make($request->password)]);

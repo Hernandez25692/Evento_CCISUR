@@ -45,13 +45,16 @@ class CertificadoController extends Controller
         $capacitacion = Capacitacion::with('plantilla')->findOrFail($capacitacion_id);
 
         // Verificamos que el participante esté vinculado a la capacitación
+        // y que el diploma esté habilitado para descarga (mismo criterio que
+        // usa la vista pública para mostrar el botón de descarga).
         $participante = Participante::where('id', $participante_id)
             ->whereHas('capacitaciones', function ($query) use ($capacitacion_id) {
-                $query->where('capacitacion_id', $capacitacion_id);
+                $query->where('capacitacion_id', $capacitacion_id)
+                    ->where('habilitado_diploma', true);
             })->first();
 
         if (!$participante) {
-            return redirect()->route('certificados.buscar')->with('error', '❌ Participante no encontrado en esta capacitación.');
+            return redirect()->route('certificados.buscar')->with('error', '❌ Participante no encontrado o diploma no habilitado para esta capacitación.');
         }
 
         $plantilla = $capacitacion->plantilla;
