@@ -13,6 +13,7 @@ use Dompdf\Options;
 use Illuminate\Support\Str;
 use App\Models\PlantillaGlobal;
 use App\Services\DiplomaCamposService;
+use App\Services\GhostscriptService;
 use Spatie\Browsershot\Browsershot;
 use ZipArchive;
 
@@ -323,32 +324,31 @@ class CapacitacionController extends Controller
             mkdir($outputDir, 0755, true);
         }
 
-        foreach ($participantes as $participante) {
-            // Generar PDF temporal
-            $html = view('pdf.diplomas', [
-                'capacitacion' => $capacitacion,
-                'plantilla' => $plantilla,
-                'participantes' => collect([$participante])
-            ])->render();
+        try {
+            foreach ($participantes as $participante) {
+                // Generar PDF temporal
+                $html = view('pdf.diplomas', [
+                    'capacitacion' => $capacitacion,
+                    'plantilla' => $plantilla,
+                    'participantes' => collect([$participante])
+                ])->render();
 
-            $pdfPath = "{$outputDir}/" . Str::slug($participante->nombre_completo) . ".pdf";
-            $pngPath = "{$outputDir}/" . Str::slug($participante->nombre_completo) . ".png";
+                $pdfPath = "{$outputDir}/" . Str::slug($participante->nombre_completo) . ".pdf";
+                $pngPath = "{$outputDir}/" . Str::slug($participante->nombre_completo) . ".png";
 
-            $papel = DiplomaCamposService::paperSize($plantilla->fondo_width, $plantilla->fondo_height);
-            $orientacionPdf = $papel['orientation'] ?? ($plantilla->orientacion === 'vertical' ? 'portrait' : 'landscape');
-            PDF::loadHTML($html)->setPaper($papel['size'], $orientacionPdf)->save($pdfPath);
+                $papel = DiplomaCamposService::paperSize($plantilla->fondo_width, $plantilla->fondo_height);
+                $orientacionPdf = $papel['orientation'] ?? ($plantilla->orientacion === 'vertical' ? 'portrait' : 'landscape');
+                PDF::loadHTML($html)->setPaper($papel['size'], $orientacionPdf)->save($pdfPath);
 
-            // Convertir PDF a PNG con Imagick
-            $imagick = new \Imagick();
-            $imagick->setResolution(300, 300); // Alta calidad
-            $imagick->readImage($pdfPath);
-            $imagick->setImageFormat('png');
-            $imagick->writeImage($pngPath);
-            $imagick->clear();
-            $imagick->destroy();
+                // Convertir PDF a PNG con Ghostscript (alta calidad, sin
+                // depender de la extensión PHP Imagick).
+                GhostscriptService::pdfAPng($pdfPath, $pngPath, 300);
 
-            // Opcional: borrar PDF temporal
-            unlink($pdfPath);
+                // Opcional: borrar PDF temporal
+                unlink($pdfPath);
+            }
+        } catch (\RuntimeException $e) {
+            return back()->with('error', $e->getMessage());
         }
 
         // Crear ZIP

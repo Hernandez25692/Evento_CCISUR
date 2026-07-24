@@ -69,25 +69,39 @@
             gap: 1rem;
         }
 
+        .back-link {
+            color: #fff;
+            font-size: 1.3rem;
+            opacity: .85;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
+
         .logo-icon {
-            width: 50px;
-            height: 50px;
-            background-color: rgba(255, 255, 255, 0.2);
+            width: 44px;
+            height: 44px;
+            background-color: rgba(255, 255, 255, 0.15);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
+            flex-shrink: 0;
         }
 
         .logo-text {
             font-weight: 700;
-            font-size: 1.5rem;
+            font-size: 1.35rem;
+            letter-spacing: .5px;
         }
 
         .logo-subtext {
-            font-size: 0.9rem;
-            opacity: 0.8;
+            font-size: 0.85rem;
+            opacity: 0.85;
             font-weight: 300;
         }
 
@@ -358,21 +372,17 @@
 <body class="app-container">
     <!-- Header -->
     <header class="app-header">
-        <div class="container">
-            <div class="logo-container">
-                <div class="logo-icon" style="background: linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%); box-shadow: 0 2px 8px rgba(67,97,238,0.15);">
-                    <i class="fas fa-certificate"></i>
-                </div>
-                <div>
-                <a href="{{ route('home') }}" class="me-3" title="Regresar al inicio" style="color: #fff; font-size: 1.5rem;">
-                    <i class="fas fa-arrow-left"></i>
-                </a>
-                    <div class="logo-text" style="letter-spacing: 1px; font-size: 1.7rem;">
-                        <span style="color: #4cc9f0;">FORMACIONES</span> <span style="color: #fff;">CCISUR</span>
-                    </div>
-                    <div class="logo-subtext" style="font-size: 1rem; color: #e6f0ff;">
-                        Plataforma de gestión de Formaciones para la <span style="font-weight:500;">Cámara de Comercio e Industrias del Sur</span>.
-                    </div>
+        <div class="container logo-container">
+            <a href="{{ route('home') }}" class="back-link" title="Regresar al inicio">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="logo-icon">
+                <i class="fas fa-certificate"></i>
+            </div>
+            <div>
+                <div class="logo-text"><span style="color: #4cc9f0;">FORMACIONES</span> CCISUR</div>
+                <div class="logo-subtext">
+                    Plataforma de gestión de Formaciones para la Cámara de Comercio e Industrias del Sur.
                 </div>
             </div>
         </div>

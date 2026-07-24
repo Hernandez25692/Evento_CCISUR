@@ -3,558 +3,581 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Consulta de Certificados</title>
+    <title>Mis Certificados | CCISUR</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- FontAwesome CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         :root {
             --primary: #4361ee;
-            --secondary: #4cc9f0;
-            --bg: #f1f3f5;
-            --white: #fff;
+            --primary-dark: #3a0ca3;
+            --primary-light: #e6f0ff;
             --text: #2b2d42;
-            --gray: #adb5bd;
-            --shadow: 0 4px 24px 0 rgba(67, 97, 238, 0.08);
-            --radius: 1.25rem;
-            --transition: all .3s cubic-bezier(.4, 0, .2, 1);
+            --text-light: #858796;
+            --white: #ffffff;
+            --gray: #f8f9fa;
+            --border: #e9ecef;
+            --success: #4bb543;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --transition: all 0.2s ease;
         }
 
-        .certificados-publicos {
-            min-height: 100vh;
-            background: var(--bg);
-            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
             color: var(--text);
-            padding-bottom: 2rem;
+            background-color: var(--gray);
+            line-height: 1.6;
         }
 
-        .hero {
-            background: linear-gradient(120deg, var(--primary) 60%, var(--secondary) 100%);
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .app-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: var(--white);
-            padding: clamp(2rem, 8vw, 4.5rem) 1rem 2.5rem 1rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+            padding: 1.25rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            left: -10vw;
-            top: -10vw;
-            width: 40vw;
-            height: 40vw;
-            background: radial-gradient(circle, #fff 0%, #4cc9f0 80%, transparent 100%);
-            opacity: 0.10;
-            z-index: 0;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .hero-icon {
-            font-size: clamp(3rem, 8vw, 5rem);
-            margin-bottom: 1.5rem;
-            color: #fff;
-            filter: drop-shadow(0 4px 16px rgba(67, 97, 238, 0.18));
-        }
-
-        .hero-title {
-            font-size: clamp(2rem, 6vw, 3rem);
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-            letter-spacing: -1px;
-        }
-
-        .hero-desc {
-            font-size: clamp(1.1rem, 3vw, 1.35rem);
-            font-weight: 400;
-            opacity: .95;
-            margin-bottom: 0;
-        }
-
-        .hero-highlight {
-            color: var(--secondary);
-            font-weight: 600;
-        }
-
-        .main-content {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: clamp(1rem, 4vw, 2.5rem) 1rem 0 1rem;
-        }
-
-        .participant-card {
+        .header-inner {
             display: flex;
             align-items: center;
-            background: var(--white);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: clamp(1.25rem, 4vw, 2.5rem);
-            margin-bottom: 2.5rem;
-            gap: 2rem;
+            gap: 1rem;
+        }
+
+        .back-link {
+            color: #fff;
+            font-size: 1.3rem;
+            opacity: .85;
             transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .participant-card:hover {
-            box-shadow: 0 8px 32px 0 rgba(67, 97, 238, 0.13);
-            transform: translateY(-4px) scale(1.01);
-        }
-
-        .avatar {
             flex-shrink: 0;
-            width: clamp(70px, 12vw, 100px);
-            height: clamp(70px, 12vw, 100px);
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background-color: rgba(255, 255, 255, 0.15);
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary) 60%, var(--secondary) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #fff;
-            font-size: clamp(2.5rem, 6vw, 3.5rem);
-            box-shadow: 0 2px 12px 0 rgba(67, 97, 238, 0.10);
+            font-size: 1.3rem;
+            flex-shrink: 0;
         }
 
-        .participant-info {
-            flex: 1 1 0;
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.35rem;
+            letter-spacing: .5px;
+        }
+
+        .logo-text span:first-child {
+            color: #4cc9f0;
+        }
+
+        .logo-subtext {
+            font-size: .85rem;
+            opacity: .85;
+            font-weight: 300;
+        }
+
+        /* Main */
+        .main-content {
+            flex: 1;
+            padding: 2rem 0 3rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1.25rem;
+        }
+
+        /* Participant summary bar */
+        .participant-bar {
+            display: flex;
+            align-items: center;
+            gap: 1.1rem;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .participant-avatar {
+            flex-shrink: 0;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .participant-details {
             min-width: 0;
+            flex: 1;
         }
 
         .participant-name {
-            font-size: clamp(1.3rem, 4vw, 2rem);
-            font-weight: 700;
-            margin-bottom: 1.1rem;
-            color: var(--primary);
-            letter-spacing: -0.5px;
-        }
-
-        .info-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.2rem 2.5rem;
-        }
-
-        .info-item {
-            display: flex;
-            align-items: center;
-            font-size: clamp(1rem, 2.5vw, 1.1rem);
-            color: var(--text);
-            gap: 0.7rem;
-        }
-
-        .info-item i {
-            color: var(--secondary);
-            font-size: 1.1em;
-        }
-
-        .diplomas-section {
-            margin-top: 1.5rem;
-        }
-
-        .diplomas-title {
-            font-size: clamp(1.2rem, 3vw, 1.5rem);
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            gap: 0.7rem;
-        }
-
-        .diplomas-title i {
-            color: var(--primary);
-            font-size: 1.2em;
-        }
-
-        .diplomas-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
-
-        @media (min-width: 600px) {
-            .diplomas-grid {
-                grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-            }
-        }
-
-        .diploma-card {
-            display: flex;
-            align-items: center;
-            background: var(--white);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: clamp(1rem, 3vw, 1.5rem);
-            gap: 1.5rem;
-            transition: var(--transition);
-            opacity: 0;
-            transform: translateY(30px);
-        }
-
-        .diploma-card:hover {
-            box-shadow: 0 8px 32px 0 rgba(67, 97, 238, 0.13);
-            transform: translateY(-4px) scale(1.01);
-        }
-
-        .diploma-icon {
-            flex-shrink: 0;
-            width: 60px;
-            height: 60px;
-            border-radius: 1rem;
-            background: linear-gradient(135deg, var(--primary) 60%, var(--secondary) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: 2rem;
-            box-shadow: 0 2px 12px 0 rgba(67, 97, 238, 0.10);
-        }
-
-        .diploma-info {
-            flex: 1 1 0;
-            min-width: 0;
-        }
-
-        .diploma-title {
-            font-size: clamp(1.1rem, 2.5vw, 1.25rem);
             font-weight: 600;
-            margin-bottom: 0.7rem;
-            color: var(--primary);
-            letter-spacing: -0.5px;
+            font-size: 1.15rem;
+            color: var(--text);
         }
 
-        .diploma-meta {
+        .participant-meta {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.8rem 2.2rem;
-            font-size: clamp(0.98rem, 2vw, 1.05rem);
-            color: var(--gray);
+            gap: .35rem 1.25rem;
+            font-size: .88rem;
+            color: var(--text-light);
+            margin-top: .15rem;
         }
 
-        .diploma-meta i {
-            color: var(--secondary);
-            margin-right: 0.4em;
+        .participant-meta i {
+            color: var(--primary);
+            margin-right: .35em;
         }
 
-        .diploma-actions {
+        .participant-count {
             flex-shrink: 0;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            font-weight: 600;
+            font-size: .85rem;
+            padding: .5em .9em;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        /* Toolbar: search */
+        .toolbar {
             display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 0.5rem;
-            min-width: 120px;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-title {
+            font-weight: 600;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: .5em;
+        }
+
+        .toolbar-title i {
+            color: var(--primary);
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 320px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: .9rem;
+        }
+
+        .search-box input {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius);
+            padding: .6rem 1rem .6rem 2.4rem;
+            font-family: inherit;
+            font-size: .92rem;
+            background: var(--white);
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.12);
+        }
+
+        /* Table card */
+        .table-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+
+        table.diplomas-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .diplomas-table thead th {
+            text-align: left;
+            font-size: .78rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: var(--text-light);
+            font-weight: 600;
+            background: var(--gray);
+            padding: .9rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .diplomas-table tbody tr {
+            transition: var(--transition);
+        }
+
+        .diplomas-table tbody tr:not(:last-child) {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .diplomas-table tbody tr:hover {
+            background: var(--primary-light);
+        }
+
+        .diplomas-table td {
+            padding: 1rem 1.25rem;
+            font-size: .92rem;
+            vertical-align: middle;
+        }
+
+        .curso-nombre {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .curso-nombre i {
+            color: var(--primary);
+            margin-right: .5em;
+        }
+
+        .col-accion {
+            text-align: right;
         }
 
         .download-btn {
             display: inline-flex;
             align-items: center;
-            gap: 0.5em;
-            background: linear-gradient(90deg, var(--primary) 60%, var(--secondary) 100%);
+            gap: .5em;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: #fff;
             border: none;
-            border-radius: 0.7em;
-            padding: 0.65em 1.2em;
-            font-weight: 600;
-            font-size: 1em;
+            border-radius: .6em;
+            padding: .55em 1.1em;
+            font-weight: 500;
+            font-size: .88rem;
             text-decoration: none;
-            box-shadow: 0 2px 8px 0 rgba(67, 97, 238, 0.10);
             transition: var(--transition);
-            cursor: pointer;
+            white-space: nowrap;
         }
 
         .download-btn:hover {
-            background: linear-gradient(90deg, var(--secondary) 60%, var(--primary) 100%);
-            transform: translateY(-2px) scale(1.03);
-            box-shadow: 0 4px 16px 0 rgba(67, 97, 238, 0.13);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
         }
 
         .badge-no {
             display: inline-flex;
             align-items: center;
-            gap: 0.5em;
-            background: #f1f3f5;
-            color: #adb5bd;
-            border-radius: 0.7em;
-            padding: 0.5em 1em;
-            font-weight: 600;
-            font-size: 0.98em;
-            border: 1px solid #e0e7ff;
+            gap: .5em;
+            background: var(--gray);
+            color: var(--text-light);
+            border-radius: .6em;
+            padding: .55em 1.1em;
+            font-weight: 500;
+            font-size: .85rem;
+            border: 1px solid var(--border);
+            white-space: nowrap;
         }
 
+        .fila-oculta-filtro {
+            display: none !important;
+        }
+
+        /* Empty states */
         .empty-state {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 1.2rem;
-            background: #fff;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: clamp(1.2rem, 4vw, 2rem);
-            margin: 2.5rem 0;
-            color: #adb5bd;
-            font-size: 1.1rem;
-            justify-content: center;
-            text-align: left;
+            text-align: center;
+            gap: .75rem;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 3rem 1.5rem;
+            color: var(--text-light);
         }
 
-        .empty-icon {
-            font-size: 2.5rem;
-            color: #adb5bd;
+        .empty-state i {
+            font-size: 2.6rem;
+            color: var(--primary-light);
         }
 
+        .empty-state h2 {
+            font-size: 1.15rem;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .empty-state p {
+            font-size: .92rem;
+            max-width: 360px;
+        }
+
+        /* Mobile: table -> stacked cards */
         @media (max-width: 700px) {
-            .participant-card {
-                flex-direction: column;
-                gap: 1.2rem;
-                text-align: center;
-                align-items: center;
+            .diplomas-table thead {
+                display: none;
             }
 
-            .info-list {
-                flex-direction: column;
-                gap: 0.7rem;
-                align-items: center;
+            .diplomas-table,
+            .diplomas-table tbody,
+            .diplomas-table tr,
+            .diplomas-table td {
+                display: block;
+                width: 100%;
             }
 
-            .diploma-card {
-                flex-direction: column;
-                align-items: stretch;
-                text-align: center;
-                gap: 1rem;
+            .diplomas-table tbody tr {
+                padding: 1rem 1.25rem;
             }
 
-            .diploma-actions {
-                align-items: center;
-                min-width: 0;
+            .diplomas-table td {
+                padding: .3rem 0;
+                text-align: left !important;
+            }
+
+            .diplomas-table td[data-label]::before {
+                content: attr(data-label);
+                display: block;
+                font-size: .72rem;
+                text-transform: uppercase;
+                letter-spacing: .04em;
+                color: var(--text-light);
+                font-weight: 600;
+                margin-bottom: .1rem;
+            }
+
+            .col-accion {
+                margin-top: .5rem;
+            }
+
+            .search-box {
+                flex-basis: 100%;
+                max-width: none;
+            }
+
+            .download-btn,
+            .badge-no {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .participant-bar {
+                flex-wrap: wrap;
+            }
+
+            .participant-count {
+                flex-basis: 100%;
+                margin-left: 0;
+                margin-top: .5rem;
             }
         }
 
-        @media (max-width: 480px) {
-            .main-content {
-                padding: 1rem 0.2rem 0 0.2rem;
-            }
-
-            .participant-card,
-            .empty-state {
-                padding: 1rem;
-            }
-
-            .diploma-card {
-                padding: 1rem;
-            }
-        }
-
-        .scroll-reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.7s cubic-bezier(.4, 0, .2, 1), transform 0.7s cubic-bezier(.4, 0, .2, 1);
-        }
-
-        .scroll-reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
+        /* Footer */
+        .app-footer {
+            background-color: var(--white);
+            padding: 1.5rem 0;
+            text-align: center;
+            font-size: .88rem;
+            color: var(--text-light);
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
         }
     </style>
 </head>
 
-<body>
-    <div class="certificados-publicos">
-        <!-- Hero Section -->
-        <section class="hero">
-            <div class="hero-content">
-                <div class="certificate-icon">
-                    <img src="{{ asset('storage/logo_diploma/ccisur para fondo azul.png') }}" alt="Logo CCISUR"
-                        style="max-width: 120px; max-height: 120px;">
-                </div>
-                <h1 class="hero-title">¡Tus logros, tu orgullo!</h1>
-                <p class="hero-desc">
-                    Consulta y descarga tus diplomas de capacitación.<br>
-                    <span class="hero-highlight">¡Sigue creciendo y celebrando tus éxitos!</span>
-                </p>
-            </div>
-            <a href="{{ route('certificados.buscar') }}" class="download-btn"
-                style="position:absolute;top:1.5rem;left:1.5rem;z-index:2;background: #222;color: #fff;">
+<body class="app-container">
+    <header class="app-header">
+        <div class="container header-inner">
+            <a href="{{ route('certificados.buscar') }}" class="back-link" title="Buscar otro certificado">
                 <i class="fas fa-arrow-left"></i>
             </a>
-        </section>
+            <div class="logo-icon">
+                <i class="fas fa-certificate"></i>
+            </div>
+            <div>
+                <div class="logo-text"><span>FORMACIONES</span> CCISUR</div>
+                <div class="logo-subtext">Mis Certificados</div>
+            </div>
+        </div>
+    </header>
 
-        <main class="main-content">
+    <main class="main-content">
+        <div class="container">
             @if (!$participante)
                 <div class="empty-state">
-                    <i class="fas fa-user-slash empty-icon"></i>
-                    <div>
-                        <h2>No encontramos resultados</h2>
-                        <p>No existe ningún participante con esa identidad.</p>
-                    </div>
+                    <i class="fas fa-user-slash"></i>
+                    <h2>No encontramos resultados</h2>
+                    <p>No existe ningún participante registrado con esa identidad. Verifica el número e inténtalo de
+                        nuevo.</p>
+                    <a href="{{ route('certificados.buscar') }}" class="download-btn" style="margin-top:.5rem;">
+                        <i class="fas fa-search"></i> Buscar de nuevo
+                    </a>
                 </div>
             @else
-                <!-- Participant Card -->
-                <section class="participant-card">
-                    <div class="avatar">
-                        <i class="fas fa-user-circle"></i>
+                <div class="participant-bar">
+                    <div class="participant-avatar">
+                        {{ strtoupper(mb_substr($participante->nombre_completo, 0, 1)) }}
                     </div>
-                    <div class="participant-info">
-                        <h2 class="participant-name">{{ $participante->nombre_completo }}</h2>
-                        <div class="info-list">
-                            <div class="info-item">
-                                <i class="fas fa-envelope"></i>
-                                <span>{{ $participante->correo ?: 'No especificado' }}</span>
-                            </div>
-                            <div class="info-item">
-                                <i class="fas fa-id-card"></i>
-                                <span>{{ $participante->identidad }}</span>
-                            </div>
-                            <div class="info-item">
-                                <i class="fas fa-graduation-cap"></i>
-                                <span>{{ $participante->capacitaciones->count() }} capacitación(es)</span>
-                            </div>
+                    <div class="participant-details">
+                        <div class="participant-name">{{ $participante->nombre_completo }}</div>
+                        <div class="participant-meta">
+                            <span><i
+                                    class="fas fa-id-card"></i>{{ $participante->identidad ? substr($participante->identidad, 0, 3) . str_repeat('*', max(strlen($participante->identidad) - 6, 0)) . substr($participante->identidad, -3) : 'No especificado' }}</span>
+                            <span><i
+                                    class="fas fa-envelope"></i>{{ $participante->correo ? preg_replace('/(^.).*(@.*$)/', '$1***$2', $participante->correo) : 'No especificado' }}</span>
                         </div>
                     </div>
-                </section>
+                    <div class="participant-count">
+                        {{ $participante->capacitaciones->count() }}
+                        {{ $participante->capacitaciones->count() === 1 ? 'capacitación' : 'capacitaciones' }}
+                    </div>
+                </div>
 
-                <!-- Diplomas List -->
-                <section class="diplomas-section">
-                    <h3 class="diplomas-title">
-                        <i class="fas fa-certificate"></i> Diplomas Disponibles
-                    </h3>
-                    @if ($participante->capacitaciones->isEmpty())
-                        <div class="empty-state">
-                            <i class="fas fa-info-circle empty-icon"></i>
-                            <div>
-                                <h2>Sin diplomas registrados</h2>
-                                <p>Este participante aún no tiene diplomas disponibles.</p>
-                            </div>
+                @if ($participante->capacitaciones->isEmpty())
+                    <div class="empty-state">
+                        <i class="fas fa-info-circle"></i>
+                        <h2>Sin diplomas registrados</h2>
+                        <p>Este participante aún no tiene capacitaciones ni diplomas disponibles.</p>
+                    </div>
+                @else
+                    <div class="toolbar">
+                        <div class="toolbar-title">
+                            <i class="fas fa-graduation-cap"></i> Diplomas disponibles
                         </div>
-                    @else
-                        <div class="diplomas-grid">
-                            @foreach ($participante->capacitaciones as $capacitacion)
-                                @php
-                                    $habilitado = $capacitacion->pivot->habilitado_diploma ?? false;
-                                @endphp
-                                <div class="diploma-card scroll-reveal">
-                                    <div class="diploma-icon">
-                                        <i class="fas fa-book-open"></i>
-                                    </div>
-                                    <div class="diploma-info">
-                                        <h4 class="diploma-title">{{ $capacitacion->nombre }}</h4>
-                                        <div class="diploma-meta">
-                                            <div>
-                                                <i class="fas fa-calendar-day"></i>
-                                                <span>{{ \Carbon\Carbon::parse($capacitacion->fecha_inicio)->isoFormat('D [de] MMMM [de] YYYY') }}</span>
-                                            </div>
-                                            <div>
-                                                <i class="fas fa-laptop"></i>
-                                                <span>
-                                                    {{ ucfirst($capacitacion->tipo_formacion ?? 'No especificada') }}
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <i class="fas fa-clock"></i>
-                                                <span>{{ $capacitacion->forma ?: 'No especificada' }}</span>
-                                            </div>
-                                            <div>
-                                                <i class="fas fa-clock"></i>
-                                                <span>{{ $capacitacion->duracion ?: 'Duración no especificada' }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="diploma-actions">
-                                        @if ($habilitado)
-                                            <a href="{{ route('certificados.descargar', [$capacitacion->id, $participante->id]) }}"
-                                                class="download-btn" target="_blank">
-                                                <i class="fas fa-download"></i> Descargar Diploma
-                                            </a>
-                                        @else
-                                            <span class="badge-no">
-                                                <i class="fas fa-lock"></i> No habilitado
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="filtroCurso" placeholder="Buscar curso...">
+                        </div>
+                    </div>
+
+                    <div class="table-card">
+                        <table class="diplomas-table">
+                            <thead>
+                                <tr>
+                                    <th>Curso</th>
+                                    <th>Fecha</th>
+                                    <th>Tipo de Formación</th>
+                                    <th>Duración (H)</th>
+                                    <th class="col-accion">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cuerpoTablaDiplomas">
+                                @foreach ($participante->capacitaciones as $capacitacion)
+                                    @php
+                                        $habilitado = $capacitacion->pivot->habilitado_diploma ?? false;
+                                    @endphp
+                                    <tr data-nombre="{{ mb_strtolower($capacitacion->nombre) }}">
+                                        <td data-label="Curso">
+                                            <span class="curso-nombre">
+                                                <i class="fas fa-book-open"></i>{{ $capacitacion->nombre }}
                                             </span>
-                                        @endif
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-                </section>
+                                        </td>
+                                        <td data-label="Fecha">
+                                            {{ \Carbon\Carbon::parse($capacitacion->fecha_inicio)->locale('es')->isoFormat('D [de] MMMM [de] YYYY') }}
+                                        </td>
+                                        <td data-label="Modalidad">
+                                            {{ ucfirst($capacitacion->tipo_formacion ?? 'No especificada') }}
+                                        </td>
+                                        <td data-label="Duración">
+                                            {{ $capacitacion->duracion ?: 'No especificada' }}
+                                        </td>
+                                        <td data-label="Diploma" class="col-accion">
+                                            @if ($habilitado)
+                                                <a href="{{ route('certificados.descargar', [$capacitacion->id, $participante->id]) }}"
+                                                    class="download-btn" target="_blank">
+                                                    <i class="fas fa-download"></i> Descargar
+                                                </a>
+                                            @else
+                                                <span class="badge-no">
+                                                    <i class="fas fa-lock"></i> No habilitado
+                                                </span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="empty-state fila-oculta-filtro" id="sinResultadosFiltro" style="margin-top:1rem;">
+                        <i class="fas fa-search"></i>
+                        <h2>Sin coincidencias</h2>
+                        <p>Ningún curso coincide con tu búsqueda.</p>
+                    </div>
+                @endif
             @endif
-        </main>
-    </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Scroll reveal for diploma cards
-            function revealOnScroll() {
-                document.querySelectorAll('.scroll-reveal').forEach(function(el, i) {
-                    const rect = el.getBoundingClientRect();
-                    if (rect.top < window.innerHeight - 60) {
-                        setTimeout(() => el.classList.add('visible'), i * 80);
-                    }
-                });
-            }
-            revealOnScroll();
-            window.addEventListener('scroll', revealOnScroll);
-            // Animate participant card and empty state
-            setTimeout(() => {
-                document.querySelectorAll('.participant-card, .empty-state').forEach(el => {
-                    el.style.opacity = '1';
-                    el.style.transform = 'translateY(0)';
-                    el.style.transition =
-                        'opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1)';
-                });
-            }, 200);
-        });
-    </script>
-    <!-- Footer Customizado - Solo esto tiene nuevos estilos -->
-    <footer class="footer-custom"
-        style="background: linear-gradient(90deg, var(--primary) 60%, var(--secondary) 100%); color: #fff; padding: 1.5rem 0 1rem 0; text-align: center; margin-top: 3rem; box-shadow: 0 -2px 16px 0 rgba(67,97,238,0.08);">
-        <div class="container" style="max-width: 900px; margin: 0 auto; padding: 0 1rem;">
-            <p style="margin: 0; font-size: 1.05rem; letter-spacing: 0.5px;">
-                &copy; {{ date('Y') }} <strong>Formaciones CCISUR</strong> - Todos los derechos reservados
-            </p>
+        </div>
+    </main>
+
+    <footer class="app-footer">
+        <div class="container">
+            &copy; {{ date('Y') }} <strong>Formaciones CCISUR</strong> - Todos los derechos reservados
         </div>
     </footer>
-    <style>
-        .footer-custom {
-            background: linear-gradient(90deg, var(--primary) 60%, var(--secondary) 100%);
-            color: #fff;
-            padding: 1.5rem 0 1rem 0;
-            text-align: center;
-            margin-top: 3rem;
-            box-shadow: 0 -2px 16px 0 rgba(67, 97, 238, 0.08);
-        }
 
-        .footer-custom .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.getElementById('filtroCurso');
+            if (!input) return;
 
-        .footer-custom p {
-            margin: 0;
-            font-size: 1.05rem;
-            letter-spacing: 0.5px;
-        }
+            const filas = Array.from(document.querySelectorAll('#cuerpoTablaDiplomas tr'));
+            const sinResultados = document.getElementById('sinResultadosFiltro');
 
-        @media (max-width: 600px) {
-            .footer-custom {
-                padding: 1rem 0 0.7rem 0;
-                font-size: 0.98rem;
-            }
+            input.addEventListener('input', function() {
+                const termino = input.value.trim().toLowerCase();
+                let visibles = 0;
 
-            .footer-custom .container {
-                padding: 0 0.5rem;
-            }
-        }
+                filas.forEach(function(fila) {
+                    const coincide = fila.dataset.nombre.includes(termino);
+                    fila.classList.toggle('fila-oculta-filtro', !coincide);
+                    if (coincide) visibles++;
+                });
 
-        @media (max-width: 400px) {
-            .footer-custom p {
-                font-size: 0.93rem;
-            }
-        }
-    </style>
+                sinResultados.classList.toggle('fila-oculta-filtro', visibles !== 0);
+            });
+        });
+    </script>
 </body>
 
 </html>
