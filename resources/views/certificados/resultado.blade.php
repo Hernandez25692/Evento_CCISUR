@@ -703,7 +703,7 @@
                 <i class="fas fa-arrow-left"></i>
             </a>
             <a href="https://www.ccisur.org/" target="_blank" rel="noopener" class="header-logo">
-                <img src="{{ asset('storage/logo_diploma/' . rawurlencode('ccisur para fondo azul.png')) }}"
+                <img src="{{ asset('storage/logo_diploma/' . rawurlencode('Logo_Diploma.png')) }}"
                     alt="CCISUR - Cámara de Comercio e Industrias del Sur">
             </a>
             <div class="header-titles">
@@ -844,7 +844,7 @@
             <div class="ccisur-footer-grid">
                 <div class="ccisur-footer-brand">
                     <a class="ccisur-footer-logo" href="https://www.ccisur.org/" target="_blank" rel="noopener">
-                        <img src="{{ asset('storage/logo_diploma/' . rawurlencode('ccisur para fondo azul.png')) }}"
+                        <img src="{{ asset('storage/logo_diploma/' . rawurlencode('Logo_Diploma.png')) }}"
                             alt="CCISUR - Cámara de Comercio e Industrias del Sur" loading="lazy" decoding="async">
                     </a>
                     <h3>Cámara de Comercio e Industrias del Sur</h3>
