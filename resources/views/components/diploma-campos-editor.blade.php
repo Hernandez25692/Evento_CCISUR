@@ -271,17 +271,14 @@
             transition: background-color .1s, outline-color .1s;
         }
 
-        /* Sin relleno ni fondo permanentes: a tamaños de fuente grandes, un
-           fondo blanco semitransparente constante tapaba buena parte del
-           diseño de la plantilla. El contorno punteado, fino y discreto,
-           basta para ubicar el campo sin ocultar lo que hay debajo. */
-        .campo-handle.es-texto {
-            outline: 1px dashed rgba(37, 99, 235, .45);
-        }
-
+        /* Sin contorno ni fondo por defecto: se ve solo el texto, tal cual
+           tal cual se vería en el PDF, sin ningún recuadro que lo tape o que
+           dé la impresión de un área más grande que el texto real. El
+           contorno aparece nada más al pasar el mouse (para saber qué se
+           puede arrastrar) y en el campo seleccionado (para saber cuál se
+           está editando). */
         .campo-handle.es-texto:hover {
-            outline-color: rgba(37, 99, 235, .9);
-            background: rgba(191, 219, 254, .3);
+            outline: 1px dashed rgba(37, 99, 235, .9);
         }
 
         .campo-handle.oculto {
@@ -293,8 +290,8 @@
         }
 
         .campo-handle.seleccionado {
-            outline: 2px solid #2563eb;
-            outline-offset: 2px;
+            outline: 1.5px solid #2563eb;
+            outline-offset: 3px;
             z-index: 10;
         }
 
