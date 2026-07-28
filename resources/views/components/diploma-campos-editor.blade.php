@@ -266,18 +266,22 @@
             transform: translate(-50%, -50%);
             cursor: move;
             touch-action: none;
-            border-radius: 4px;
-            padding: 2px 6px;
-            transition: background-color .1s;
+            border-radius: 3px;
+            padding: 0 2px;
+            transition: background-color .1s, outline-color .1s;
         }
 
+        /* Sin relleno ni fondo permanentes: a tamaños de fuente grandes, un
+           fondo blanco semitransparente constante tapaba buena parte del
+           diseño de la plantilla. El contorno punteado, fino y discreto,
+           basta para ubicar el campo sin ocultar lo que hay debajo. */
         .campo-handle.es-texto {
-            background: rgba(255, 255, 255, .6);
-            outline: 1px dashed rgba(37, 99, 235, .65);
+            outline: 1px dashed rgba(37, 99, 235, .45);
         }
 
         .campo-handle.es-texto:hover {
-            background: rgba(191, 219, 254, .85);
+            outline-color: rgba(37, 99, 235, .9);
+            background: rgba(191, 219, 254, .3);
         }
 
         .campo-handle.oculto {

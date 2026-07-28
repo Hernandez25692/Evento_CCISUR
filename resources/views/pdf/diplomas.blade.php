@@ -10,6 +10,16 @@
         $anchoIn = $plantilla->fondo_width ? $plantilla->fondo_width / 96 : null;
         $altoIn = $plantilla->fondo_height ? $plantilla->fondo_height / 96 : null;
 
+        // Ancho/alto reales de .diploma-container, en las mismas unidades y
+        // con la misma lógica que el tamaño de @page de abajo. Dompdf no
+        // soporta la unidad "vh", así que "height:100vh" en el contenedor no
+        // hace nada (queda con altura automática, más chica que la página) y
+        // desplaza hacia arriba el top:% de todos los campos respecto a
+        // donde se ven en el editor. Con un alto/ancho explícito en pulgadas
+        // el contenedor sí mide exactamente el tamaño de la página.
+        $anchoContenedor = $anchoIn ? "{$anchoIn}in" : ($plantilla->orientacion === 'vertical' ? '8.5in' : '11in');
+        $altoContenedor = $altoIn ? "{$altoIn}in" : ($plantilla->orientacion === 'vertical' ? '11in' : '8.5in');
+
         // Posiciones y estilos configurables de cada campo (o valores por
         // defecto si la plantilla nunca se configuró en el editor).
         $campos = \App\Services\DiplomaCamposService::resolve($plantilla->campos ?? null);
@@ -79,8 +89,8 @@
 
         .diploma-container {
             position: relative;
-            width: 100%;
-            height: 100vh;
+            width: {{ $anchoContenedor }};
+            height: {{ $altoContenedor }};
             box-sizing: border-box;
         }
 
