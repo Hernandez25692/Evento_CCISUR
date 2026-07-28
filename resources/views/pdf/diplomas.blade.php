@@ -21,21 +21,37 @@
         $defecto = \App\Services\DiplomaCamposService::contenidoPorDefecto($capacitacion, $plantilla);
 
         // Arma el bloque de estilo inline (posición + tipografía) de un campo.
+        // Debe producir exactamente las mismas propiedades que
+        // estiloBadge() en el componente del editor
+        // (resources/views/components/diploma-campos-editor.blade.php), para
+        // que lo que se ve al posicionar sea lo que sale en el PDF final.
         $estiloCampo = function (string $clave) use ($campos, $fuentes) {
             $c = $campos[$clave];
             $fuente = $fuentes[$c['font_family']]['pdf'] ?? $fuentes['visby-light']['pdf'];
 
             return sprintf(
-                'left:%s%%; top:%s%%; font-size:%dpx; font-family:%s; font-weight:%s; text-decoration:%s; color:%s; text-align:%s;',
+                'left:%s%%; top:%s%%; font-size:%dpx; font-family:%s; font-weight:%s; font-style:%s; text-decoration:%s; color:%s; text-align:%s; letter-spacing:%spx; line-height:%s; max-width:%s%%; transform:translate(-50%%,-50%%) rotate(%sdeg);',
                 $c['x'],
                 $c['y'],
                 $c['font_size'],
                 $fuente,
                 $c['bold'] ? 'bold' : 'normal',
+                $c['italic'] ? 'italic' : 'normal',
                 $c['underline'] ? 'underline' : 'none',
                 $c['color'],
-                $c['align']
+                $c['align'],
+                $c['letter_spacing'],
+                $c['line_height'],
+                $c['max_width'],
+                $c['rotacion']
             );
+        };
+
+        // Aplica el salto de línea manual configurado para el campo (si hay
+        // alguno) sobre el contenido ya resuelto (texto personalizado, texto
+        // automático, o el nombre real del participante).
+        $texto = function (string $clave, string $contenido) use ($campos) {
+            return \App\Services\DiplomaCamposService::conSaltoLinea($contenido, $campos[$clave]['salto_linea_palabra']);
         };
     @endphp
     <style>
@@ -74,10 +90,11 @@
            simétricamente si se ajusta a varias líneas. */
         .campo {
             position: absolute;
-            transform: translate(-50%, -50%);
-            max-width: 80%;
-            white-space: normal;
-            line-height: 1.4;
+            /* posición, tamaño de fuente, interlineado, ancho máximo y
+               rotación van inline por campo (ver $estiloCampo arriba);
+               pre-line respeta tanto el ajuste automático por ancho como
+               los saltos de línea manuales (\n) que arma $texto(). */
+            white-space: pre-line;
         }
 
         .firma-box {
@@ -128,43 +145,43 @@
 
             @if ($campos['titulo_secundario']['visible'])
                 <div class="campo" style="{{ $estiloCampo('titulo_secundario') }}">
-                    {{ $campos['titulo_secundario']['texto'] ?: $defecto['titulo_secundario'] }}
+                    {{ $texto('titulo_secundario', $campos['titulo_secundario']['texto'] ?: $defecto['titulo_secundario']) }}
                 </div>
             @endif
 
             @if ($campos['nombre']['visible'])
                 <div class="campo" style="{{ $estiloCampo('nombre') }}">
-                    {{ $participante->nombre_completo }}
+                    {{ $texto('nombre', $participante->nombre_completo) }}
                 </div>
             @endif
 
             @if ($campos['participacion']['visible'])
                 <div class="campo" style="{{ $estiloCampo('participacion') }}">
-                    {{ $campos['participacion']['texto'] ?: $defecto['participacion'] }}
+                    {{ $texto('participacion', $campos['participacion']['texto'] ?: $defecto['participacion']) }}
                 </div>
             @endif
 
             @if ($campos['actividad']['visible'])
                 <div class="campo" style="{{ $estiloCampo('actividad') }}">
-                    {{ $campos['actividad']['texto'] ?: $defecto['actividad'] }}
+                    {{ $texto('actividad', $campos['actividad']['texto'] ?: $defecto['actividad']) }}
                 </div>
             @endif
 
             @if ($campos['modalidad_duracion']['visible'])
                 <div class="campo" style="{{ $estiloCampo('modalidad_duracion') }}">
-                    {{ $campos['modalidad_duracion']['texto'] ?: $defecto['modalidad_duracion'] }}
+                    {{ $texto('modalidad_duracion', $campos['modalidad_duracion']['texto'] ?: $defecto['modalidad_duracion']) }}
                 </div>
             @endif
 
             @if ($campos['lugar_fecha']['visible'])
                 <div class="campo" style="{{ $estiloCampo('lugar_fecha') }}">
-                    {{ $campos['lugar_fecha']['texto'] ?: $defecto['lugar_fecha'] }}
+                    {{ $texto('lugar_fecha', $campos['lugar_fecha']['texto'] ?: $defecto['lugar_fecha']) }}
                 </div>
             @endif
 
             @if ($plantilla->tipo_certificado === 'generico' && $campos['impartido_por']['visible'])
                 <div class="campo" style="{{ $estiloCampo('impartido_por') }}">
-                    {{ $campos['impartido_por']['texto'] ?: $defecto['impartido_por'] }}
+                    {{ $texto('impartido_por', $campos['impartido_por']['texto'] ?: $defecto['impartido_por']) }}
                 </div>
             @endif
 

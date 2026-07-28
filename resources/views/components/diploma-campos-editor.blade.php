@@ -59,14 +59,39 @@
             return clave !== 'nombre' && !this.esFirma(clave) && !this.esQr(clave);
         },
 
+        // Distinto de esEditable: el nombre no tiene texto libre (siempre es
+        // el del participante), pero sí es un campo de texto al que le
+        // aplican interlineado, ancho máximo, espaciado, cursiva, rotación y
+        // salto de línea manual igual que a cualquier otro.
+        // Excluye firma y QR: son los únicos 7 campos donde interlineado,
+        // ancho máximo (%) y salto de línea manual tienen sentido (el ancho
+        // de la firma es fijo en px, no en %, y el QR es una imagen).
+        esTexto(clave) {
+            return !this.esFirma(clave) && !this.esQr(clave);
+        },
+
+        // Espejo de DiplomaCamposService::conSaltoLinea() en PHP: inserta un
+        // salto de línea real después de la palabra N para que el editor
+        // muestre exactamente el mismo partido de línea que el PDF final.
+        conSaltoLinea(texto, indice) {
+            if (!indice || indice <= 0) return texto;
+            const palabras = String(texto).trim().split(/\s+/);
+            if (indice >= palabras.length) return texto;
+            return palabras.slice(0, indice).join(' ') + '\n' + palabras.slice(indice).join(' ');
+        },
+
         contenidoDe(clave) {
+            let contenido;
             if (clave === 'nombre' && Object.keys(this.participantes).length) {
-                return this.participantes[this.participanteId] ?? Object.values(this.participantes)[0];
+                contenido = this.participantes[this.participanteId] ?? Object.values(this.participantes)[0];
+            } else if (this.esEditable(clave) && this.campos[clave].texto) {
+                contenido = this.campos[clave].texto;
+            } else {
+                contenido = this.contenidos[clave] ?? this.etiquetas[clave] ?? clave;
             }
-            if (this.esEditable(clave) && this.campos[clave].texto) {
-                return this.campos[clave].texto;
-            }
-            return this.contenidos[clave] ?? this.etiquetas[clave] ?? clave;
+            return this.esTexto(clave)
+                ? this.conSaltoLinea(contenido, this.campos[clave].salto_linea_palabra)
+                : contenido;
         },
 
         fuenteWebDe(clave) {
@@ -78,16 +103,21 @@
             const c = this.campos[clave];
             const tam = Math.max(7, Math.round((c.font_size || 16) * this.escala));
             let base = `left:${c.x}%; top:${c.y}%; font-size:${tam}px; font-family:${this.fuenteWebDe(clave)}; font-weight:${c.bold ? 'bold' : 'normal'}; text-decoration:${c.underline ? 'underline' : 'none'}; color:${c.color}; text-align:${c.align || 'center'};`;
-            // Mismo max-width/wrap que usa el PDF (pdf/diplomas.blade.php .campo)
-            // para que el editor muestre el texto partido en líneas igual que
-            // el resultado final, en vez de una sola línea siempre.
+            // Mismo max-width/interlineado/espaciado/rotación que usa el PDF
+            // (pdf/diplomas.blade.php $estiloCampo) para que el editor
+            // muestre el texto igual que el resultado final.
             if (this.esFirma(clave)) {
                 base += `width:${Math.round(220 * this.escala)}px;`;
             } else if (this.esQr(clave)) {
                 const lado = Math.max(16, Math.round((c.font_size || 90) * this.escala));
                 base += `width:${lado}px; height:${lado}px;`;
             } else {
-                base += `max-width:80%; white-space:normal; line-height:1.4;`;
+                // letter-spacing es un valor absoluto en px (a diferencia de
+                // line-height/max-width, que son relativos), así que hay que
+                // escalarlo igual que font-size para que se vea proporcional
+                // en el lienzo reducido del editor.
+                const espaciado = Math.round(c.letter_spacing * this.escala * 10) / 10;
+                base += `max-width:${c.max_width}%; white-space:pre-line; line-height:${c.line_height}; letter-spacing:${espaciado}px; font-style:${c.italic ? 'italic' : 'normal'}; transform:translate(-50%,-50%) rotate(${c.rotacion}deg);`;
             }
             return base;
         },
@@ -96,11 +126,20 @@
             return `height:${Math.max(20, Math.round(155 * this.escala))}px; object-fit:contain; display:block; margin:0 auto;`;
         },
 
+        // Mismos límites que la CSS de .panel-flotante (min(270px, 88vw) /
+        // min(480px, 80vh)), para que el panel nunca se calcule fuera del
+        // lienzo ni se salga de la pantalla en móvil.
+        dimensionesPopover() {
+            return {
+                ancho: Math.min(270, window.innerWidth * 0.88),
+                alto: Math.min(480, window.innerHeight * 0.8),
+            };
+        },
+
         posicionAutoPopover() {
             const rect = this.$refs.lienzo.getBoundingClientRect();
             const c = this.campos[this.seleccionado];
-            const anchoPop = 270;
-            const altoPop = 400;
+            const { ancho: anchoPop, alto: altoPop } = this.dimensionesPopover();
             let x = (c.x / 100) * rect.width + 18;
             let y = (c.y / 100) * rect.height - 20;
             if (x + anchoPop > rect.width) x = (c.x / 100) * rect.width - anchoPop - 18;
@@ -186,8 +225,7 @@
             if (this.arrastrandoPanel) {
                 const rect = this.$refs.lienzo.getBoundingClientRect();
                 const punto = event.touches ? event.touches[0] : event;
-                const anchoPop = 270;
-                const altoPop = 400;
+                const { ancho: anchoPop, alto: altoPop } = this.dimensionesPopover();
                 let x = punto.clientX - rect.left - this.offsetArrastrePanel.x;
                 let y = punto.clientY - rect.top - this.offsetArrastrePanel.y;
                 x = Math.max(0, Math.min(Math.max(0, rect.width - anchoPop), x));
@@ -271,7 +309,9 @@
 
         .panel-flotante {
             position: absolute;
-            width: 270px;
+            width: min(270px, 88vw);
+            max-height: min(480px, 80vh);
+            overflow-y: auto;
             background: #fff;
             border: 1px solid #d1d5db;
             border-radius: 8px;
@@ -279,6 +319,19 @@
             padding: 12px;
             z-index: 50;
             font-size: 12px;
+        }
+
+        .panel-flotante .form-label-sm {
+            display: block;
+            font-size: 10px;
+            color: #6c757d;
+            margin-bottom: 2px;
+        }
+
+        @media (max-width: 480px) {
+            .panel-flotante {
+                font-size: 13px;
+            }
         }
 
         .panel-header {
@@ -435,7 +488,7 @@
                     </div>
                 </div>
 
-                <div class="d-flex gap-3 mb-2" x-show="!esQr(seleccionado)">
+                <div class="d-flex gap-3 mb-2 flex-wrap" x-show="!esQr(seleccionado)">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" x-model="campos[seleccionado].bold"
                             id="pop-bold">
@@ -445,6 +498,49 @@
                         <input class="form-check-input" type="checkbox" x-model="campos[seleccionado].underline"
                             id="pop-underline">
                         <label class="form-check-label" for="pop-underline">Subrayado</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" x-model="campos[seleccionado].italic"
+                            id="pop-italic">
+                        <label class="form-check-label" for="pop-italic">Cursiva</label>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 mb-2" x-show="!esQr(seleccionado)">
+                    <div class="flex-fill">
+                        <label class="form-label-sm">Espaciado letras (px)</label>
+                        <input type="number" min="-5" max="30" step="0.5" class="form-control form-control-sm"
+                            x-model.number="campos[seleccionado].letter_spacing">
+                    </div>
+                    <div class="flex-fill">
+                        <label class="form-label-sm">Rotación (°)</label>
+                        <input type="number" min="-180" max="180" step="1" class="form-control form-control-sm"
+                            x-model.number="campos[seleccionado].rotacion">
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 mb-2" x-show="esTexto(seleccionado)">
+                    <div class="flex-fill">
+                        <label class="form-label-sm">Interlineado</label>
+                        <input type="number" min="0.8" max="3" step="0.1" class="form-control form-control-sm"
+                            x-model.number="campos[seleccionado].line_height">
+                    </div>
+                    <div class="flex-fill">
+                        <label class="form-label-sm">Ancho máx. (%)</label>
+                        <input type="number" min="10" max="100" step="1" class="form-control form-control-sm"
+                            x-model.number="campos[seleccionado].max_width">
+                    </div>
+                </div>
+
+                <div class="mb-3" x-show="esTexto(seleccionado)">
+                    <label class="form-label-sm">
+                        Forzar salto de línea después de la palabra # (0 = automático por ancho)
+                    </label>
+                    <input type="number" min="0" max="20" step="1" class="form-control form-control-sm"
+                        x-model.number="campos[seleccionado].salto_linea_palabra">
+                    <div class="form-text" style="font-size:9.5px;" x-show="seleccionado === 'nombre'">
+                        Útil para partir el nombre en una línea y los apellidos en otra: pon 1 si el nombre es
+                        de una sola palabra, 2 si es de dos, etc.
                     </div>
                 </div>
 

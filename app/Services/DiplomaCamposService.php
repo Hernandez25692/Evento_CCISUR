@@ -117,21 +117,65 @@ class DiplomaCamposService
      */
     public static function defaults(): array
     {
+        // Propiedades comunes a todo campo de texto; se combinan con las
+        // específicas de cada uno más abajo. Mantener esto en un solo lugar
+        // es lo que permite agregar una propiedad nueva (p. ej. rotación) y
+        // que aplique automáticamente a los diez campos sin repetirla.
+        $baseTexto = [
+            'line_height' => 1.4,
+            'max_width' => 80,
+            'letter_spacing' => 0,
+            'italic' => false,
+            'rotacion' => 0,
+            // Fuerza un salto de línea manual después de la palabra N (1 =
+            // después de la primera palabra, 0 = desactivado, solo se envuelve
+            // automáticamente por ancho). Pensado sobre todo para el nombre
+            // del participante: nombre(s) en una línea y apellidos en otra,
+            // en vez de depender de que el nombre sea lo bastante largo para
+            // envolver solo.
+            'salto_linea_palabra' => 0,
+        ];
+
         return [
-            'titulo_secundario'  => ['x' => 50, 'y' => 20, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-demibold', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => ''],
-            'nombre'              => ['x' => 50, 'y' => 34, 'align' => 'center', 'font_size' => 30, 'font_family' => 'visby-heavy', 'bold' => true, 'underline' => true, 'visible' => true, 'color' => '#004aad', 'texto' => ''],
-            'participacion'       => ['x' => 50, 'y' => 42, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => ''],
-            'actividad'           => ['x' => 50, 'y' => 47, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-heavy', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => ''],
-            'modalidad_duracion'  => ['x' => 50, 'y' => 52, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => ''],
-            'lugar_fecha'         => ['x' => 50, 'y' => 57, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => ''],
-            'impartido_por'       => ['x' => 50, 'y' => 62, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => ''],
-            'firma_1'             => ['x' => 30, 'y' => 88, 'align' => 'center', 'font_size' => 16, 'font_family' => 'visby-demibold', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => ''],
-            'firma_2'             => ['x' => 70, 'y' => 88, 'align' => 'center', 'font_size' => 16, 'font_family' => 'visby-demibold', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => ''],
+            'titulo_secundario'  => ['x' => 50, 'y' => 20, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-demibold', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => '', ...$baseTexto],
+            'nombre'              => ['x' => 50, 'y' => 34, 'align' => 'center', 'font_size' => 30, 'font_family' => 'visby-heavy', 'bold' => true, 'underline' => true, 'visible' => true, 'color' => '#004aad', 'texto' => '', ...$baseTexto],
+            'participacion'       => ['x' => 50, 'y' => 42, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => '', ...$baseTexto],
+            'actividad'           => ['x' => 50, 'y' => 47, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-heavy', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => '', ...$baseTexto],
+            'modalidad_duracion'  => ['x' => 50, 'y' => 52, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => '', ...$baseTexto],
+            'lugar_fecha'         => ['x' => 50, 'y' => 57, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => '', ...$baseTexto],
+            'impartido_por'       => ['x' => 50, 'y' => 62, 'align' => 'center', 'font_size' => 20, 'font_family' => 'visby-light', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => '', ...$baseTexto],
+            'firma_1'             => ['x' => 30, 'y' => 88, 'align' => 'center', 'font_size' => 16, 'font_family' => 'visby-demibold', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => '', ...$baseTexto],
+            'firma_2'             => ['x' => 70, 'y' => 88, 'align' => 'center', 'font_size' => 16, 'font_family' => 'visby-demibold', 'bold' => true, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => '', ...$baseTexto],
             // 'font_size' se reutiliza como el tamaño en píxeles del cuadro
             // del QR (mismo patrón que el ancho fijo de las firmas, pero
             // configurable como cualquier otro campo).
-            'qr_verificacion'     => ['x' => 88, 'y' => 90, 'align' => 'center', 'font_size' => 90, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => ''],
+            'qr_verificacion'     => ['x' => 88, 'y' => 90, 'align' => 'center', 'font_size' => 90, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => '', ...$baseTexto],
         ];
+    }
+
+    /**
+     * Inserta un salto de línea manual después de la palabra N de un texto
+     * (1-indexado). Con $indicePalabra en 0 (o mayor o igual al número de
+     * palabras) devuelve el texto sin tocar. Se inserta un "\n" literal, no
+     * HTML, así que sigue siendo seguro pasarlo por {{ }} (que escapa HTML
+     * pero no toca saltos de línea) — ni el editor ni el PDF necesitan HTML
+     * crudo para esto, ambos interpretan "\n" vía white-space: pre-line.
+     */
+    public static function conSaltoLinea(string $texto, int $indicePalabra): string
+    {
+        if ($indicePalabra <= 0) {
+            return $texto;
+        }
+
+        $palabras = preg_split('/\s+/', trim($texto)) ?: [];
+
+        if ($indicePalabra >= count($palabras)) {
+            return $texto;
+        }
+
+        return implode(' ', array_slice($palabras, 0, $indicePalabra))
+            . "\n"
+            . implode(' ', array_slice($palabras, $indicePalabra));
     }
 
     /**
@@ -201,11 +245,11 @@ class DiplomaCamposService
                 'x' => max(0, min(100, (float) ($valores['x'] ?? 0))),
                 'y' => max(0, min(100, (float) ($valores['y'] ?? 0))),
                 'align' => in_array($valores['align'] ?? 'center', ['left', 'center', 'right'], true)
-                    ? $valores['align']
+                    ? $valores['align'] ?? 'center'
                     : 'center',
                 'font_size' => max(8, min(200, (int) ($valores['font_size'] ?? 20))),
                 'font_family' => array_key_exists($valores['font_family'] ?? null, self::FUENTES)
-                    ? $valores['font_family']
+                    ? $valores['font_family'] ?? 'visby-light'
                     : 'visby-light',
                 'bold' => filter_var($valores['bold'] ?? false, FILTER_VALIDATE_BOOLEAN),
                 'underline' => filter_var($valores['underline'] ?? false, FILTER_VALIDATE_BOOLEAN),
@@ -216,6 +260,12 @@ class DiplomaCamposService
                 'texto' => is_string($valores['texto'] ?? null)
                     ? mb_substr(trim($valores['texto']), 0, 500)
                     : '',
+                'line_height' => max(0.8, min(3, (float) ($valores['line_height'] ?? 1.4))),
+                'max_width' => max(10, min(100, (float) ($valores['max_width'] ?? 80))),
+                'letter_spacing' => max(-5, min(30, (float) ($valores['letter_spacing'] ?? 0))),
+                'italic' => filter_var($valores['italic'] ?? false, FILTER_VALIDATE_BOOLEAN),
+                'rotacion' => max(-180, min(180, (float) ($valores['rotacion'] ?? 0))),
+                'salto_linea_palabra' => max(0, min(20, (int) ($valores['salto_linea_palabra'] ?? 0))),
             ];
         }
 
