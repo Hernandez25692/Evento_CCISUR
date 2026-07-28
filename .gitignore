@@ -22,3 +22,9 @@ yarn-error.log
 /.vscode
 /.zed
 /leeme.txt
+
+# Caché de fuentes de Dompdf: se regenera sola al primer uso y las rutas que
+# guarda son absolutas (dependen de dónde esté desplegado el proyecto), así
+# que committearla no sirve en otro entorno.
+/storage/fonts/installed-fonts.json
+/storage/fonts/visby_*

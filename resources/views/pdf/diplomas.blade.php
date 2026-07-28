@@ -39,6 +39,8 @@
         };
     @endphp
     <style>
+        {!! \App\Services\DiplomaCamposService::fontFacesPdf() !!}
+
         @page {
             @if ($anchoIn && $altoIn)
                 size: {{ $anchoIn }}in {{ $altoIn }}in;

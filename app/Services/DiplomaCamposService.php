@@ -5,6 +5,33 @@ namespace App\Services;
 class DiplomaCamposService
 {
     /**
+     * Bloque @font-face con las fuentes Visby para incrustar en el <style>
+     * de cualquier vista que genere un PDF de diploma (pdf/diplomas.blade.php
+     * y cualquier otra que se agregue). Única fuente de verdad: si se agrega
+     * un peso nuevo, se registra aquí una sola vez y todas las vistas de PDF
+     * lo heredan automáticamente.
+     */
+    public static function fontFacesPdf(): string
+    {
+        $reglas = '';
+
+        foreach (self::FUENTES_PDF_ARCHIVO as $familia => $archivo) {
+            $ruta = base_path("resources/fonts/VisbyCF-ttf/{$archivo}");
+            // Se registra igual para normal y bold (mismo archivo): el editor
+            // permite activar "negrita" sobre cualquier peso Visby, pero no
+            // existe un archivo "bold" separado de cada peso. Sin esta
+            // segunda regla, Dompdf no encuentra variante bold registrada y
+            // sustituye el campo entero por Helvetica-Bold en vez de negritar
+            // la misma tipografía Visby.
+            $reglas .= "@font-face { font-family: '{$familia}'; src: url('{$ruta}') format('truetype'); font-weight: normal; }\n";
+            $reglas .= "@font-face { font-family: '{$familia}'; src: url('{$ruta}') format('truetype'); font-weight: bold; }\n";
+        }
+
+        return $reglas;
+    }
+
+
+    /**
      * Claves de campos posicionables sobre la plantilla del diploma.
      * Esta lista es la única fuente de verdad: la usan tanto el editor
      * visual de posiciones como la vista que genera el PDF final.
@@ -40,16 +67,43 @@ class DiplomaCamposService
 
     /**
      * Fuentes permitidas por campo. Los nombres "pdf"/"web" son distintos
-     * porque la misma fuente está registrada con nombres diferentes en
-     * config/dompdf.php (para el PDF) y en public/css/fonts-visby.css
-     * (para el navegador) — la clave lógica evita que se desincronicen.
+     * porque la misma fuente está registrada con nombres diferentes en el
+     * PDF (@font-face en resources/views/pdf/diplomas.blade.php, usando los
+     * .ttf de resources/fonts/VisbyCF-ttf) y en el navegador
+     * (public/css/fonts-visby.css, usando los .otf originales de
+     * public/fonts/VisbyCF) — la clave lógica evita que se desincronicen.
+     *
+     * Los .ttf del PDF son una conversión de los .otf originales (que usan
+     * contorno CFF/PostScript, formato que Dompdf no sabe leer) a contorno
+     * TrueType, generada con la herramienta `otf2ttf`. Visualmente son la
+     * misma tipografía; solo cambia el formato del contorno.
      */
     public const FUENTES = [
+        'visby-thin' => ['label' => 'Visby Thin', 'pdf' => 'Visby-Thin', 'web' => 'VisbyCF-Thin'],
         'visby-light' => ['label' => 'Visby Light', 'pdf' => 'Visby-Light', 'web' => 'VisbyCF-Light'],
+        'visby-medium' => ['label' => 'Visby Medium', 'pdf' => 'Visby-Medium', 'web' => 'VisbyCF-Medium'],
         'visby-demibold' => ['label' => 'Visby DemiBold', 'pdf' => 'Visby-DemiBold', 'web' => 'VisbyCF-DemiBold'],
+        'visby-bold' => ['label' => 'Visby Bold', 'pdf' => 'Visby-Bold', 'web' => 'VisbyCF-Bold'],
+        'visby-extrabold' => ['label' => 'Visby ExtraBold', 'pdf' => 'Visby-ExtraBold', 'web' => 'VisbyCF-ExtraBold'],
         'visby-heavy' => ['label' => 'Visby Heavy', 'pdf' => 'Visby-Heavy', 'web' => 'VisbyCF-Heavy'],
         'helvetica' => ['label' => 'Helvetica (genérica)', 'pdf' => 'Helvetica, sans-serif', 'web' => 'Helvetica, Arial, sans-serif'],
         'times' => ['label' => 'Times (genérica)', 'pdf' => 'Times, serif', 'web' => "'Times New Roman', Times, serif"],
+    ];
+
+    /**
+     * Fuentes Visby que deben registrarse como @font-face al generar el PDF
+     * (las genéricas Helvetica/Times ya las conoce Dompdf de fábrica).
+     * Clave = nombre de familia usado en el PDF, valor = archivo .ttf en
+     * resources/fonts/VisbyCF-ttf.
+     */
+    public const FUENTES_PDF_ARCHIVO = [
+        'Visby-Thin' => 'VisbyCF-Thin.ttf',
+        'Visby-Light' => 'VisbyCF-Light.ttf',
+        'Visby-Medium' => 'VisbyCF-Medium.ttf',
+        'Visby-DemiBold' => 'VisbyCF-DemiBold.ttf',
+        'Visby-Bold' => 'VisbyCF-Bold.ttf',
+        'Visby-ExtraBold' => 'VisbyCF-ExtraBold.ttf',
+        'Visby-Heavy' => 'VisbyCF-Heavy.ttf',
     ];
 
     /**
