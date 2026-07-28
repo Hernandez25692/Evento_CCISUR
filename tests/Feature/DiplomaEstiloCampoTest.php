@@ -11,11 +11,11 @@ use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 /**
- * Verifica que las propiedades tipográficas nuevas (interlineado, ancho
- * máximo, espaciado entre letras, cursiva, rotación, salto de línea manual)
- * realmente lleguen al HTML que Dompdf convierte a PDF, con los mismos
- * valores que el admin configuró en el editor — es la regresión concreta
- * que motivó separar $estiloCampo/$texto del resto de la plantilla.
+ * Verifica que las propiedades tipográficas (interlineado, ancho máximo,
+ * espaciado entre letras, cursiva, rotación) realmente lleguen al HTML que
+ * Dompdf convierte a PDF, con los mismos valores que el admin configuró en
+ * el editor — es la regresión concreta que motivó separar $estiloCampo del
+ * resto de la plantilla.
  */
 class DiplomaEstiloCampoTest extends TestCase
 {
@@ -38,7 +38,6 @@ class DiplomaEstiloCampoTest extends TestCase
         Storage::disk('public')->put($fondoPath, base64_decode(self::PIXEL_PNG_BASE64));
 
         $campos = DiplomaCamposService::defaults();
-        $campos['nombre']['salto_linea_palabra'] = 1;
         $campos['actividad']['rotacion'] = 15;
         $campos['actividad']['letter_spacing'] = 4.5;
         $campos['actividad']['italic'] = true;
@@ -65,9 +64,6 @@ class DiplomaEstiloCampoTest extends TestCase
             'plantilla' => $plantilla,
             'capacitacion' => $capacitacion,
         ])->render();
-
-        // El nombre debe partirse después de la primera palabra ("Ana").
-        $this->assertStringContainsString("Ana\nMaria Lopez", $html);
 
         // El campo "actividad" debe traer exactamente el estilo configurado.
         $this->assertStringContainsString('rotate(15deg)', $html);

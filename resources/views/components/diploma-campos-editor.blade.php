@@ -61,37 +61,22 @@
 
         // Distinto de esEditable: el nombre no tiene texto libre (siempre es
         // el del participante), pero sí es un campo de texto al que le
-        // aplican interlineado, ancho máximo, espaciado, cursiva, rotación y
-        // salto de línea manual igual que a cualquier otro.
-        // Excluye firma y QR: son los únicos 7 campos donde interlineado,
-        // ancho máximo (%) y salto de línea manual tienen sentido (el ancho
-        // de la firma es fijo en px, no en %, y el QR es una imagen).
+        // aplican interlineado, ancho máximo, espaciado, cursiva y rotación
+        // igual que a cualquier otro. Excluye firma y QR: son los únicos 7
+        // campos donde interlineado y ancho máximo (%) tienen sentido (el
+        // ancho de la firma es fijo en px, no en %, y el QR es una imagen).
         esTexto(clave) {
             return !this.esFirma(clave) && !this.esQr(clave);
         },
 
-        // Espejo de DiplomaCamposService::conSaltoLinea() en PHP: inserta un
-        // salto de línea real después de la palabra N para que el editor
-        // muestre exactamente el mismo partido de línea que el PDF final.
-        conSaltoLinea(texto, indice) {
-            if (!indice || indice <= 0) return texto;
-            const palabras = String(texto).trim().split(/\s+/);
-            if (indice >= palabras.length) return texto;
-            return palabras.slice(0, indice).join(' ') + '\n' + palabras.slice(indice).join(' ');
-        },
-
         contenidoDe(clave) {
-            let contenido;
             if (clave === 'nombre' && Object.keys(this.participantes).length) {
-                contenido = this.participantes[this.participanteId] ?? Object.values(this.participantes)[0];
-            } else if (this.esEditable(clave) && this.campos[clave].texto) {
-                contenido = this.campos[clave].texto;
-            } else {
-                contenido = this.contenidos[clave] ?? this.etiquetas[clave] ?? clave;
+                return this.participantes[this.participanteId] ?? Object.values(this.participantes)[0];
             }
-            return this.esTexto(clave)
-                ? this.conSaltoLinea(contenido, this.campos[clave].salto_linea_palabra)
-                : contenido;
+            if (this.esEditable(clave) && this.campos[clave].texto) {
+                return this.campos[clave].texto;
+            }
+            return this.contenidos[clave] ?? this.etiquetas[clave] ?? clave;
         },
 
         fuenteWebDe(clave) {
@@ -117,7 +102,7 @@
                 // escalarlo igual que font-size para que se vea proporcional
                 // en el lienzo reducido del editor.
                 const espaciado = Math.round(c.letter_spacing * this.escala * 10) / 10;
-                base += `max-width:${c.max_width}%; white-space:pre-line; line-height:${c.line_height}; letter-spacing:${espaciado}px; font-style:${c.italic ? 'italic' : 'normal'}; transform:translate(-50%,-50%) rotate(${c.rotacion}deg);`;
+                base += `max-width:${c.max_width}%; white-space:normal; line-height:${c.line_height}; letter-spacing:${espaciado}px; font-style:${c.italic ? 'italic' : 'normal'}; transform:translate(-50%,-50%) rotate(${c.rotacion}deg);`;
             }
             return base;
         },
@@ -530,18 +515,6 @@
                         <label class="form-label-sm">Ancho máx. (%)</label>
                         <input type="number" min="10" max="100" step="1" class="form-control form-control-sm"
                             x-model.number="campos[seleccionado].max_width">
-                    </div>
-                </div>
-
-                <div class="mb-3" x-show="esTexto(seleccionado)">
-                    <label class="form-label-sm">
-                        Forzar salto de línea después de la palabra # (0 = automático por ancho)
-                    </label>
-                    <input type="number" min="0" max="20" step="1" class="form-control form-control-sm"
-                        x-model.number="campos[seleccionado].salto_linea_palabra">
-                    <div class="form-text" style="font-size:9.5px;" x-show="seleccionado === 'nombre'">
-                        Útil para partir el nombre en una línea y los apellidos en otra: pon 1 si el nombre es
-                        de una sola palabra, 2 si es de dos, etc.
                     </div>
                 </div>
 

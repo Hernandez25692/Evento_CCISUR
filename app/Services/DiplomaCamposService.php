@@ -127,13 +127,6 @@ class DiplomaCamposService
             'letter_spacing' => 0,
             'italic' => false,
             'rotacion' => 0,
-            // Fuerza un salto de línea manual después de la palabra N (1 =
-            // después de la primera palabra, 0 = desactivado, solo se envuelve
-            // automáticamente por ancho). Pensado sobre todo para el nombre
-            // del participante: nombre(s) en una línea y apellidos en otra,
-            // en vez de depender de que el nombre sea lo bastante largo para
-            // envolver solo.
-            'salto_linea_palabra' => 0,
         ];
 
         return [
@@ -151,31 +144,6 @@ class DiplomaCamposService
             // configurable como cualquier otro campo).
             'qr_verificacion'     => ['x' => 88, 'y' => 90, 'align' => 'center', 'font_size' => 90, 'font_family' => 'visby-light', 'bold' => false, 'underline' => false, 'visible' => true, 'color' => '#000000', 'texto' => '', ...$baseTexto],
         ];
-    }
-
-    /**
-     * Inserta un salto de línea manual después de la palabra N de un texto
-     * (1-indexado). Con $indicePalabra en 0 (o mayor o igual al número de
-     * palabras) devuelve el texto sin tocar. Se inserta un "\n" literal, no
-     * HTML, así que sigue siendo seguro pasarlo por {{ }} (que escapa HTML
-     * pero no toca saltos de línea) — ni el editor ni el PDF necesitan HTML
-     * crudo para esto, ambos interpretan "\n" vía white-space: pre-line.
-     */
-    public static function conSaltoLinea(string $texto, int $indicePalabra): string
-    {
-        if ($indicePalabra <= 0) {
-            return $texto;
-        }
-
-        $palabras = preg_split('/\s+/', trim($texto)) ?: [];
-
-        if ($indicePalabra >= count($palabras)) {
-            return $texto;
-        }
-
-        return implode(' ', array_slice($palabras, 0, $indicePalabra))
-            . "\n"
-            . implode(' ', array_slice($palabras, $indicePalabra));
     }
 
     /**
@@ -265,7 +233,6 @@ class DiplomaCamposService
                 'letter_spacing' => max(-5, min(30, (float) ($valores['letter_spacing'] ?? 0))),
                 'italic' => filter_var($valores['italic'] ?? false, FILTER_VALIDATE_BOOLEAN),
                 'rotacion' => max(-180, min(180, (float) ($valores['rotacion'] ?? 0))),
-                'salto_linea_palabra' => max(0, min(20, (int) ($valores['salto_linea_palabra'] ?? 0))),
             ];
         }
 

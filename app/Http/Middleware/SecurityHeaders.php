@@ -20,7 +20,14 @@ class SecurityHeaders
 
         $csp = implode('; ', [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://cdn.datatables.net https://kit.fontawesome.com",
+            // 'unsafe-eval' es necesario para Alpine.js: evalúa la expresión
+            // de x-data (un objeto JS grande, como en el editor de campos
+            // del diploma) con Function(), que el navegador bloquea sin
+            // este permiso. Sin él, Alpine falla en silencio (solo un
+            // warning en consola) y dejaba el editor con estado a medio
+            // inicializar — la causa real de varios reportes de que "el
+            // editor no coincide con el PDF".
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://cdn.datatables.net https://kit.fontawesome.com",
             "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.datatables.net https://fonts.googleapis.com https://fonts.bunny.net",
             "font-src 'self' data: https://fonts.gstatic.com https://fonts.bunny.net https://cdnjs.cloudflare.com",
             "img-src 'self' data:",
