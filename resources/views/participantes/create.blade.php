@@ -33,6 +33,50 @@
             </div>
         @endif
 
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show animated-alert" role="alert">
+                <div class="alert-content">
+                    <i class="fas fa-times-circle alert-icon"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show animated-alert" role="alert">
+                <div class="alert-content" style="align-items: flex-start;">
+                    <i class="fas fa-times-circle alert-icon" style="margin-top: .2em;"></i>
+                    <div>
+                        <strong>Revisa estos datos:</strong>
+                        <ul style="margin: .5rem 0 0; padding-left: 1.2rem;">
+                            @foreach ($errors->all() as $errorCampo)
+                                <li>{{ $errorCampo }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if (session('import_errores'))
+            <div class="alert alert-danger alert-dismissible fade show animated-alert" role="alert">
+                <div class="alert-content" style="align-items: flex-start;">
+                    <i class="fas fa-times-circle alert-icon" style="margin-top: .2em;"></i>
+                    <div>
+                        <strong>{{ count(session('import_errores')) }} fila(s) del Excel no se pudieron importar:</strong>
+                        <ul style="margin: .5rem 0 0; padding-left: 1.2rem;">
+                            @foreach (session('import_errores') as $errorFila)
+                                <li>{{ $errorFila }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
         <!-- Formulario principal -->
         <div class="form-card glassmorphism-card">
             <form id="form-participante" action="{{ route('capacitaciones.participantes.store', $capacitacion->id) }}"
@@ -49,7 +93,7 @@
 
                         <div class="form-group floating-form-group">
                             <input type="text" class="form-control floating-input" name="nombre_completo"
-                                id="nombre_completo" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+"
+                                id="nombre_completo" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" value="{{ old('nombre_completo') }}"
                                 title="Solo se permiten letras y espacios" required>
                             <label for="nombre_completo" class="floating-label">Nombre Completo</label>
                             <i class="fas fa-user input-icon"></i>
@@ -58,14 +102,14 @@
 
                         <div class="form-group floating-form-group">
                             <input type="email" class="form-control floating-input" name="correo" id="correo"
-                                required>
+                                value="{{ old('correo') }}" required>
                             <label for="correo" class="floating-label">Correo Electrónico</label>
                             <i class="fas fa-envelope input-icon"></i>
                         </div>
 
                         <div class="form-group floating-form-group">
                             <input type="text" class="form-control floating-input" name="telefono" id="telefono"
-                                maxlength="8" pattern="\d{8}" title="Ingrese un número de 8 dígitos" required>
+                                maxlength="8" pattern="\d{8}" value="{{ old('telefono') }}" title="Ingrese un número de 8 dígitos" required>
                             <label for="telefono" class="floating-label">Teléfono</label>
                             <i class="fas fa-phone input-icon"></i>
                         </div>
@@ -73,7 +117,7 @@
 
                         <div class="form-group floating-form-group">
                             <input type="text" class="form-control floating-input" name="identidad" id="identidad"
-                                maxlength="13" pattern="\d{13}" title="Ingrese 13 dígitos numéricos" required>
+                                maxlength="13" pattern="\d{13}" value="{{ old('identidad') }}" title="Ingrese 13 dígitos numéricos" required>
                             <label for="identidad" class="floating-label">Identidad (sin guiones)</label>
                             <i class="fas fa-id-card input-icon"></i>
                         </div>
@@ -91,17 +135,17 @@
                         <div class="row g-2">
                             <div class="col-md-6 form-group floating-form-group">
                                 <input type="number" class="form-control floating-input" name="edad" id="edad"
-                                    required>
+                                    value="{{ old('edad') }}" required>
                                 <label for="edad" class="floating-label">Edad</label>
                                 <i class="fas fa-birthday-cake input-icon"></i>
                             </div>
 
                             <div class="col-md-6 form-group floating-form-group">
                                 <select class="form-control floating-select" name="genero" id="genero" required>
-                                    
-                                    <option>Masculino</option>
-                                    <option>Femenino</option>
-                                    <option>Otro</option>
+
+                                    <option value="Masculino" @selected(old('genero') == 'Masculino')>Masculino</option>
+                                    <option value="Femenino" @selected(old('genero') == 'Femenino')>Femenino</option>
+                                    <option value="Otro" @selected(old('genero') == 'Otro')>Otro</option>
                                 </select>
                                 <label for="genero" class="floating-label">Género</label>
                                 <i class="fas fa-venus-mars input-icon"></i>
@@ -117,13 +161,13 @@
                         </h3>
 
                         <div class="form-group floating-form-group">
-                            <input type="text" class="form-control floating-input" name="empresa" id="empresa">
+                            <input type="text" class="form-control floating-input" name="empresa" id="empresa" value="{{ old('empresa') }}">
                             <label for="empresa" class="floating-label">Empresa</label>
                             <i class="fas fa-building input-icon"></i>
                         </div>
 
                         <div class="form-group floating-form-group">
-                            <input type="text" class="form-control floating-input" name="puesto" id="puesto">
+                            <input type="text" class="form-control floating-input" name="puesto" id="puesto" value="{{ old('puesto') }}">
                             <label for="puesto" class="floating-label">Puesto</label>
                             <i class="fas fa-user-tie input-icon"></i>
                         </div>
@@ -131,15 +175,15 @@
                         <div class="form-group floating-form-group">
                             <select class="form-control floating-select" name="nivel_educativo" id="nivel_educativo"
                                 required>
-                                
-                                <option>Universitaria Completa</option>
-                                <option>Universitaria Incompleta</option>
-                                <option>Técnico Completo</option>
-                                <option>Técnico Incompleto</option>
-                                <option>Secundaria Completa</option>
-                                <option>Secundaria Incompleta</option>
-                                <option>Primaria Completa</option>
-                                <option>Primaria Incompleta</option>
+
+                                <option @selected(old('nivel_educativo') == 'Universitaria Completa')>Universitaria Completa</option>
+                                <option @selected(old('nivel_educativo') == 'Universitaria Incompleta')>Universitaria Incompleta</option>
+                                <option @selected(old('nivel_educativo') == 'Técnico Completo')>Técnico Completo</option>
+                                <option @selected(old('nivel_educativo') == 'Técnico Incompleto')>Técnico Incompleto</option>
+                                <option @selected(old('nivel_educativo') == 'Secundaria Completa')>Secundaria Completa</option>
+                                <option @selected(old('nivel_educativo') == 'Secundaria Incompleta')>Secundaria Incompleta</option>
+                                <option @selected(old('nivel_educativo') == 'Primaria Completa')>Primaria Completa</option>
+                                <option @selected(old('nivel_educativo') == 'Primaria Incompleta')>Primaria Incompleta</option>
                             </select>
                             <label for="nivel_educativo" class="floating-label">Nivel Educativo</label>
                             <i class="fas fa-graduation-cap input-icon"></i>
@@ -155,22 +199,22 @@
 
                         <div class="form-group floating-form-group">
                             <input type="text" class="form-control floating-input" name="municipio" id="municipio"
-                                required>
+                                value="{{ old('municipio') }}" required>
                             <label for="municipio" class="floating-label">Municipio</label>
                             <i class="fas fa-city input-icon"></i>
                         </div>
 
                         <div class="form-group floating-form-group">
                             <input type="text" class="form-control floating-input" name="ciudad" id="ciudad"
-                                required>
+                                value="{{ old('ciudad') }}" required>
                             <label for="ciudad" class="floating-label">Ciudad</label>
                             <i class="fas fa-map input-icon"></i>
                         </div>
 
                         <div class="form-group floating-form-group">
                             <select name="afiliado" id="afiliado" class="form-control floating-select" required>
-                                <option value="0">No</option>
-                                <option value="1">Sí</option>
+                                <option value="0" @selected(old('afiliado') == '0')>No</option>
+                                <option value="1" @selected(old('afiliado') == '1')>Sí</option>
                             </select>
                             <label for="afiliado" class="floating-label">¿Es afiliado?</label>
                             <i class="fas fa-id-badge input-icon"></i>

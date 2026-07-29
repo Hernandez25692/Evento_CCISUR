@@ -33,6 +33,23 @@
             </div>
         @endif
 
+        @if ($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show animated-alert" role="alert">
+                <div class="alert-content" style="align-items: flex-start;">
+                    <i class="fas fa-times-circle alert-icon" style="margin-top: .2em;"></i>
+                    <div>
+                        <strong>Revisa estos datos:</strong>
+                        <ul style="margin: .5rem 0 0; padding-left: 1.2rem;">
+                            @foreach ($errors->all() as $errorCampo)
+                                <li>{{ $errorCampo }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
         <!-- Formulario principal -->
         <div class="form-card glassmorphism-card">
             <form id="form-participante"

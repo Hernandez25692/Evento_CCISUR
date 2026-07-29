@@ -10,6 +10,7 @@ use App\Imports\ParticipantesImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class ParticipanteController extends Controller
 {
@@ -23,10 +24,18 @@ class ParticipanteController extends Controller
     {
         $capacitacion = Capacitacion::findOrFail($id);
 
+        // Buscar participante por identidad antes de validar, para permitir
+        // que el correo coincida con el de este mismo participante si ya
+        // existe (p. ej. re-registrarlo en otra capacitación).
+        $participanteExistente = Participante::where('identidad', $request->identidad)->first();
+
         // Validar formulario
         $request->validate([
             'nombre_completo' => 'required|string|max:255',
-            'correo' => 'required|email|max:255',
+            'correo' => [
+                'required', 'email', 'max:255',
+                Rule::unique('participantes', 'correo')->ignore($participanteExistente?->id),
+            ],
             'telefono' => 'required|string|max:20',
             'empresa' => 'nullable|string|max:255',
             'puesto' => 'nullable|string|max:255',
@@ -38,7 +47,7 @@ class ParticipanteController extends Controller
             'ciudad' => 'required|string|max:100',
             'afiliado' => 'nullable|boolean',
             'comprobante' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-        ]);
+        ], [], ['correo' => 'correo']);
 
         // Si tiene cupos limitados, verificar si se ha alcanzado el máximo
         if ($capacitacion->cupos === 'limitado') {
@@ -50,8 +59,7 @@ class ParticipanteController extends Controller
             }
         }
 
-        // Buscar participante por identidad
-        $participante = Participante::where('identidad', $request->identidad)->first();
+        $participante = $participanteExistente;
 
         // Si ya existe y está vinculado a esta capacitación, mostrar advertencia
         if ($participante && $participante->capacitaciones->contains($capacitacion->id)) {
@@ -150,9 +158,33 @@ class ParticipanteController extends Controller
             'archivo_excel' => 'required|file|mimes:xlsx,xls'
         ]);
 
-        Excel::import(new ParticipantesImport($capacitacion_id), $request->file('archivo_excel'));
+        $import = new ParticipantesImport($capacitacion_id);
+        Excel::import($import, $request->file('archivo_excel'));
 
-        return back()->with('success', 'Participantes importados correctamente.');
+        if ($import->errorGeneral) {
+            return back()->with('error', $import->errorGeneral);
+        }
+
+        $respuesta = back();
+
+        if ($import->importados > 0) {
+            $partes = ["✅ Se importaron {$import->importados} participante(s)."];
+            if ($import->yaRegistrados > 0) {
+                $partes[] = "{$import->yaRegistrados} ya estaban registrados y se omitieron.";
+            }
+            $respuesta = $respuesta->with('success', implode(' ', $partes));
+        } elseif (empty($import->errores)) {
+            $respuesta = $respuesta->with('warning', 'No se importó ningún participante nuevo (todas las filas ya estaban registradas).');
+        }
+
+        // Filas puntuales que no se pudieron importar (dato duplicado, etc.),
+        // para que el admin sepa exactamente qué corregir en el Excel en vez
+        // de que el import completo falle sin explicación.
+        if (!empty($import->errores)) {
+            $respuesta = $respuesta->with('import_errores', $import->errores);
+        }
+
+        return $respuesta;
     }
 
     public function exportarExcel($capacitacion_id)
@@ -178,7 +210,10 @@ class ParticipanteController extends Controller
 
         $request->validate([
             'nombre_completo' => 'required|string|max:255',
-            'correo' => 'required|email|max:255',
+            'correo' => [
+                'required', 'email', 'max:255',
+                Rule::unique('participantes', 'correo')->ignore($participante->id),
+            ],
             'telefono' => 'required|string|max:20',
             'empresa' => 'nullable|string|max:255',
             'puesto' => 'nullable|string|max:255',
